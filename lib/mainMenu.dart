@@ -4,7 +4,7 @@ import 'package:cma_management/Menu/dashboardFragment.dart';
 import 'package:cma_management/Menu/notificationFragment.dart';
 import 'package:cma_management/component/barChart.dart';
 import 'package:cma_management/component/btm_nav_item.dart';
-import 'package:cma_management/component/header.dart';
+import 'package:cma_management/Menu/component/header.dart';
 import 'package:cma_management/component/historyTable.dart';
 import 'package:cma_management/component/infoCard.dart';
 import 'package:cma_management/component/paymentDetailList.dart';
