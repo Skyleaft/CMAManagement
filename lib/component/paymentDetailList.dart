@@ -14,23 +14,23 @@ class PaymentDetailList extends StatelessWidget {
   Widget build(BuildContext context) {
     var grey = Colors.grey;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      SizedBox(
-        height: SizeConfig.blockSizeVertical! * 5,
-      ),
-      Container(
-        decoration:
-            BoxDecoration(borderRadius: BorderRadius.circular(30), boxShadow: [
-          BoxShadow(
-            color: grey,
-            blurRadius: 15.0,
-            offset: const Offset(
-              10.0,
-              15.0,
-            ),
-          )
-        ]),
-        child: Image.asset('assets/card.png'),
-      ),
+      // SizedBox(
+      //   height: SizeConfig.blockSizeVertical! * 5,
+      // ),
+      // Container(
+      //   decoration:
+      //       BoxDecoration(borderRadius: BorderRadius.circular(30), boxShadow: [
+      //     BoxShadow(
+      //       color: grey,
+      //       blurRadius: 15.0,
+      //       offset: const Offset(
+      //         10.0,
+      //         15.0,
+      //       ),
+      //     )
+      //   ]),
+      //   child: Image.asset('assets/card.png'),
+      // ),
       SizedBox(
         height: SizeConfig.blockSizeVertical! * 5,
       ),

@@ -1,4 +1,5 @@
-import 'package:cma_management/dashboard.dart';
+import 'package:cma_management/Login/login.dart';
+import 'package:cma_management/mainMenu.dart';
 import 'package:cma_management/styles/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
           primarySwatch: Colors.blue,
           scaffoldBackgroundColor: AppColors.primaryBg),
-      home: Dashboard(),
+      home: Login(),
     );
   }
 }

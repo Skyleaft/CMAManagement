@@ -18,7 +18,7 @@ class Header extends StatelessWidget {
               PrimaryText(
                   text: 'Dashboard', size: 30, fontWeight: FontWeight.w800),
               PrimaryText(
-                text: 'Payments updates',
+                text: 'CMA Management',
                 size: 16,
                 fontWeight: FontWeight.w400,
                 color: AppColors.secondary,
