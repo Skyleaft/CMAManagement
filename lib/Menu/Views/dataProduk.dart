@@ -1,49 +1,49 @@
 import 'dart:convert';
-import 'package:cma_management/model/Usaha.dart';
+import 'package:cma_management/model/Produk.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class DataUsaha extends StatefulWidget {
-  const DataUsaha({Key? key}) : super(key: key);
+class DataProduk extends StatefulWidget {
+  const DataProduk({Key? key}) : super(key: key);
 
   @override
-  _DataUsahaState createState() => _DataUsahaState();
+  _DataProdukState createState() => _DataProdukState();
 }
 
-class _DataUsahaState extends State<DataUsaha> {
+class _DataProdukState extends State<DataProduk> {
   final List<String> entries = <String>['A', 'B', 'C'];
   final List<int> colorCodes = <int>[600, 500, 100];
-  late List<Usaha> futureUsaha;
+  late List<Produk> futureProduk;
 
-  Future<Usaha> fetchUsaha() async {
+  Future<Produk> fetchProduk() async {
     final response =
-        await http.get(Uri.parse('https://faktur.cybercode.id/api/usaha'));
+        await http.get(Uri.parse('https://faktur.cybercode.id/api/produk'));
 
     if (response.statusCode == 200) {
-      return Usaha.fromJson(jsonDecode(response.body));
+      return Produk.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load Usaha');
+      throw Exception('Failed to load Produk');
     }
   }
 
-  Future<List<Usaha>?> getUsahas() async {
+  Future<List<Produk>?> getProduks() async {
     final response =
-        await http.get(Uri.parse('https://faktur.cybercode.id/api/usaha'));
+        await http.get(Uri.parse('https://faktur.cybercode.id/api/produk'));
     if (response.statusCode == 200) {
-      return usahaFromJson(response.body);
+      return produkFromJson(response.body);
     } else {
       return null;
     }
   }
 
-  Widget _buildListView(List<Usaha> usahas) {
+  Widget _buildListView(List<Produk> produks) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: ListView.builder(
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
         itemBuilder: (context, index) {
-          Usaha usaha = usahas[index];
+          Produk produk = produks[index];
           return Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: Card(
@@ -53,10 +53,10 @@ class _DataUsahaState extends State<DataUsaha> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      usaha.nama_usaha,
+                      produk.nama_produk,
                       style: TextStyle(color: Colors.black54, fontSize: 16),
                     ),
-                    Text('${usaha.keterangan}'),
+                    Text('${produk.keterangan}'),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
@@ -86,7 +86,7 @@ class _DataUsahaState extends State<DataUsaha> {
             ),
           );
         },
-        itemCount: usahas.length,
+        itemCount: produks.length,
       ),
     );
   }
@@ -104,7 +104,7 @@ class _DataUsahaState extends State<DataUsaha> {
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text("Data Usaha"),
+        title: Text("Data Produk"),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -115,8 +115,8 @@ class _DataUsahaState extends State<DataUsaha> {
             children: [
               TextFormField(
                 decoration: new InputDecoration(
-                    hintText: "Masukan Nama Usaha",
-                    labelText: "Nama Usaha",
+                    hintText: "Masukan Nama Produk",
+                    labelText: "Nama Produk",
                     icon: Icon(Icons.people)),
               ),
               TextFormField(
@@ -138,10 +138,10 @@ class _DataUsahaState extends State<DataUsaha> {
               SizedBox(
                 height: 20,
               ),
-              Text('List Usaha'),
+              Text('List Produk'),
 
               FutureBuilder(
-                future: getUsahas(),
+                future: getProduks(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return Center(
@@ -149,8 +149,8 @@ class _DataUsahaState extends State<DataUsaha> {
                           "Something wrong with message: ${snapshot.error.toString()}"),
                     );
                   } else if (snapshot.connectionState == ConnectionState.done) {
-                    List<Usaha>? usahas = snapshot.data;
-                    return _buildListView(usahas!);
+                    List<Produk>? produks = snapshot.data;
+                    return _buildListView(produks!);
                   } else {
                     return Center(
                       child: CircularProgressIndicator(),

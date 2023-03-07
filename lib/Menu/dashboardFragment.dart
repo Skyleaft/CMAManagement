@@ -5,9 +5,11 @@ import 'package:cma_management/component/infoCard.dart';
 import 'package:cma_management/component/paymentDetailList.dart';
 import 'package:cma_management/config/responsive.dart';
 import 'package:cma_management/config/size_config.dart';
+import 'package:cma_management/model/Produk.dart';
 import 'package:cma_management/styles/colors.dart';
 import 'package:cma_management/styles/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class DashboardFragment extends StatefulWidget {
   const DashboardFragment({Key? key}) : super(key: key);
@@ -17,6 +19,21 @@ class DashboardFragment extends StatefulWidget {
 }
 
 class _DashboardFragmentState extends State<DashboardFragment> {
+  Future<List<Produk>?> getProduks() async {
+    final response =
+        await http.get(Uri.parse('https://faktur.cybercode.id/api/produk'));
+    if (response.statusCode == 200) {
+      return produkFromJson(response.body);
+    } else {
+      return null;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -42,10 +59,29 @@ class _DashboardFragmentState extends State<DashboardFragment> {
                         runSpacing: 20,
                         alignment: WrapAlignment.spaceBetween,
                         children: [
-                          InfoCard(
-                              icon: 'assets/credit-card.svg',
-                              label: 'Jumlah Produk',
-                              amount: '\$1200'),
+                          FutureBuilder(
+                            future: getProduks(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasError) {
+                                return Center(
+                                  child: Text(
+                                      "Something wrong with message: ${snapshot.error.toString()}"),
+                                );
+                              } else if (snapshot.connectionState ==
+                                  ConnectionState.done) {
+                                List<Produk>? _produks = snapshot.data;
+
+                                return InfoCard(
+                                    icon: 'assets/credit-card.svg',
+                                    label: 'Jumlah Produk',
+                                    amount: '${_produks?.length}');
+                              } else {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                            },
+                          ),
                           InfoCard(
                               icon: 'assets/transfer.svg',
                               label: 'Total Barang',

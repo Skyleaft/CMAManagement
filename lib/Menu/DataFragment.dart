@@ -1,3 +1,5 @@
+import 'package:cma_management/Menu/Views/dataProduk.dart';
+import 'package:cma_management/Menu/Views/dataSpeksifikasi.dart';
 import 'package:cma_management/Menu/Views/dataUsaha.dart';
 import 'package:cma_management/styles/styles.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +58,13 @@ class _DataFragmentState extends State<DataFragment> {
                 ),
                 SizedBox(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const DataSpeksifikasi()),
+                      );
+                    },
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -71,7 +79,13 @@ class _DataFragmentState extends State<DataFragment> {
                 ),
                 SizedBox(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const DataProduk()),
+                      );
+                    },
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,

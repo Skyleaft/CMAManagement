@@ -1,0 +1,56 @@
+import 'dart:convert';
+
+import 'package:flutter_guid/flutter_guid.dart';
+
+class Produk {
+  final Guid id;
+  final Guid id_usaha;
+  final String nama_produk;
+  final String? keterangan;
+  final String? created_at;
+  final String? updated_at;
+  final String? deleted_at;
+
+  const Produk(
+      {required this.id,
+      required this.id_usaha,
+      required this.nama_produk,
+      this.keterangan,
+      this.created_at,
+      this.updated_at,
+      this.deleted_at});
+
+  factory Produk.fromJson(Map<String, dynamic> json) {
+    return Produk(
+      id: new Guid(json["id"]),
+      id_usaha: new Guid(json["id_usaha"]),
+      nama_produk: json["nama_produk"],
+      keterangan: json["keterangan"],
+      created_at: json["created_at"],
+      updated_at: json["updated_at"],
+      deleted_at: json["deleted_at"],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "id_usaha": id_usaha,
+      "nama_produk": nama_produk,
+      "keterangan": keterangan,
+      "created_at": created_at,
+      "updated_at": updated_at,
+      "deleted_at": deleted_at
+    };
+  }
+}
+
+List<Produk> produkFromJson(String jsonData) {
+  final data = json.decode(jsonData);
+  return List<Produk>.from(data.map((item) => Produk.fromJson(item)));
+}
+
+String produkToJson(Produk data) {
+  final jsonData = data.toJson();
+  return json.encode(jsonData);
+}
