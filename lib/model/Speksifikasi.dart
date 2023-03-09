@@ -34,7 +34,7 @@ class Speksifikasi {
 
   Map<String, dynamic> toJson() {
     return {
-      "id": id,
+      "id": id.value,
       "id_barang": id_barang,
       "id_mspek": id_mspek,
       "value": value,

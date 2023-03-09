@@ -34,8 +34,8 @@ class Produk {
 
   Map<String, dynamic> toJson() {
     return {
-      "id": id,
-      "id_usaha": id_usaha,
+      "id": id.value,
+      "id_usaha": id_usaha.value,
       "nama_produk": nama_produk,
       "keterangan": keterangan,
       "created_at": created_at,
