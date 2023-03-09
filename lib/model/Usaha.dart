@@ -31,7 +31,7 @@ class Usaha {
 
   Map<String, dynamic> toJson() {
     return {
-      "id": id,
+      "id": id.value,
       "nama_usaha": nama_usaha,
       "keterangan": keterangan,
       "created_at": created_at,

@@ -1,6 +1,7 @@
-import 'dart:convert';
 import 'package:cma_management/model/Usaha.dart';
+import 'package:cma_management/services/usaha_services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_guid/flutter_guid.dart';
 import 'package:http/http.dart' as http;
 
 class DataUsaha extends StatefulWidget {
@@ -11,42 +12,117 @@ class DataUsaha extends StatefulWidget {
 }
 
 class _DataUsahaState extends State<DataUsaha> {
-  final List<String> entries = <String>['A', 'B', 'C'];
-  final List<int> colorCodes = <int>[600, 500, 100];
-  late List<Usaha> futureUsaha;
+  late List<Usaha> _usahaList;
+  late Future<void> futureUsaha;
+  UsahaService service = new UsahaService();
+  final _formKey = GlobalKey<FormState>();
+  GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
 
-  Future<Usaha> fetchUsaha() async {
-    final response =
-        await http.get(Uri.parse('https://faktur.cybercode.id/api/usaha'));
+//dialog form
+  Widget _dialogForm() {
+    final namaController = TextEditingController();
+    final keteranganController = TextEditingController();
+    return AlertDialog(
+      title: const Text('Usaha Baru'),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              controller: namaController,
+              decoration: new InputDecoration(
+                  hintText: "Masukan Nama Usaha",
+                  labelText: "Nama Usaha",
+                  icon: Icon(Icons.people)),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a name';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              controller: keteranganController,
+              decoration: new InputDecoration(
+                  hintText: "Masukan Keterangan",
+                  labelText: "Keterangan",
+                  icon: Icon(Icons.people)),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            if (_formKey.currentState!.validate()) {
+              _formKey.currentState!.save();
+              final usaha = Usaha(
+                  id: Guid.generate(),
+                  nama_usaha: namaController.text,
+                  keterangan: keteranganController.text,
+                  created_at: DateTime.now().toIso8601String() + 'Z',
+                  updated_at: null,
+                  deleted_at: null);
 
-    if (response.statusCode == 200) {
-      return Usaha.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception('Failed to load Usaha');
-    }
+              service.createUsaha(usaha);
+              _refreshData();
+              Navigator.pop(context);
+            }
+          },
+          child: const Text('Save'),
+        ),
+      ],
+    );
   }
 
-  Future<List<Usaha>?> getUsahas() async {
-    final response =
-        await http.get(Uri.parse('https://faktur.cybercode.id/api/usaha'));
-    if (response.statusCode == 200) {
-      return usahaFromJson(response.body);
-    } else {
-      return null;
-    }
+  Widget _deleteDialog(Usaha _usaha) {
+    return AlertDialog(
+      title: const Text('Delete Data'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [Text('Yakin Mau Hapus Usaha ${_usaha.nama_usaha}?')],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            _refreshData();
+            Navigator.pop(context);
+          },
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            service.deleteUsaha(_usaha.id.toString());
+            _refreshData();
+            Navigator.pop(context);
+          },
+          child: const Text('Yes'),
+        ),
+      ],
+    );
   }
 
   Widget _buildListView(List<Usaha> usahas) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-      child: ListView.builder(
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          Usaha usaha = usahas[index];
-          return Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Card(
+    return Expanded(
+      child: RefreshIndicator(
+        key: _refreshIndicatorKey,
+        onRefresh: _refreshData,
+        child: ListView.builder(
+          shrinkWrap: true,
+          scrollDirection: Axis.vertical,
+          physics: AlwaysScrollableScrollPhysics(),
+          itemCount: usahas.length,
+          itemBuilder: (context, index) {
+            Usaha usaha = usahas[index];
+            return Card(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -61,8 +137,13 @@ class _DataUsahaState extends State<DataUsaha> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
                         TextButton(
-                          onPressed: () {
-                            // TODO: do something in here
+                          onPressed: () => {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return _deleteDialog(usaha);
+                              },
+                            )
                           },
                           child: Text(
                             "Delete",
@@ -83,17 +164,30 @@ class _DataUsahaState extends State<DataUsaha> {
                   ],
                 ),
               ),
-            ),
-          );
-        },
-        itemCount: usahas.length,
+            );
+          },
+        ),
       ),
     );
+  }
+
+  Future<void> _initData() async {
+    final List<Usaha> _usaha = await service.getUsahas();
+    _usahaList = _usaha;
+  }
+
+  Future<void> _refreshData() async {
+    await Future.delayed(Duration(milliseconds: 100));
+    final List<Usaha> _usaha = await service.getUsahas();
+    setState(() {
+      _usahaList = _usaha;
+    });
   }
 
   @override
   void initState() {
     super.initState();
+    futureUsaha = _initData();
   }
 
   @override
@@ -107,72 +201,52 @@ class _DataUsahaState extends State<DataUsaha> {
         title: Text("Data Usaha"),
         centerTitle: true,
       ),
-      body: SafeArea(
-        child: Container(
-          margin: EdgeInsets.all(40),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              TextFormField(
-                decoration: new InputDecoration(
-                    hintText: "Masukan Nama Usaha",
-                    labelText: "Nama Usaha",
-                    icon: Icon(Icons.people)),
+      resizeToAvoidBottomInset: true,
+      body: Container(
+        margin: EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            TextButton.icon(
+              onPressed: () => {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return _dialogForm();
+                  },
+                )
+              },
+              icon: Icon(
+                // <-- Icon
+                Icons.add,
+                size: 24.0,
               ),
-              TextFormField(
-                decoration: new InputDecoration(
-                    hintText: "Masukan Keterangan",
-                    labelText: "Keterangan",
-                    icon: Icon(Icons.people)),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    child: const Text('Save'),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Text('List Usaha'),
-
-              FutureBuilder(
-                future: getUsahas(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text(
-                          "Something wrong with message: ${snapshot.error.toString()}"),
-                    );
-                  } else if (snapshot.connectionState == ConnectionState.done) {
-                    List<Usaha>? usahas = snapshot.data;
-                    return _buildListView(usahas!);
-                  } else {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                },
-              ),
-
-              // ListView.builder(
-              //     padding: const EdgeInsets.all(8),
-              //     itemCount: entries.length,
-              //     scrollDirection: Axis.vertical,
-              //     shrinkWrap: true,
-              //     itemBuilder: (BuildContext context, int index) {
-              //       return Container(
-              //         height: 50,
-              //         color: Colors.amber[colorCodes[index]],
-              //         child: Center(child: Text('Entry ${entries[index]}')),
-              //       );
-              //     }),
-            ],
-          ),
+              label: Text('Usaha Baru'),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Text('List Usaha'),
+            FutureBuilder(
+              future: futureUsaha,
+              builder: (context, snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.none:
+                  case ConnectionState.waiting:
+                  case ConnectionState.active:
+                    {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  case ConnectionState.done:
+                    {
+                      return _buildListView(_usahaList);
+                    }
+                }
+              },
+            ),
+          ],
         ),
       ),
     );
