@@ -1,5 +1,6 @@
 import 'package:cma_management/model/Usaha.dart';
 import 'package:cma_management/services/usaha_services.dart';
+import 'package:cma_management/styles/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 import 'package:http/http.dart' as http;
@@ -20,11 +21,16 @@ class _DataUsahaState extends State<DataUsaha> {
       GlobalKey<RefreshIndicatorState>();
 
 //dialog form
-  Widget _dialogForm() {
+  Widget _dialogForm(bool isUpdate, [Usaha? _usaha]) {
     final namaController = TextEditingController();
     final keteranganController = TextEditingController();
+
+    if (isUpdate) {
+      namaController.text = _usaha!.nama_usaha;
+      keteranganController.text = _usaha.keterangan!;
+    }
     return AlertDialog(
-      title: const Text('Usaha Baru'),
+      title: isUpdate ? const Text('Ubah Data') : const Text('Usaha Baru'),
       content: Form(
         key: _formKey,
         child: Column(
@@ -64,20 +70,31 @@ class _DataUsahaState extends State<DataUsaha> {
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
-              final usaha = Usaha(
-                  id: Guid.generate(),
-                  nama_usaha: namaController.text,
-                  keterangan: keteranganController.text,
-                  created_at: DateTime.now().toIso8601String() + 'Z',
-                  updated_at: null,
-                  deleted_at: null);
+              if (isUpdate) {
+                final usahaToUpdate = Usaha(
+                    id: _usaha!.id,
+                    nama_usaha: namaController.text,
+                    keterangan: keteranganController.text,
+                    created_at: _usaha.created_at,
+                    updated_at: DateTime.now().toIso8601String() + 'Z',
+                    deleted_at: _usaha.deleted_at);
+                service.updateUsaha(usahaToUpdate.id.value, usahaToUpdate);
+              } else {
+                final usaha = Usaha(
+                    id: Guid.generate(),
+                    nama_usaha: namaController.text,
+                    keterangan: keteranganController.text,
+                    created_at: DateTime.now().toIso8601String() + 'Z',
+                    updated_at: null,
+                    deleted_at: null);
+                service.createUsaha(usaha);
+              }
 
-              service.createUsaha(usaha);
               _refreshData();
               Navigator.pop(context);
             }
           },
-          child: const Text('Save'),
+          child: isUpdate ? const Text('Update') : const Text('Save'),
         ),
       ],
     );
@@ -151,12 +168,17 @@ class _DataUsahaState extends State<DataUsaha> {
                           ),
                         ),
                         TextButton(
-                          onPressed: () {
-                            // TODO: do something in here
+                          onPressed: () => {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return _dialogForm(true, usaha);
+                              },
+                            )
                           },
                           child: Text(
                             "Edit",
-                            style: TextStyle(color: Colors.blue),
+                            style: TextStyle(color: AppColors.primary),
                           ),
                         ),
                       ],
@@ -212,7 +234,7 @@ class _DataUsahaState extends State<DataUsaha> {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return _dialogForm();
+                    return _dialogForm(false);
                   },
                 )
               },
