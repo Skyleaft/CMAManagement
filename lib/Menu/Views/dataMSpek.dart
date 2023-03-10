@@ -1,43 +1,42 @@
 import 'dart:math';
 
-import 'package:cma_management/model/Usaha.dart';
-import 'package:cma_management/services/usaha_services.dart';
+import 'package:cma_management/model/MSpek.dart';
+import 'package:cma_management/services/mspek_services.dart';
 import 'package:cma_management/styles/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
 
-class DataUsaha extends StatefulWidget {
-  const DataUsaha({Key? key}) : super(key: key);
+class DataMSpek extends StatefulWidget {
+  const DataMSpek({Key? key}) : super(key: key);
 
   @override
-  _DataUsahaState createState() => _DataUsahaState();
+  _DataMSpekState createState() => _DataMSpekState();
 }
 
 enum SampleItem { itemOne, itemTwo, itemThree }
 
-List<Usaha> globalUsaha = <Usaha>[];
+List<MSpek> globalMSpek = <MSpek>[];
 
-class _DataUsahaState extends State<DataUsaha> {
-  late List<Usaha> _usahaList;
-  late Future<void> futureUsaha;
-  UsahaService service = new UsahaService();
+class _DataMSpekState extends State<DataMSpek> {
+  late List<MSpek> _mSpekList;
+  late Future<void> futureMSpek;
+  MSpekService service = new MSpekService();
   final _formKey = GlobalKey<FormState>();
   GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
 //dialog form
-  Widget _dialogForm(bool isUpdate, [Usaha? _usaha]) {
+  Widget _dialogForm(bool isUpdate, [MSpek? _mSpek]) {
     final namaController = TextEditingController();
     final keteranganController = TextEditingController();
 
     if (isUpdate) {
-      namaController.text = _usaha!.nama_usaha;
-      keteranganController.text = _usaha.keterangan!;
+      namaController.text = _mSpek!.nama_speksifikasi;
     }
     return AlertDialog(
-      title: isUpdate ? const Text('Ubah Data') : const Text('Usaha Baru'),
+      title: isUpdate ? const Text('Ubah Data') : const Text('MSpek Baru'),
       content: Form(
         key: _formKey,
         child: Column(
@@ -46,8 +45,8 @@ class _DataUsahaState extends State<DataUsaha> {
             TextFormField(
               controller: namaController,
               decoration: new InputDecoration(
-                  hintText: "Masukan Nama Usaha",
-                  labelText: "Nama Usaha",
+                  hintText: "Masukan Nama Speksifikasi",
+                  labelText: "Nama spek",
                   icon: Icon(Icons.people)),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -55,13 +54,6 @@ class _DataUsahaState extends State<DataUsaha> {
                 }
                 return null;
               },
-            ),
-            TextFormField(
-              controller: keteranganController,
-              decoration: new InputDecoration(
-                  hintText: "Masukan Keterangan",
-                  labelText: "Keterangan",
-                  icon: Icon(Icons.people)),
             ),
           ],
         ),
@@ -78,23 +70,21 @@ class _DataUsahaState extends State<DataUsaha> {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
               if (isUpdate) {
-                final usahaToUpdate = Usaha(
-                    id: _usaha!.id,
-                    nama_usaha: namaController.text,
-                    keterangan: keteranganController.text,
-                    created_at: _usaha.created_at,
+                final mSpekToUpdate = MSpek(
+                    id: _mSpek!.id,
+                    nama_speksifikasi: namaController.text,
+                    created_at: _mSpek.created_at,
                     updated_at: DateTime.now().toIso8601String() + 'Z',
-                    deleted_at: _usaha.deleted_at);
-                service.updateUsaha(usahaToUpdate.id.value, usahaToUpdate);
+                    deleted_at: _mSpek.deleted_at);
+                service.updateMSpek(mSpekToUpdate.id.value, mSpekToUpdate);
               } else {
-                final usaha = Usaha(
+                final mSpek = MSpek(
                     id: Guid.generate(),
-                    nama_usaha: namaController.text,
-                    keterangan: keteranganController.text,
+                    nama_speksifikasi: namaController.text,
                     created_at: DateTime.now().toIso8601String() + 'Z',
                     updated_at: null,
                     deleted_at: null);
-                service.createUsaha(usaha);
+                service.createMSpek(mSpek);
               }
 
               _refreshData();
@@ -107,12 +97,12 @@ class _DataUsahaState extends State<DataUsaha> {
     );
   }
 
-  Widget _deleteDialog(Usaha _usaha) {
+  Widget _deleteDialog(MSpek _mSpek) {
     return AlertDialog(
       title: const Text('Delete Data'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [Text('Yakin Mau Hapus Usaha ${_usaha.nama_usaha}?')],
+        children: [Text('Yakin Mau Hapus MSpek ${_mSpek.nama_speksifikasi}?')],
       ),
       actions: [
         TextButton(
@@ -124,7 +114,7 @@ class _DataUsahaState extends State<DataUsaha> {
         ),
         ElevatedButton(
           onPressed: () async {
-            service.deleteUsaha(_usaha.id.toString());
+            service.deleteMSpek(_mSpek.id.toString());
             _refreshData();
             Navigator.pop(context);
           },
@@ -134,7 +124,7 @@ class _DataUsahaState extends State<DataUsaha> {
     );
   }
 
-  Widget _buildListView(List<Usaha> usahas) {
+  Widget _buildListView(List<MSpek> mSpeks) {
     return Expanded(
       child: RefreshIndicator(
         key: _refreshIndicatorKey,
@@ -143,9 +133,9 @@ class _DataUsahaState extends State<DataUsaha> {
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
           physics: AlwaysScrollableScrollPhysics(),
-          itemCount: usahas.length,
+          itemCount: mSpeks.length,
           itemBuilder: (context, index) {
-            Usaha usaha = usahas[index];
+            MSpek mSpek = mSpeks[index];
             return Card(
               margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
               child: Padding(
@@ -154,10 +144,9 @@ class _DataUsahaState extends State<DataUsaha> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      usaha.nama_usaha,
-                      style: TextStyle(color: Colors.black54, fontSize: 16),
+                      mSpek.nama_speksifikasi,
+                      style: TextStyle(color: Colors.black54, fontSize: 22),
                     ),
-                    Text('${usaha.keterangan}'),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
@@ -166,7 +155,7 @@ class _DataUsahaState extends State<DataUsaha> {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
-                                return _deleteDialog(usaha);
+                                return _deleteDialog(mSpek);
                               },
                             )
                           },
@@ -180,7 +169,7 @@ class _DataUsahaState extends State<DataUsaha> {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
-                                return _dialogForm(true, usaha);
+                                return _dialogForm(true, mSpek);
                               },
                             )
                           },
@@ -202,23 +191,23 @@ class _DataUsahaState extends State<DataUsaha> {
   }
 
   Future<void> _initData() async {
-    final List<Usaha> _usaha = await service.getUsahas();
-    _usahaList = _usaha;
-    globalUsaha = await service.getUsahas();
+    final List<MSpek> _mSpek = await service.getMSpeks();
+    _mSpekList = _mSpek;
+    globalMSpek = await service.getMSpeks();
   }
 
   Future<void> _refreshData() async {
     await Future.delayed(Duration(milliseconds: 100));
-    final List<Usaha> _usaha = await service.getUsahas();
+    final List<MSpek> _mSpek = await service.getMSpeks();
     setState(() {
-      _usahaList = _usaha;
+      _mSpekList = _mSpek;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    futureUsaha = _initData();
+    futureMSpek = _initData();
   }
 
   SampleItem? selectedMenu;
@@ -296,7 +285,7 @@ class _DataUsahaState extends State<DataUsaha> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 20),
                 child: Text(
-                  'Usaha',
+                  'Speksifikasi',
                   style: Theme.of(context)
                       .textTheme
                       .headline5
@@ -305,7 +294,7 @@ class _DataUsahaState extends State<DataUsaha> {
               ),
             ),
             FutureBuilder(
-              future: futureUsaha,
+              future: futureMSpek,
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
@@ -318,7 +307,7 @@ class _DataUsahaState extends State<DataUsaha> {
                     }
                   case ConnectionState.done:
                     {
-                      return _buildListView(_usahaList);
+                      return _buildListView(_mSpekList);
                     }
                 }
               },
@@ -330,9 +319,9 @@ class _DataUsahaState extends State<DataUsaha> {
   }
 }
 
-class customSearchDelegate extends SearchDelegate<Usaha?> {
-  UsahaService service = new UsahaService();
-  List<Usaha> usahaList = <Usaha>[];
+class customSearchDelegate extends SearchDelegate<MSpek?> {
+  MSpekService service = new MSpekService();
+  List<MSpek> mSpekList = <MSpek>[];
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -356,7 +345,7 @@ class customSearchDelegate extends SearchDelegate<Usaha?> {
   }
 
   Future<void> initData() async {
-    usahaList = await service.getUsahas();
+    mSpekList = await service.getMSpeks();
   }
 
   @override
@@ -370,12 +359,12 @@ class customSearchDelegate extends SearchDelegate<Usaha?> {
   }
 
   Widget buildMatchingSuggestions(BuildContext context) {
-    List<Usaha> matchQuery = [];
+    List<MSpek> matchQuery = [];
     if (query.length < 2) return Container();
 
     initData();
-    for (var data in usahaList) {
-      if (data.nama_usaha.toLowerCase().contains(query.toLowerCase())) {
+    for (var data in mSpekList) {
+      if (data.nama_speksifikasi.toLowerCase().contains(query.toLowerCase())) {
         matchQuery.add(data);
       }
     }
@@ -386,7 +375,7 @@ class customSearchDelegate extends SearchDelegate<Usaha?> {
       itemBuilder: (context, index) {
         var result = matchQuery[index];
         return ListTile(
-          title: Text(result.nama_usaha),
+          title: Text(result.nama_speksifikasi),
         );
       },
     );

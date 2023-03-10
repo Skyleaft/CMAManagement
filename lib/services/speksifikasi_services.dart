@@ -1,12 +1,12 @@
 import 'dart:convert';
+import 'package:cma_management/config/global_config.dart';
 import 'package:cma_management/model/Speksifikasi.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 import 'package:http/http.dart' as http;
 
 class SpeksifikasiService {
-  static const String baseUrl = 'https://faktur.cybercode.id';
-  //static const String baseUrl = 'http://10.10.10.99:5153';
-  static const String speksifikasisUrl = '$baseUrl/api/speksifikasi';
+  static const String speksifikasisUrl =
+      '${GlobalConfig.base_url}/api/speksifikasi';
 
   Future<List<Speksifikasi>> getSpeksifikasis() async {
     final response = await http.get(Uri.parse(speksifikasisUrl));

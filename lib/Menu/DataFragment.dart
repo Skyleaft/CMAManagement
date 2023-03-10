@@ -1,5 +1,9 @@
+import 'package:cma_management/Menu/Views/dataCustomer.dart';
+import 'package:cma_management/Menu/Views/dataMSpek.dart';
 import 'package:cma_management/Menu/Views/dataProduk.dart';
+import 'package:cma_management/Menu/Views/dataSuplier.dart';
 import 'package:cma_management/Menu/Views/dataUsaha.dart';
+import 'package:cma_management/styles/colors.dart';
 import 'package:cma_management/styles/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +26,7 @@ class _DataFragmentState extends State<DataFragment> {
               padding: const EdgeInsets.only(left: 20, top: 80),
               child: PrimaryText(
                 text: 'Master Data',
-                size: 30,
+                size: 26,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -36,6 +40,9 @@ class _DataFragmentState extends State<DataFragment> {
               children: [
                 SizedBox(
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: AppColors.primary, // Background color
+                    ),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -49,35 +56,41 @@ class _DataFragmentState extends State<DataFragment> {
                         children: [
                           Icon(
                             Icons.add_business,
-                            size: 48.0,
+                            size: 36,
                           ),
-                          Text('Data Usaha'),
+                          Text('Usaha'),
                         ]),
                   ),
                 ),
                 SizedBox(
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: AppColors.primary, // Background color
+                    ),
                     onPressed: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //       builder: (context) => const DataSpeksifikasi()),
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const DataMSpek()),
+                      );
                     },
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.add_business,
-                            size: 48.0,
+                            Icons.tune,
+                            size: 36,
                           ),
-                          Text('Data Speksifikasi'),
+                          Text('Speksifikasi'),
                         ]),
                   ),
                 ),
                 SizedBox(
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: AppColors.primary, // Background color
+                    ),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -90,40 +103,58 @@ class _DataFragmentState extends State<DataFragment> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.add_business,
-                            size: 48.0,
+                            Icons.inventory_2,
+                            size: 36,
                           ),
-                          Text('Data Produk'),
+                          Text('Produk'),
                         ]),
                   ),
                 ),
                 SizedBox(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      primary: AppColors.primary, // Background color
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const DataCustomer()),
+                      );
+                    },
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.add_business,
-                            size: 48.0,
+                            Icons.support_agent,
+                            size: 36,
                           ),
-                          Text('Data Customer'),
+                          Text('Customer'),
                         ]),
                   ),
                 ),
                 SizedBox(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      primary: AppColors.primary, // Background color
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const DataSuplier()),
+                      );
+                    },
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.add_business,
-                            size: 48.0,
+                            Icons.shelves,
+                            size: 36,
                           ),
-                          Text('Data Suplier'),
+                          Text('Suplier'),
                         ]),
                   ),
                 ),
@@ -133,7 +164,7 @@ class _DataFragmentState extends State<DataFragment> {
               padding: const EdgeInsets.only(left: 20, top: 20),
               child: PrimaryText(
                 text: 'Transaksi',
-                size: 30,
+                size: 26,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -147,6 +178,9 @@ class _DataFragmentState extends State<DataFragment> {
               children: [
                 SizedBox(
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: AppColors.primary, // Background color
+                    ),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -160,7 +194,7 @@ class _DataFragmentState extends State<DataFragment> {
                         children: [
                           Icon(
                             Icons.add_business,
-                            size: 48.0,
+                            size: 36,
                           ),
                           Text('Barang'),
                         ]),
@@ -168,6 +202,9 @@ class _DataFragmentState extends State<DataFragment> {
                 ),
                 SizedBox(
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: AppColors.primary, // Background color
+                    ),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -181,7 +218,7 @@ class _DataFragmentState extends State<DataFragment> {
                         children: [
                           Icon(
                             Icons.add_business,
-                            size: 48.0,
+                            size: 36,
                           ),
                           Text('Pembelian'),
                         ]),
@@ -189,6 +226,9 @@ class _DataFragmentState extends State<DataFragment> {
                 ),
                 SizedBox(
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: AppColors.primary, // Background color
+                    ),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -202,7 +242,7 @@ class _DataFragmentState extends State<DataFragment> {
                         children: [
                           Icon(
                             Icons.add_business,
-                            size: 48.0,
+                            size: 36,
                           ),
                           Text('Penjualan'),
                         ]),
@@ -210,6 +250,9 @@ class _DataFragmentState extends State<DataFragment> {
                 ),
                 SizedBox(
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: AppColors.primary, // Background color
+                    ),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -223,7 +266,7 @@ class _DataFragmentState extends State<DataFragment> {
                         children: [
                           Icon(
                             Icons.add_business,
-                            size: 48.0,
+                            size: 36,
                           ),
                           Text('Pembayaran'),
                         ]),

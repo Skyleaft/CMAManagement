@@ -1,118 +1,157 @@
-import 'dart:math';
-
+import 'package:cma_management/model/Customer.dart';
 import 'package:cma_management/model/Usaha.dart';
-import 'package:cma_management/services/usaha_services.dart';
+import 'package:cma_management/services/customer_services.dart';
 import 'package:cma_management/styles/colors.dart';
+import 'package:cma_management/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 import 'package:http/http.dart' as http;
-import 'dart:developer' as developer;
+import 'package:intl_phone_field/intl_phone_field.dart';
 
-class DataUsaha extends StatefulWidget {
-  const DataUsaha({Key? key}) : super(key: key);
+class DataCustomer extends StatefulWidget {
+  const DataCustomer({Key? key}) : super(key: key);
 
   @override
-  _DataUsahaState createState() => _DataUsahaState();
+  _DataCustomerState createState() => _DataCustomerState();
 }
 
 enum SampleItem { itemOne, itemTwo, itemThree }
 
-List<Usaha> globalUsaha = <Usaha>[];
-
-class _DataUsahaState extends State<DataUsaha> {
-  late List<Usaha> _usahaList;
-  late Future<void> futureUsaha;
-  UsahaService service = new UsahaService();
+class _DataCustomerState extends State<DataCustomer> {
+  late List<Customer> _customerList;
+  late Future<void> futureCustomer;
+  CustomerService service = new CustomerService();
   final _formKey = GlobalKey<FormState>();
   GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
 //dialog form
-  Widget _dialogForm(bool isUpdate, [Usaha? _usaha]) {
+  Widget _dialogForm(bool isUpdate, [Customer? _customer]) {
     final namaController = TextEditingController();
-    final keteranganController = TextEditingController();
+    final alamatController = TextEditingController();
+    final notelpController = TextEditingController();
 
     if (isUpdate) {
-      namaController.text = _usaha!.nama_usaha;
-      keteranganController.text = _usaha.keterangan!;
+      namaController.text = _customer!.nama_customer;
+      alamatController.text = '${_customer.alamat!}';
+      notelpController.text = '${_customer.no_telp!}';
     }
-    return AlertDialog(
-      title: isUpdate ? const Text('Ubah Data') : const Text('Usaha Baru'),
-      content: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextFormField(
-              controller: namaController,
-              decoration: new InputDecoration(
-                  hintText: "Masukan Nama Usaha",
-                  labelText: "Nama Usaha",
-                  icon: Icon(Icons.people)),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a name';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              controller: keteranganController,
-              decoration: new InputDecoration(
-                  hintText: "Masukan Keterangan",
-                  labelText: "Keterangan",
-                  icon: Icon(Icons.people)),
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            if (_formKey.currentState!.validate()) {
-              _formKey.currentState!.save();
-              if (isUpdate) {
-                final usahaToUpdate = Usaha(
-                    id: _usaha!.id,
-                    nama_usaha: namaController.text,
-                    keterangan: keteranganController.text,
-                    created_at: _usaha.created_at,
-                    updated_at: DateTime.now().toIso8601String() + 'Z',
-                    deleted_at: _usaha.deleted_at);
-                service.updateUsaha(usahaToUpdate.id.value, usahaToUpdate);
-              } else {
-                final usaha = Usaha(
-                    id: Guid.generate(),
-                    nama_usaha: namaController.text,
-                    keterangan: keteranganController.text,
-                    created_at: DateTime.now().toIso8601String() + 'Z',
-                    updated_at: null,
-                    deleted_at: null);
-                service.createUsaha(usaha);
-              }
 
-              _refreshData();
-              Navigator.pop(context);
-            }
-          },
-          child: isUpdate ? const Text('Update') : const Text('Save'),
+    return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+      return Dialog(
+        //title: isUpdate ? const Text('Ubah Data') : const Text('Customer Baru'),
+        insetPadding: EdgeInsets.all(15),
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: 10),
+                PrimaryText(
+                  text: "${isUpdate ? 'Ubah Data' : 'Customer Baru'}",
+                  size: 22,
+                  fontWeight: FontWeight.w800,
+                ),
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: namaController,
+                  decoration: new InputDecoration(
+                      hintText: "Masukan Nama Customer",
+                      labelText: "Nama Customer",
+                      icon: Icon(Icons.people)),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a name';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: alamatController,
+                  decoration: new InputDecoration(
+                      hintText: "Masukan Alamat",
+                      labelText: "Alamat",
+                      icon: Icon(Icons.people)),
+                ),
+                IntlPhoneField(
+                  decoration: InputDecoration(
+                    labelText: 'No.HP',
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(),
+                    ),
+                  ),
+                  controller: notelpController,
+                  initialCountryCode: 'ID',
+                  onChanged: (phone) {
+                    print(phone.completeNumber);
+                  },
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          if (isUpdate) {
+                            final customerToUpdate = Customer(
+                                id: _customer!.id,
+                                nama_customer: namaController.text,
+                                alamat: alamatController.text,
+                                no_telp: notelpController.text,
+                                created_at: _customer.created_at,
+                                updated_at:
+                                    DateTime.now().toIso8601String() + 'Z',
+                                deleted_at: _customer.deleted_at);
+                            service.updateCustomer(
+                                customerToUpdate.id.value, customerToUpdate);
+                          } else {
+                            final customer = Customer(
+                                id: Guid.generate(),
+                                nama_customer: namaController.text,
+                                alamat: alamatController.text,
+                                no_telp: notelpController.text,
+                                created_at:
+                                    DateTime.now().toIso8601String() + 'Z',
+                                updated_at: null,
+                                deleted_at: null);
+                            service.createCustomer(customer);
+                          }
+
+                          _refreshData();
+                          Navigator.pop(context);
+                        }
+                      },
+                      child:
+                          isUpdate ? const Text('Update') : const Text('Save'),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
         ),
-      ],
-    );
+      );
+    });
   }
 
-  Widget _deleteDialog(Usaha _usaha) {
+  Widget _deleteDialog(Customer _customer) {
     return AlertDialog(
       title: const Text('Delete Data'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [Text('Yakin Mau Hapus Usaha ${_usaha.nama_usaha}?')],
+        children: [
+          Text('Yakin Mau Hapus Customer ${_customer.nama_customer}?')
+        ],
       ),
       actions: [
         TextButton(
@@ -124,7 +163,7 @@ class _DataUsahaState extends State<DataUsaha> {
         ),
         ElevatedButton(
           onPressed: () async {
-            service.deleteUsaha(_usaha.id.toString());
+            service.deleteCustomer(_customer.id.toString());
             _refreshData();
             Navigator.pop(context);
           },
@@ -134,7 +173,7 @@ class _DataUsahaState extends State<DataUsaha> {
     );
   }
 
-  Widget _buildListView(List<Usaha> usahas) {
+  Widget _buildListView(List<Customer> customers) {
     return Expanded(
       child: RefreshIndicator(
         key: _refreshIndicatorKey,
@@ -143,9 +182,9 @@ class _DataUsahaState extends State<DataUsaha> {
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
           physics: AlwaysScrollableScrollPhysics(),
-          itemCount: usahas.length,
+          itemCount: customers.length,
           itemBuilder: (context, index) {
-            Usaha usaha = usahas[index];
+            Customer customer = customers[index];
             return Card(
               margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
               child: Padding(
@@ -154,10 +193,10 @@ class _DataUsahaState extends State<DataUsaha> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      usaha.nama_usaha,
+                      customer.nama_customer,
                       style: TextStyle(color: Colors.black54, fontSize: 16),
                     ),
-                    Text('${usaha.keterangan}'),
+                    Text('${customer.alamat}'),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
@@ -166,7 +205,7 @@ class _DataUsahaState extends State<DataUsaha> {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
-                                return _deleteDialog(usaha);
+                                return _deleteDialog(customer);
                               },
                             )
                           },
@@ -180,7 +219,7 @@ class _DataUsahaState extends State<DataUsaha> {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
-                                return _dialogForm(true, usaha);
+                                return _dialogForm(true, customer);
                               },
                             )
                           },
@@ -202,23 +241,22 @@ class _DataUsahaState extends State<DataUsaha> {
   }
 
   Future<void> _initData() async {
-    final List<Usaha> _usaha = await service.getUsahas();
-    _usahaList = _usaha;
-    globalUsaha = await service.getUsahas();
+    final List<Customer> _customer = await service.getCustomers();
+    _customerList = _customer;
   }
 
   Future<void> _refreshData() async {
     await Future.delayed(Duration(milliseconds: 100));
-    final List<Usaha> _usaha = await service.getUsahas();
+    final List<Customer> _customer = await service.getCustomers();
     setState(() {
-      _usahaList = _usaha;
+      _customerList = _customer;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    futureUsaha = _initData();
+    futureCustomer = _initData();
   }
 
   SampleItem? selectedMenu;
@@ -271,6 +309,7 @@ class _DataUsahaState extends State<DataUsaha> {
         ],
         centerTitle: true,
       ),
+      resizeToAvoidBottomInset: true,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => {
           showDialog(
@@ -284,7 +323,6 @@ class _DataUsahaState extends State<DataUsaha> {
         icon: const Icon(Icons.add),
         backgroundColor: AppColors.primary,
       ),
-      resizeToAvoidBottomInset: true,
       body: Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -296,7 +334,7 @@ class _DataUsahaState extends State<DataUsaha> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 20),
                 child: Text(
-                  'Usaha',
+                  'Customer',
                   style: Theme.of(context)
                       .textTheme
                       .headline5
@@ -305,7 +343,7 @@ class _DataUsahaState extends State<DataUsaha> {
               ),
             ),
             FutureBuilder(
-              future: futureUsaha,
+              future: futureCustomer,
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
@@ -318,7 +356,7 @@ class _DataUsahaState extends State<DataUsaha> {
                     }
                   case ConnectionState.done:
                     {
-                      return _buildListView(_usahaList);
+                      return _buildListView(_customerList);
                     }
                 }
               },
@@ -331,8 +369,8 @@ class _DataUsahaState extends State<DataUsaha> {
 }
 
 class customSearchDelegate extends SearchDelegate<Usaha?> {
-  UsahaService service = new UsahaService();
-  List<Usaha> usahaList = <Usaha>[];
+  CustomerService service = new CustomerService();
+  List<Customer> customerList = <Customer>[];
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -356,7 +394,7 @@ class customSearchDelegate extends SearchDelegate<Usaha?> {
   }
 
   Future<void> initData() async {
-    usahaList = await service.getUsahas();
+    customerList = await service.getCustomers();
   }
 
   @override
@@ -370,23 +408,22 @@ class customSearchDelegate extends SearchDelegate<Usaha?> {
   }
 
   Widget buildMatchingSuggestions(BuildContext context) {
-    List<Usaha> matchQuery = [];
+    List<Customer> matchQuery = [];
     if (query.length < 2) return Container();
 
     initData();
-    for (var data in usahaList) {
-      if (data.nama_usaha.toLowerCase().contains(query.toLowerCase())) {
+    for (var data in customerList) {
+      if (data.nama_customer.toLowerCase().contains(query.toLowerCase())) {
         matchQuery.add(data);
       }
     }
-    developer.log(matchQuery.length.toString());
 
     return ListView.builder(
       itemCount: matchQuery.length,
       itemBuilder: (context, index) {
         var result = matchQuery[index];
         return ListTile(
-          title: Text(result.nama_usaha),
+          title: Text(result.nama_customer),
         );
       },
     );

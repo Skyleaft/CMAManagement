@@ -1,12 +1,11 @@
 import 'dart:convert';
+import 'package:cma_management/config/global_config.dart';
 import 'package:cma_management/model/Produk.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 import 'package:http/http.dart' as http;
 
 class ProdukService {
-  static const String baseUrl = 'https://faktur.cybercode.id';
-  //static const String baseUrl = 'http://10.10.10.99:5153';
-  static const String produksUrl = '$baseUrl/api/produk';
+  static const String produksUrl = '${GlobalConfig.base_url}/api/produk';
 
   Future<List<Produk>> getProduks() async {
     final response = await http.get(Uri.parse(produksUrl));

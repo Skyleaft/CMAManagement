@@ -1,118 +1,166 @@
-import 'dart:math';
-
+import 'package:cma_management/model/Suplier.dart';
 import 'package:cma_management/model/Usaha.dart';
-import 'package:cma_management/services/usaha_services.dart';
+import 'package:cma_management/services/suplier_services.dart';
 import 'package:cma_management/styles/colors.dart';
+import 'package:cma_management/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 import 'package:http/http.dart' as http;
-import 'dart:developer' as developer;
+import 'package:intl_phone_field/intl_phone_field.dart';
 
-class DataUsaha extends StatefulWidget {
-  const DataUsaha({Key? key}) : super(key: key);
+class DataSuplier extends StatefulWidget {
+  const DataSuplier({Key? key}) : super(key: key);
 
   @override
-  _DataUsahaState createState() => _DataUsahaState();
+  _DataSuplierState createState() => _DataSuplierState();
 }
 
 enum SampleItem { itemOne, itemTwo, itemThree }
 
-List<Usaha> globalUsaha = <Usaha>[];
-
-class _DataUsahaState extends State<DataUsaha> {
-  late List<Usaha> _usahaList;
-  late Future<void> futureUsaha;
-  UsahaService service = new UsahaService();
+class _DataSuplierState extends State<DataSuplier> {
+  late List<Suplier> _suplierList;
+  late Future<void> futureSuplier;
+  SuplierService service = new SuplierService();
   final _formKey = GlobalKey<FormState>();
   GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
 //dialog form
-  Widget _dialogForm(bool isUpdate, [Usaha? _usaha]) {
+  Widget _dialogForm(bool isUpdate, [Suplier? _suplier]) {
     final namaController = TextEditingController();
-    final keteranganController = TextEditingController();
+    final alamatController = TextEditingController();
+    final notelpController = TextEditingController();
 
     if (isUpdate) {
-      namaController.text = _usaha!.nama_usaha;
-      keteranganController.text = _usaha.keterangan!;
+      namaController.text = _suplier!.nama_suplier;
+      alamatController.text = '${_suplier.alamat!}';
+      notelpController.text = '${_suplier.no_telp!}';
     }
-    return AlertDialog(
-      title: isUpdate ? const Text('Ubah Data') : const Text('Usaha Baru'),
-      content: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextFormField(
-              controller: namaController,
-              decoration: new InputDecoration(
-                  hintText: "Masukan Nama Usaha",
-                  labelText: "Nama Usaha",
-                  icon: Icon(Icons.people)),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a name';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              controller: keteranganController,
-              decoration: new InputDecoration(
-                  hintText: "Masukan Keterangan",
-                  labelText: "Keterangan",
-                  icon: Icon(Icons.people)),
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            if (_formKey.currentState!.validate()) {
-              _formKey.currentState!.save();
-              if (isUpdate) {
-                final usahaToUpdate = Usaha(
-                    id: _usaha!.id,
-                    nama_usaha: namaController.text,
-                    keterangan: keteranganController.text,
-                    created_at: _usaha.created_at,
-                    updated_at: DateTime.now().toIso8601String() + 'Z',
-                    deleted_at: _usaha.deleted_at);
-                service.updateUsaha(usahaToUpdate.id.value, usahaToUpdate);
-              } else {
-                final usaha = Usaha(
-                    id: Guid.generate(),
-                    nama_usaha: namaController.text,
-                    keterangan: keteranganController.text,
-                    created_at: DateTime.now().toIso8601String() + 'Z',
-                    updated_at: null,
-                    deleted_at: null);
-                service.createUsaha(usaha);
-              }
 
-              _refreshData();
-              Navigator.pop(context);
-            }
-          },
-          child: isUpdate ? const Text('Update') : const Text('Save'),
+    return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+      return Dialog(
+        //title: isUpdate ? const Text('Ubah Data') : const Text('Suplier Baru'),
+        insetPadding: EdgeInsets.all(15),
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: 10),
+                PrimaryText(
+                  text: "${isUpdate ? 'Ubah Data' : 'Suplier Baru'}",
+                  size: 22,
+                  fontWeight: FontWeight.w800,
+                ),
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: namaController,
+                  decoration: new InputDecoration(
+                      hintText: "Masukan Nama Suplier",
+                      labelText: "Nama Suplier",
+                      icon: Icon(Icons.people),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                        width: 1,
+                      ))),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a name';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: alamatController,
+                  decoration: new InputDecoration(
+                    hintText: "Masukan Alamat",
+                    labelText: "Alamat",
+                    icon: Icon(Icons.people),
+                    enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                      width: 1,
+                    )),
+                  ),
+                ),
+                SizedBox(height: 10),
+                IntlPhoneField(
+                  decoration: InputDecoration(
+                    labelText: 'No.HP',
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(),
+                    ),
+                  ),
+                  controller: notelpController,
+                  initialCountryCode: 'ID',
+                  onChanged: (phone) {
+                    print(phone.completeNumber);
+                  },
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          if (isUpdate) {
+                            final suplierToUpdate = Suplier(
+                                id: _suplier!.id,
+                                nama_suplier: namaController.text,
+                                alamat: alamatController.text,
+                                no_telp: notelpController.text,
+                                created_at: _suplier.created_at,
+                                updated_at:
+                                    DateTime.now().toIso8601String() + 'Z',
+                                deleted_at: _suplier.deleted_at);
+                            service.updateSuplier(
+                                suplierToUpdate.id.value, suplierToUpdate);
+                          } else {
+                            final suplier = Suplier(
+                                id: Guid.generate(),
+                                nama_suplier: namaController.text,
+                                alamat: alamatController.text,
+                                no_telp: notelpController.text,
+                                created_at:
+                                    DateTime.now().toIso8601String() + 'Z',
+                                updated_at: null,
+                                deleted_at: null);
+                            service.createSuplier(suplier);
+                          }
+
+                          _refreshData();
+                          Navigator.pop(context);
+                        }
+                      },
+                      child:
+                          isUpdate ? const Text('Update') : const Text('Save'),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
         ),
-      ],
-    );
+      );
+    });
   }
 
-  Widget _deleteDialog(Usaha _usaha) {
+  Widget _deleteDialog(Suplier _suplier) {
     return AlertDialog(
       title: const Text('Delete Data'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [Text('Yakin Mau Hapus Usaha ${_usaha.nama_usaha}?')],
+        children: [Text('Yakin Mau Hapus Suplier ${_suplier.nama_suplier}?')],
       ),
       actions: [
         TextButton(
@@ -124,7 +172,7 @@ class _DataUsahaState extends State<DataUsaha> {
         ),
         ElevatedButton(
           onPressed: () async {
-            service.deleteUsaha(_usaha.id.toString());
+            service.deleteSuplier(_suplier.id.toString());
             _refreshData();
             Navigator.pop(context);
           },
@@ -134,7 +182,7 @@ class _DataUsahaState extends State<DataUsaha> {
     );
   }
 
-  Widget _buildListView(List<Usaha> usahas) {
+  Widget _buildListView(List<Suplier> supliers) {
     return Expanded(
       child: RefreshIndicator(
         key: _refreshIndicatorKey,
@@ -143,9 +191,9 @@ class _DataUsahaState extends State<DataUsaha> {
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
           physics: AlwaysScrollableScrollPhysics(),
-          itemCount: usahas.length,
+          itemCount: supliers.length,
           itemBuilder: (context, index) {
-            Usaha usaha = usahas[index];
+            Suplier suplier = supliers[index];
             return Card(
               margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
               child: Padding(
@@ -154,10 +202,10 @@ class _DataUsahaState extends State<DataUsaha> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      usaha.nama_usaha,
+                      suplier.nama_suplier,
                       style: TextStyle(color: Colors.black54, fontSize: 16),
                     ),
-                    Text('${usaha.keterangan}'),
+                    Text('${suplier.alamat}'),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
@@ -166,7 +214,7 @@ class _DataUsahaState extends State<DataUsaha> {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
-                                return _deleteDialog(usaha);
+                                return _deleteDialog(suplier);
                               },
                             )
                           },
@@ -180,7 +228,7 @@ class _DataUsahaState extends State<DataUsaha> {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
-                                return _dialogForm(true, usaha);
+                                return _dialogForm(true, suplier);
                               },
                             )
                           },
@@ -202,23 +250,22 @@ class _DataUsahaState extends State<DataUsaha> {
   }
 
   Future<void> _initData() async {
-    final List<Usaha> _usaha = await service.getUsahas();
-    _usahaList = _usaha;
-    globalUsaha = await service.getUsahas();
+    final List<Suplier> _suplier = await service.getSupliers();
+    _suplierList = _suplier;
   }
 
   Future<void> _refreshData() async {
     await Future.delayed(Duration(milliseconds: 100));
-    final List<Usaha> _usaha = await service.getUsahas();
+    final List<Suplier> _suplier = await service.getSupliers();
     setState(() {
-      _usahaList = _usaha;
+      _suplierList = _suplier;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    futureUsaha = _initData();
+    futureSuplier = _initData();
   }
 
   SampleItem? selectedMenu;
@@ -271,6 +318,7 @@ class _DataUsahaState extends State<DataUsaha> {
         ],
         centerTitle: true,
       ),
+      resizeToAvoidBottomInset: true,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => {
           showDialog(
@@ -284,7 +332,6 @@ class _DataUsahaState extends State<DataUsaha> {
         icon: const Icon(Icons.add),
         backgroundColor: AppColors.primary,
       ),
-      resizeToAvoidBottomInset: true,
       body: Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -296,7 +343,7 @@ class _DataUsahaState extends State<DataUsaha> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 20),
                 child: Text(
-                  'Usaha',
+                  'Suplier',
                   style: Theme.of(context)
                       .textTheme
                       .headline5
@@ -305,7 +352,7 @@ class _DataUsahaState extends State<DataUsaha> {
               ),
             ),
             FutureBuilder(
-              future: futureUsaha,
+              future: futureSuplier,
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
@@ -318,7 +365,7 @@ class _DataUsahaState extends State<DataUsaha> {
                     }
                   case ConnectionState.done:
                     {
-                      return _buildListView(_usahaList);
+                      return _buildListView(_suplierList);
                     }
                 }
               },
@@ -331,8 +378,8 @@ class _DataUsahaState extends State<DataUsaha> {
 }
 
 class customSearchDelegate extends SearchDelegate<Usaha?> {
-  UsahaService service = new UsahaService();
-  List<Usaha> usahaList = <Usaha>[];
+  SuplierService service = new SuplierService();
+  List<Suplier> suplierList = <Suplier>[];
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -356,7 +403,7 @@ class customSearchDelegate extends SearchDelegate<Usaha?> {
   }
 
   Future<void> initData() async {
-    usahaList = await service.getUsahas();
+    suplierList = await service.getSupliers();
   }
 
   @override
@@ -370,23 +417,22 @@ class customSearchDelegate extends SearchDelegate<Usaha?> {
   }
 
   Widget buildMatchingSuggestions(BuildContext context) {
-    List<Usaha> matchQuery = [];
+    List<Suplier> matchQuery = [];
     if (query.length < 2) return Container();
 
     initData();
-    for (var data in usahaList) {
-      if (data.nama_usaha.toLowerCase().contains(query.toLowerCase())) {
+    for (var data in suplierList) {
+      if (data.nama_suplier.toLowerCase().contains(query.toLowerCase())) {
         matchQuery.add(data);
       }
     }
-    developer.log(matchQuery.length.toString());
 
     return ListView.builder(
       itemCount: matchQuery.length,
       itemBuilder: (context, index) {
         var result = matchQuery[index];
         return ListTile(
-          title: Text(result.nama_usaha),
+          title: Text(result.nama_suplier),
         );
       },
     );

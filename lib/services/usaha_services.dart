@@ -1,12 +1,11 @@
 import 'dart:convert';
+import 'package:cma_management/config/global_config.dart';
 import 'package:cma_management/model/Usaha.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 import 'package:http/http.dart' as http;
 
 class UsahaService {
-  static const String baseUrl = 'https://faktur.cybercode.id';
-  //static const String baseUrl = 'http://10.10.10.99:5153';
-  static const String usahasUrl = '$baseUrl/api/usaha';
+  static const String usahasUrl = '${GlobalConfig.base_url}/api/usaha';
 
   Future<List<Usaha>> getUsahas() async {
     final response = await http.get(Uri.parse(usahasUrl));

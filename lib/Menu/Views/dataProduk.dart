@@ -14,6 +14,8 @@ class DataProduk extends StatefulWidget {
   _DataProdukState createState() => _DataProdukState();
 }
 
+enum SampleItem { itemOne, itemTwo, itemThree }
+
 class _DataProdukState extends State<DataProduk> {
   late List<Produk> _produkList;
   late Future<void> futureProduk;
@@ -190,6 +192,7 @@ class _DataProdukState extends State<DataProduk> {
           itemBuilder: (context, index) {
             Produk produk = produks[index];
             return Card(
+              margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -263,43 +266,89 @@ class _DataProdukState extends State<DataProduk> {
     futureProduk = _initData();
   }
 
+  SampleItem? selectedMenu;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: AppColors.iconGray),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text("Data Produk"),
+        actions: <Widget>[
+          PopupMenuButton(
+            icon: Icon(Icons.sort, color: AppColors.iconGray),
+            initialValue: selectedMenu,
+            onSelected: (SampleItem item) {
+              setState(() {
+                selectedMenu = item;
+              });
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<SampleItem>>[
+              const PopupMenuItem<SampleItem>(
+                value: SampleItem.itemOne,
+                child: Text('Item 1'),
+              ),
+              const PopupMenuItem<SampleItem>(
+                value: SampleItem.itemTwo,
+                child: Text('Item 2'),
+              ),
+              const PopupMenuItem<SampleItem>(
+                value: SampleItem.itemThree,
+                child: Text('Item 3'),
+              ),
+            ],
+          ),
+          IconButton(
+            icon: Icon(Icons.search, color: AppColors.iconGray),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: customSearchDelegate(),
+              );
+            },
+          ),
+          SizedBox(
+            width: 20,
+          )
+        ],
         centerTitle: true,
       ),
       resizeToAvoidBottomInset: true,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return _dialogForm(false);
+            },
+          ),
+        },
+        label: const Text('Baru'),
+        icon: const Icon(Icons.add),
+        backgroundColor: AppColors.primary,
+      ),
       body: Container(
-        margin: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            TextButton.icon(
-              onPressed: () => {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return _dialogForm(false);
-                  },
-                )
-              },
-              icon: Icon(
-                // <-- Icon
-                Icons.add,
-                size: 24.0,
+            Container(
+              color: Colors.white,
+              width: double.infinity,
+              height: 40,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Text(
+                  'Produk',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline5
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
               ),
-              label: Text('Produk Baru'),
             ),
-            SizedBox(
-              height: 20,
-            ),
-            Text('List Produk'),
             FutureBuilder(
               future: futureProduk,
               builder: (context, snapshot) {
@@ -322,6 +371,68 @@ class _DataProdukState extends State<DataProduk> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class customSearchDelegate extends SearchDelegate<Usaha?> {
+  ProdukService service = new ProdukService();
+  List<Produk> produkList = <Produk>[];
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        onPressed: () {
+          query = '';
+        },
+        icon: Icon(Icons.clear),
+      )
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        close(context, null);
+      },
+      icon: Icon(Icons.arrow_back),
+    );
+  }
+
+  Future<void> initData() async {
+    produkList = await service.getProduks();
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return buildMatchingSuggestions(context);
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return buildMatchingSuggestions(context);
+  }
+
+  Widget buildMatchingSuggestions(BuildContext context) {
+    List<Produk> matchQuery = [];
+    if (query.length < 2) return Container();
+
+    initData();
+    for (var data in produkList) {
+      if (data.nama_produk.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(data);
+      }
+    }
+
+    return ListView.builder(
+      itemCount: matchQuery.length,
+      itemBuilder: (context, index) {
+        var result = matchQuery[index];
+        return ListTile(
+          title: Text(result.nama_produk),
+        );
+      },
     );
   }
 }
