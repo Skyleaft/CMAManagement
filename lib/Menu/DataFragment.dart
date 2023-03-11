@@ -1,3 +1,4 @@
+import 'package:cma_management/Menu/Views/dataBarang.dart';
 import 'package:cma_management/Menu/Views/dataCustomer.dart';
 import 'package:cma_management/Menu/Views/dataMSpek.dart';
 import 'package:cma_management/Menu/Views/dataProduk.dart';
@@ -185,7 +186,7 @@ class _DataFragmentState extends State<DataFragment> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const DataUsaha()),
+                            builder: (context) => const DataBarang()),
                       );
                     },
                     child: Column(
