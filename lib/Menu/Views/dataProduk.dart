@@ -122,7 +122,7 @@ class _DataProdukState extends State<DataProduk> {
                 if (isUpdate) {
                   final produkToUpdate = Produk(
                       id: _produk!.id,
-                      id_usaha: currentUsaha!.id,
+                      usahaID: currentUsaha!.id,
                       nama_produk: namaController.text,
                       keterangan: keteranganController.text,
                       created_at: _produk.created_at,
@@ -132,7 +132,7 @@ class _DataProdukState extends State<DataProduk> {
                 } else {
                   final produk = Produk(
                       id: Guid.generate(),
-                      id_usaha: currentUsaha!.id,
+                      usahaID: currentUsaha!.id,
                       nama_produk: namaController.text,
                       keterangan: keteranganController.text,
                       created_at: DateTime.now().toIso8601String() + 'Z',

@@ -8,7 +8,14 @@ class SuplierService {
   static const String supliersUrl = '${GlobalConfig.base_url}/api/suplier';
 
   Future<List<Suplier>> getSupliers() async {
-    final response = await http.get(Uri.parse(supliersUrl));
+    final response = await http.get(
+      Uri.parse(supliersUrl),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
     if (response.statusCode == 200) {
       final List<dynamic> supliersJson = jsonDecode(response.body);
       return supliersJson.map((json) => Suplier.fromJson(json)).toList();
@@ -18,7 +25,14 @@ class SuplierService {
   }
 
   Future<Suplier> getSuplier(String id) async {
-    final response = await http.get(Uri.parse('$supliersUrl/$id'));
+    final response = await http.get(
+      Uri.parse('$supliersUrl/$id'),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
     if (response.statusCode == 200) {
       final dynamic suplierJson = jsonDecode(response.body);
       return Suplier.fromJson(suplierJson);
@@ -33,6 +47,7 @@ class SuplierService {
       headers: <String, String>{
         'accept': 'text/plain',
         'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
       },
       body: jsonEncode(suplier.toJson()),
     );
@@ -48,7 +63,9 @@ class SuplierService {
     final response = await http.put(
       Uri.parse('$supliersUrl/$id'),
       headers: <String, String>{
+        'accept': 'text/plain',
         'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
       },
       body: jsonEncode(suplier.toJson()),
     );
@@ -61,7 +78,14 @@ class SuplierService {
   }
 
   Future<void> deleteSuplier(String id) async {
-    final response = await http.delete(Uri.parse('$supliersUrl/$id'));
+    final response = await http.delete(
+      Uri.parse('$supliersUrl/$id'),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
     if (response.statusCode != 200) {
       throw Exception('Failed to delete suplier');
     }

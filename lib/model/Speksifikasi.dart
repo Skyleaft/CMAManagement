@@ -4,8 +4,8 @@ import 'package:flutter_guid/flutter_guid.dart';
 
 class Speksifikasi {
   final Guid id;
-  final Guid id_mspek;
-  final Guid id_barang;
+  final Guid mspekID;
+  final Guid barangID;
   final String value;
   final String? created_at;
   final String? updated_at;
@@ -13,8 +13,8 @@ class Speksifikasi {
 
   const Speksifikasi(
       {required this.id,
-      required this.id_mspek,
-      required this.id_barang,
+      required this.mspekID,
+      required this.barangID,
       required this.value,
       this.created_at,
       this.updated_at,
@@ -23,8 +23,8 @@ class Speksifikasi {
   factory Speksifikasi.fromJson(Map<String, dynamic> json) {
     return Speksifikasi(
       id: new Guid(json["id"]),
-      id_barang: new Guid(json["id_barang"]),
-      id_mspek: new Guid(json["id_mspek"]),
+      barangID: new Guid(json["barangID"]),
+      mspekID: new Guid(json["mspekID"]),
       value: json["value"],
       created_at: json["created_at"],
       updated_at: json["updated_at"],
@@ -35,8 +35,8 @@ class Speksifikasi {
   Map<String, dynamic> toJson() {
     return {
       "id": id.value,
-      "id_barang": id_barang,
-      "id_mspek": id_mspek,
+      "barangID": barangID,
+      "mspekID": mspekID,
       "value": value,
       "created_at": created_at,
       "updated_at": updated_at,

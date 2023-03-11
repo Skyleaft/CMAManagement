@@ -6,6 +6,7 @@ import 'package:cma_management/component/paymentDetailList.dart';
 import 'package:cma_management/config/responsive.dart';
 import 'package:cma_management/config/size_config.dart';
 import 'package:cma_management/model/Produk.dart';
+import 'package:cma_management/services/produk_services.dart';
 import 'package:cma_management/styles/colors.dart';
 import 'package:cma_management/styles/styles.dart';
 import 'package:flutter/material.dart';
@@ -19,19 +20,28 @@ class DashboardFragment extends StatefulWidget {
 }
 
 class _DashboardFragmentState extends State<DashboardFragment> {
-  Future<List<Produk>?> getProduks() async {
-    final response =
-        await http.get(Uri.parse('https://faktur.cybercode.id/api/produk'));
-    if (response.statusCode == 200) {
-      return produkFromJson(response.body);
-    } else {
-      return null;
-    }
+  ProdukService serviceProduk = new ProdukService();
+  GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+
+  late List<Produk> produks = <Produk>[];
+
+  Future<void> initData() async {
+    produks = await serviceProduk.getProduks();
+  }
+
+  Future<void> _refreshData() async {
+    await Future.delayed(Duration(milliseconds: 100));
+    final List<Produk> _produk = await serviceProduk.getProduks();
+    setState(() {
+      produks = _produk;
+    });
   }
 
   @override
   void initState() {
     super.initState();
+    initData();
   }
 
   @override
@@ -42,7 +52,8 @@ class _DashboardFragmentState extends State<DashboardFragment> {
         children: [
           Expanded(
             flex: 10,
-            child: SafeArea(
+            child: RefreshIndicator(
+              onRefresh: _refreshData,
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(vertical: 30, horizontal: 30),
                 child: Column(
@@ -52,50 +63,40 @@ class _DashboardFragmentState extends State<DashboardFragment> {
                     SizedBox(
                       height: SizeConfig.blockSizeVertical! * 4,
                     ),
-                    SizedBox(
-                      width: SizeConfig.screenWidth,
-                      child: Wrap(
-                        spacing: 20,
-                        runSpacing: 20,
-                        alignment: WrapAlignment.spaceBetween,
-                        children: [
-                          FutureBuilder(
-                            future: getProduks(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasError) {
-                                return Center(
-                                  child: Text(
-                                      "Something wrong with message: ${snapshot.error.toString()}"),
-                                );
-                              } else if (snapshot.connectionState ==
-                                  ConnectionState.done) {
-                                List<Produk>? _produks = snapshot.data;
-
-                                return InfoCard(
+                    FutureBuilder(
+                      future: initData(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          return SizedBox(
+                            width: SizeConfig.screenWidth,
+                            child: Wrap(
+                              spacing: 20,
+                              runSpacing: 20,
+                              alignment: WrapAlignment.spaceBetween,
+                              children: [
+                                InfoCard(
                                     icon: 'assets/credit-card.svg',
                                     label: 'Jumlah Produk',
-                                    amount: '${_produks?.length}');
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                            },
-                          ),
-                          InfoCard(
-                              icon: 'assets/transfer.svg',
-                              label: 'Total Barang',
-                              amount: '\$150'),
-                          InfoCard(
-                              icon: 'assets/invoice.svg',
-                              label: 'Total Transaksi \nPenjualan',
-                              amount: '\$1500'),
-                          InfoCard(
-                              icon: 'assets/invoice.svg',
-                              label: 'Total Transaksi \nPembelian',
-                              amount: '\$1500'),
-                        ],
-                      ),
+                                    amount: '${produks.length}'),
+                                InfoCard(
+                                    icon: 'assets/transfer.svg',
+                                    label: 'Total Barang',
+                                    amount: '\$150'),
+                                InfoCard(
+                                    icon: 'assets/invoice.svg',
+                                    label: 'Total Transaksi \nPenjualan',
+                                    amount: '\$1500'),
+                                InfoCard(
+                                    icon: 'assets/invoice.svg',
+                                    label: 'Total Transaksi \nPembelian',
+                                    amount: '\$1500'),
+                              ],
+                            ),
+                          );
+                        } else {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                      },
                     ),
                     SizedBox(
                       height: SizeConfig.blockSizeVertical! * 4,

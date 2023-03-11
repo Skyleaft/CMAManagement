@@ -8,7 +8,14 @@ class ProdukService {
   static const String produksUrl = '${GlobalConfig.base_url}/api/produk';
 
   Future<List<Produk>> getProduks() async {
-    final response = await http.get(Uri.parse(produksUrl));
+    final response = await http.get(
+      Uri.parse(produksUrl),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
     if (response.statusCode == 200) {
       final List<dynamic> produksJson = jsonDecode(response.body);
       return produksJson.map((json) => Produk.fromJson(json)).toList();
@@ -18,7 +25,14 @@ class ProdukService {
   }
 
   Future<Produk> getProduk(String id) async {
-    final response = await http.get(Uri.parse('$produksUrl/$id'));
+    final response = await http.get(
+      Uri.parse('$produksUrl/$id'),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
     if (response.statusCode == 200) {
       final dynamic produkJson = jsonDecode(response.body);
       return Produk.fromJson(produkJson);
@@ -33,6 +47,7 @@ class ProdukService {
       headers: <String, String>{
         'accept': 'text/plain',
         'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
       },
       body: jsonEncode(produk.toJson()),
     );
@@ -48,7 +63,9 @@ class ProdukService {
     final response = await http.put(
       Uri.parse('$produksUrl/$id'),
       headers: <String, String>{
+        'accept': 'text/plain',
         'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
       },
       body: jsonEncode(produk.toJson()),
     );
@@ -61,7 +78,14 @@ class ProdukService {
   }
 
   Future<void> deleteProduk(String id) async {
-    final response = await http.delete(Uri.parse('$produksUrl/$id'));
+    final response = await http.delete(
+      Uri.parse('$produksUrl/$id'),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
     if (response.statusCode != 200) {
       throw Exception('Failed to delete produk');
     }

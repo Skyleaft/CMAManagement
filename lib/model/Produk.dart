@@ -4,7 +4,7 @@ import 'package:flutter_guid/flutter_guid.dart';
 
 class Produk {
   final Guid id;
-  final Guid id_usaha;
+  final Guid usahaID;
   final String nama_produk;
   final String? keterangan;
   final String? created_at;
@@ -13,7 +13,7 @@ class Produk {
 
   const Produk(
       {required this.id,
-      required this.id_usaha,
+      required this.usahaID,
       required this.nama_produk,
       this.keterangan,
       this.created_at,
@@ -23,7 +23,7 @@ class Produk {
   factory Produk.fromJson(Map<String, dynamic> json) {
     return Produk(
       id: new Guid(json["id"]),
-      id_usaha: new Guid(json["id_usaha"]),
+      usahaID: new Guid(json["usahaID"]),
       nama_produk: json["nama_produk"],
       keterangan: json["keterangan"],
       created_at: json["created_at"],
@@ -35,7 +35,7 @@ class Produk {
   Map<String, dynamic> toJson() {
     return {
       "id": id.value,
-      "id_usaha": id_usaha.value,
+      "usahaID": usahaID.value,
       "nama_produk": nama_produk,
       "keterangan": keterangan,
       "created_at": created_at,

@@ -8,7 +8,14 @@ class CustomerService {
   static const String customersUrl = '${GlobalConfig.base_url}/api/customer';
 
   Future<List<Customer>> getCustomers() async {
-    final response = await http.get(Uri.parse(customersUrl));
+    final response = await http.get(
+      Uri.parse(customersUrl),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
     if (response.statusCode == 200) {
       final List<dynamic> customersJson = jsonDecode(response.body);
       return customersJson.map((json) => Customer.fromJson(json)).toList();
@@ -18,7 +25,14 @@ class CustomerService {
   }
 
   Future<Customer> getCustomer(String id) async {
-    final response = await http.get(Uri.parse('$customersUrl/$id'));
+    final response = await http.get(
+      Uri.parse('$customersUrl/$id'),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
     if (response.statusCode == 200) {
       final dynamic customerJson = jsonDecode(response.body);
       return Customer.fromJson(customerJson);
@@ -33,6 +47,7 @@ class CustomerService {
       headers: <String, String>{
         'accept': 'text/plain',
         'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
       },
       body: jsonEncode(customer.toJson()),
     );
@@ -48,7 +63,9 @@ class CustomerService {
     final response = await http.put(
       Uri.parse('$customersUrl/$id'),
       headers: <String, String>{
+        'accept': 'text/plain',
         'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
       },
       body: jsonEncode(customer.toJson()),
     );
@@ -61,7 +78,14 @@ class CustomerService {
   }
 
   Future<void> deleteCustomer(String id) async {
-    final response = await http.delete(Uri.parse('$customersUrl/$id'));
+    final response = await http.delete(
+      Uri.parse('$customersUrl/$id'),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
     if (response.statusCode != 200) {
       throw Exception('Failed to delete customer');
     }

@@ -9,7 +9,14 @@ class SpeksifikasiService {
       '${GlobalConfig.base_url}/api/speksifikasi';
 
   Future<List<Speksifikasi>> getSpeksifikasis() async {
-    final response = await http.get(Uri.parse(speksifikasisUrl));
+    final response = await http.get(
+      Uri.parse(speksifikasisUrl),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
     if (response.statusCode == 200) {
       final List<dynamic> speksifikasisJson = jsonDecode(response.body);
       return speksifikasisJson
@@ -21,7 +28,14 @@ class SpeksifikasiService {
   }
 
   Future<Speksifikasi> getSpeksifikasi(String id) async {
-    final response = await http.get(Uri.parse('$speksifikasisUrl/$id'));
+    final response = await http.get(
+      Uri.parse('$speksifikasisUrl/$id'),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
     if (response.statusCode == 200) {
       final dynamic speksifikasiJson = jsonDecode(response.body);
       return Speksifikasi.fromJson(speksifikasiJson);
@@ -36,6 +50,7 @@ class SpeksifikasiService {
       headers: <String, String>{
         'accept': 'text/plain',
         'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
       },
       body: jsonEncode(speksifikasi.toJson()),
     );
@@ -52,7 +67,9 @@ class SpeksifikasiService {
     final response = await http.put(
       Uri.parse('$speksifikasisUrl/$id'),
       headers: <String, String>{
+        'accept': 'text/plain',
         'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
       },
       body: jsonEncode(speksifikasi.toJson()),
     );
@@ -65,7 +82,14 @@ class SpeksifikasiService {
   }
 
   Future<void> deleteSpeksifikasi(String id) async {
-    final response = await http.delete(Uri.parse('$speksifikasisUrl/$id'));
+    final response = await http.delete(
+      Uri.parse('$speksifikasisUrl/$id'),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
     if (response.statusCode != 200) {
       throw Exception('Failed to delete speksifikasi');
     }

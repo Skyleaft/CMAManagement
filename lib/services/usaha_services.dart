@@ -8,7 +8,14 @@ class UsahaService {
   static const String usahasUrl = '${GlobalConfig.base_url}/api/usaha';
 
   Future<List<Usaha>> getUsahas() async {
-    final response = await http.get(Uri.parse(usahasUrl));
+    final response = await http.get(
+      Uri.parse(usahasUrl),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
     if (response.statusCode == 200) {
       final List<dynamic> usahasJson = jsonDecode(response.body);
       return usahasJson.map((json) => Usaha.fromJson(json)).toList();
@@ -18,7 +25,14 @@ class UsahaService {
   }
 
   Future<Usaha> getUsaha(String id) async {
-    final response = await http.get(Uri.parse('$usahasUrl/$id'));
+    final response = await http.get(
+      Uri.parse('$usahasUrl/$id'),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
     if (response.statusCode == 200) {
       final dynamic usahaJson = jsonDecode(response.body);
       return Usaha.fromJson(usahaJson);
@@ -33,6 +47,7 @@ class UsahaService {
       headers: <String, String>{
         'accept': 'text/plain',
         'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
       },
       body: jsonEncode(usaha.toJson()),
     );
@@ -48,7 +63,9 @@ class UsahaService {
     final response = await http.put(
       Uri.parse('$usahasUrl/$id'),
       headers: <String, String>{
+        'accept': 'text/plain',
         'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
       },
       body: jsonEncode(usaha.toJson()),
     );
@@ -61,7 +78,14 @@ class UsahaService {
   }
 
   Future<void> deleteUsaha(String id) async {
-    final response = await http.delete(Uri.parse('$usahasUrl/$id'));
+    final response = await http.delete(
+      Uri.parse('$usahasUrl/$id'),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
     if (response.statusCode != 200) {
       throw Exception('Failed to delete usaha');
     }
