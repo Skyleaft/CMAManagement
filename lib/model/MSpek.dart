@@ -29,7 +29,7 @@ class MSpek {
   Map<String, dynamic> toJson() {
     return {
       "id": id.value,
-      "nama_m_spek": nama_speksifikasi,
+      "nama_speksifikasi": nama_speksifikasi,
       "created_at": created_at,
       "updated_at": updated_at,
       "deleted_at": deleted_at

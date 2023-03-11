@@ -36,102 +36,108 @@ class _DataUsahaState extends State<DataUsaha> {
       namaController.text = _usaha!.nama_usaha;
       keteranganController.text = _usaha.keterangan!;
     }
-    return AlertDialog(
-      title: isUpdate ? const Text('Ubah Data') : const Text('Usaha Baru'),
-      content: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextFormField(
-              controller: namaController,
-              decoration: new InputDecoration(
-                  hintText: "Masukan Nama Usaha",
-                  labelText: "Nama Usaha",
-                  icon: Icon(Icons.people)),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a name';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              controller: keteranganController,
-              decoration: new InputDecoration(
-                  hintText: "Masukan Keterangan",
-                  labelText: "Keterangan",
-                  icon: Icon(Icons.people)),
-            ),
-          ],
+    return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+      return AlertDialog(
+        title: isUpdate ? const Text('Ubah Data') : const Text('Usaha Baru'),
+        content: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: namaController,
+                decoration: new InputDecoration(
+                    hintText: "Masukan Nama Usaha",
+                    labelText: "Nama Usaha",
+                    icon: Icon(Icons.people)),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a name';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: keteranganController,
+                decoration: new InputDecoration(
+                    hintText: "Masukan Keterangan",
+                    labelText: "Keterangan",
+                    icon: Icon(Icons.people)),
+              ),
+            ],
+          ),
         ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            if (_formKey.currentState!.validate()) {
-              _formKey.currentState!.save();
-              if (isUpdate) {
-                final usahaToUpdate = Usaha(
-                    id: _usaha!.id,
-                    nama_usaha: namaController.text,
-                    keterangan: keteranganController.text,
-                    created_at: _usaha.created_at,
-                    updated_at: DateTime.now().toIso8601String() + 'Z',
-                    deleted_at: _usaha.deleted_at);
-                service.updateUsaha(usahaToUpdate.id.value, usahaToUpdate);
-              } else {
-                final usaha = Usaha(
-                    id: Guid.generate(),
-                    nama_usaha: namaController.text,
-                    keterangan: keteranganController.text,
-                    created_at: DateTime.now().toIso8601String() + 'Z',
-                    updated_at: null,
-                    deleted_at: null);
-                service.createUsaha(usaha);
-              }
-
-              _refreshData();
+        actions: [
+          TextButton(
+            onPressed: () {
               Navigator.pop(context);
-            }
-          },
-          child: isUpdate ? const Text('Update') : const Text('Save'),
-        ),
-      ],
-    );
+            },
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (_formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
+                if (isUpdate) {
+                  final usahaToUpdate = Usaha(
+                      id: _usaha!.id,
+                      nama_usaha: namaController.text,
+                      keterangan: keteranganController.text,
+                      created_at: _usaha.created_at,
+                      updated_at: DateTime.now().toIso8601String() + 'Z',
+                      deleted_at: _usaha.deleted_at);
+                  service.updateUsaha(usahaToUpdate.id.value, usahaToUpdate);
+                } else {
+                  final usaha = Usaha(
+                      id: Guid.generate(),
+                      nama_usaha: namaController.text,
+                      keterangan: keteranganController.text,
+                      created_at: DateTime.now().toIso8601String() + 'Z',
+                      updated_at: null,
+                      deleted_at: null);
+                  service.createUsaha(usaha);
+                }
+
+                _refreshData();
+                Navigator.pop(context);
+              }
+            },
+            child: isUpdate ? const Text('Update') : const Text('Save'),
+          ),
+        ],
+      );
+    });
   }
 
   Widget _deleteDialog(Usaha _usaha) {
-    return AlertDialog(
-      title: const Text('Delete Data'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [Text('Yakin Mau Hapus Usaha ${_usaha.nama_usaha}?')],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            _refreshData();
-            Navigator.pop(context);
-          },
-          child: const Text('Cancel'),
+    return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+      return AlertDialog(
+        title: const Text('Delete Data'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [Text('Yakin Mau Hapus Usaha ${_usaha.nama_usaha}?')],
         ),
-        ElevatedButton(
-          onPressed: () async {
-            service.deleteUsaha(_usaha.id.toString());
-            _refreshData();
-            Navigator.pop(context);
-          },
-          child: const Text('Yes'),
-        ),
-      ],
-    );
+        actions: [
+          TextButton(
+            onPressed: () {
+              _refreshData();
+              Navigator.pop(context);
+            },
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              service.deleteUsaha(_usaha.id.toString());
+              _refreshData();
+              Navigator.pop(context);
+            },
+            child: const Text('Yes'),
+          ),
+        ],
+      );
+    });
   }
 
   Widget _buildListView(List<Usaha> usahas) {
