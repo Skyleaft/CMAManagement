@@ -58,7 +58,7 @@ class SpeksifikasiService {
       final dynamic speksifikasiJson = jsonDecode(response.body);
       return Speksifikasi.fromJson(speksifikasiJson);
     } else {
-      throw Exception('${speksifikasi.toJson()} failed to create speksifikasi');
+      throw Exception('${response.body} failed to create speksifikasi');
     }
   }
 

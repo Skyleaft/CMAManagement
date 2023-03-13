@@ -55,7 +55,7 @@ class ProdukService {
       final dynamic produkJson = jsonDecode(response.body);
       return Produk.fromJson(produkJson);
     } else {
-      throw Exception('${produk.toJson()} failed to create produk');
+      throw Exception('${response.body} failed to create produk');
     }
   }
 

@@ -1,20 +1,23 @@
 import 'dart:convert';
+import 'package:cma_management/model/Speksifikasi.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 
 class Barang {
   final Guid id;
   final Guid produkID;
   final Guid suplierID;
+  final List<Speksifikasi?>? speksifikasi;
   final String nama_barang;
-  final String? created_at;
-  final String? updated_at;
-  final String? deleted_at;
+  final DateTime? created_at;
+  final DateTime? updated_at;
+  final DateTime? deleted_at;
 
   const Barang(
       {required this.id,
       required this.produkID,
       required this.suplierID,
       required this.nama_barang,
+      this.speksifikasi,
       this.created_at,
       this.updated_at,
       this.deleted_at});
@@ -25,9 +28,11 @@ class Barang {
       produkID: new Guid(json["produkID"]),
       suplierID: new Guid(json["suplierID"]),
       nama_barang: json["nama_barang"],
-      created_at: json["created_at"],
-      updated_at: json["updated_at"],
-      deleted_at: json["deleted_at"],
+      speksifikasi: List<Speksifikasi>.from(
+          json["speksifikasi"].map((x) => Speksifikasi.fromJson(x))),
+      created_at: DateTime.tryParse(json["created_at"].toString()),
+      updated_at: DateTime.tryParse(json["updated_at"].toString()),
+      deleted_at: DateTime.tryParse(json["deleted_at"].toString()),
     );
   }
 
@@ -37,9 +42,9 @@ class Barang {
       "produkID": produkID.value,
       "suplierID": suplierID.value,
       "nama_barang": nama_barang,
-      "created_at": created_at,
-      "updated_at": updated_at,
-      "deleted_at": deleted_at
+      "created_at": created_at?.toUtc().toIso8601String(),
+      "updated_at": updated_at?.toUtc().toIso8601String(),
+      "deleted_at": deleted_at?.toUtc().toIso8601String(),
     };
   }
 }

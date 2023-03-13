@@ -45,7 +45,6 @@ class BarangService {
     final response = await http.post(
       Uri.parse(barangsUrl),
       headers: <String, String>{
-        'accept': 'text/plain',
         'Content-Type': 'application/json; charset=UTF-8',
         'X-Api-Key': GlobalConfig.apiKey!,
       },
@@ -55,7 +54,7 @@ class BarangService {
       final dynamic barangJson = jsonDecode(response.body);
       return Barang.fromJson(barangJson);
     } else {
-      throw Exception('${barang.toJson()} failed to create barang');
+      throw Exception('${response.body} failed to create barang');
     }
   }
 
