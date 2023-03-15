@@ -93,44 +93,6 @@ class _DataBarangState extends State<DataBarang> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // FutureBuilder(
-              //   future: usahas,
-              //   builder: (context, snapshot) {
-              //     switch (snapshot.connectionState) {
-              //       case ConnectionState.none:
-              //       case ConnectionState.waiting:
-              //       case ConnectionState.active:
-              //         {
-              //           return Center(
-              //             child: CircularProgressIndicator(),
-              //           );
-              //         }
-              //       case ConnectionState.done:
-              //         {
-              //           List<Usaha>? _usaha = snapshot.data;
-              //           return DropdownButton<Usaha?>(
-              //             value: currentUsaha ?? _usaha![0],
-              //             icon: const Icon(Icons.keyboard_arrow_down),
-              //             // Array list of items
-              //             items: _usaha
-              //                 ?.map<DropdownMenuItem<Usaha>>((Usaha items) {
-              //               return DropdownMenuItem(
-              //                 value: items,
-              //                 child: Text(items.nama_usaha),
-              //               );
-              //             }).toList(),
-              //             // After selecting the desired option,it will
-              //             // change button value to selected value
-              //             onChanged: (Usaha? newValue) {
-              //               setState(() {
-              //                 currentUsaha = newValue;
-              //               });
-              //             },
-              //           );
-              //         }
-              //     }
-              //   },
-              // ),
               FutureBuilder(
                 future: produks,
                 builder: (context, snapshot) {
@@ -262,6 +224,7 @@ class _DataBarangState extends State<DataBarang> {
           ElevatedButton(
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
                 if (isUpdate) {
                   final barangToUpdate = Barang(
                       id: _barang!.id,
@@ -273,31 +236,38 @@ class _DataBarangState extends State<DataBarang> {
                       deleted_at: _barang.deleted_at);
                   service.updateBarang(barangToUpdate.id.value, barangToUpdate);
                 } else {
-                  final barang = Barang(
-                      id: Guid.generate(),
-                      produkID: currentProduk!.id,
-                      suplierID: Guid('e4b36887-ab66-4f8f-9640-14eb94ddadc8'),
-                      nama_barang:
-                          '${currentProduk?.nama_produk} ${namaController.text}',
-                      created_at: DateTime.now(),
-                      updated_at: null,
-                      deleted_at: null);
-                  service.createBarang(barang);
+                  var currentID = Guid.generate();
+
                   final spek1 = Speksifikasi(
                     id: Guid.generate(),
                     mspekID: Guid('a86e834a-383f-42e0-9083-08798cf4a395'),
-                    barangID: barang.id,
+                    barangID: currentID,
                     value: namaController.text,
                   );
                   speksifikasiService.createSpeksifikasi(spek1);
                   final spek2 = Speksifikasi(
                       id: Guid.generate(),
                       mspekID: Guid('9fe65b33-762d-440e-b053-842feea58c20'),
-                      barangID: barang.id,
+                      barangID: currentID,
                       value: currentColor.value.toString());
                   speksifikasiService.createSpeksifikasi(spek2);
+                  List<Speksifikasi> listSpek = <Speksifikasi>[];
+                  listSpek.add(spek1);
+                  listSpek.add(spek2);
+                  final barang = Barang(
+                      id: currentID,
+                      produkID: currentProduk!.id,
+                      suplierID: Guid('e4b36887-ab66-4f8f-9640-14eb94ddadc8'),
+                      nama_barang:
+                          '${currentProduk?.nama_produk} ${namaController.text}',
+                      speksifikasi: listSpek,
+                      created_at: DateTime.now(),
+                      updated_at: null,
+                      deleted_at: null);
+                  service.createBarang(barang);
                 }
-                _formKey.currentState!.save();
+
+                await Future.delayed(Duration(milliseconds: 100));
                 _refreshData();
                 Navigator.pop(context);
               }
@@ -344,56 +314,62 @@ class _DataBarangState extends State<DataBarang> {
 
     return Card(
       child: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Colors.white,
-            Color(int.parse(bgCol!.value)),
-          ],
-        )),
-        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            Text(
-              _barang.nama_barang,
-              style: TextStyle(color: Colors.black54, fontSize: 16),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                TextButton(
-                  onPressed: () => {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return _deleteDialog(_barang);
-                      },
-                    )
-                  },
-                  child: Text(
-                    "Delete",
-                    style: TextStyle(color: Colors.red),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _barang.nama_barang,
+                    style: TextStyle(color: Colors.black54, fontSize: 16),
                   ),
-                ),
-                TextButton(
-                  onPressed: () => {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return _dialogForm(true, _barang);
-                      },
-                    )
-                  },
-                  child: Text(
-                    "Edit",
-                    style: TextStyle(color: AppColors.primary),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      TextButton(
+                        onPressed: () => {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return _deleteDialog(_barang);
+                            },
+                          )
+                        },
+                        child: Text(
+                          "Delete",
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return _dialogForm(true, _barang);
+                            },
+                          )
+                        },
+                        child: Text(
+                          "Edit",
+                          style: TextStyle(color: AppColors.primary),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+            Container(
+              alignment: Alignment.bottomCenter,
+              height: 20,
+              decoration: BoxDecoration(
+                color: Color(int.parse(bgCol!.value)),
+              ),
+            )
           ],
         ),
       ),
@@ -406,12 +382,17 @@ class _DataBarangState extends State<DataBarang> {
       child: RefreshIndicator(
         key: _refreshIndicatorKey,
         onRefresh: _refreshData,
-        child: GridView.count(
-          crossAxisCount: 2,
+        child: GridView.builder(
           padding: EdgeInsets.all(10),
-          children: List.generate(barangs.length, (index) {
-            return _buildCardBarang(barangs[index]);
-          }),
+          itemBuilder: (context, index) => _buildCardBarang(barangs[index]),
+          itemCount: barangs.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 4,
+            crossAxisSpacing: 4,
+            // width / height: fixed for *all* items
+            childAspectRatio: 1.4,
+          ),
         ),
       ),
     );
@@ -528,25 +509,6 @@ class _DataBarangState extends State<DataBarang> {
                       ?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
-            ),
-            FutureBuilder(
-              future: futureSpek,
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.none:
-                  case ConnectionState.waiting:
-                  case ConnectionState.active:
-                    {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  case ConnectionState.done:
-                    {
-                      return SizedBox();
-                    }
-                }
-              },
             ),
             FutureBuilder(
               future: futureBarang,

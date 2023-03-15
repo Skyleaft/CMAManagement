@@ -28,8 +28,8 @@ class Barang {
       produkID: new Guid(json["produkID"]),
       suplierID: new Guid(json["suplierID"]),
       nama_barang: json["nama_barang"],
-      speksifikasi: List<Speksifikasi>.from(
-          json["speksifikasi"].map((x) => Speksifikasi.fromJson(x))),
+      speksifikasi: List<Speksifikasi?>.from(
+          json["speksifikasi"].map((x) => Speksifikasi?.fromJson(x))),
       created_at: DateTime.tryParse(json["created_at"].toString()),
       updated_at: DateTime.tryParse(json["updated_at"].toString()),
       deleted_at: DateTime.tryParse(json["deleted_at"].toString()),

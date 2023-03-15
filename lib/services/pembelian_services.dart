@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'package:cma_management/config/global_config.dart';
-import 'package:cma_management/model/MSpek.dart';
+import 'package:cma_management/model/Pembelian.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 import 'package:http/http.dart' as http;
 
-class MSpekService {
-  static const String M_speksUrl = '${GlobalConfig.base_url}/api/Mspek';
+class PembelianService {
+  static const String pembeliansUrl = '${GlobalConfig.base_url}/api/pembelian';
 
-  Future<List<MSpek>> getMSpeks() async {
+  Future<List<Pembelian>> getPembelians() async {
     final response = await http.get(
-      Uri.parse(M_speksUrl),
+      Uri.parse(pembeliansUrl),
       headers: <String, String>{
         'accept': 'text/plain',
         'Content-Type': 'application/json; charset=UTF-8',
@@ -17,16 +17,16 @@ class MSpekService {
       },
     );
     if (response.statusCode == 200) {
-      final List<dynamic> M_speksJson = jsonDecode(response.body);
-      return M_speksJson.map((json) => MSpek.fromJson(json)).toList();
+      final List<dynamic> pembeliansJson = jsonDecode(response.body);
+      return pembeliansJson.map((json) => Pembelian.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load M_speks');
+      throw Exception('${response.body} Failed to load pembelians');
     }
   }
 
-  Future<MSpek> getMSpek(String id) async {
+  Future<Pembelian> getPembelian(String id) async {
     final response = await http.get(
-      Uri.parse('$M_speksUrl/$id'),
+      Uri.parse('$pembeliansUrl/$id'),
       headers: <String, String>{
         'accept': 'text/plain',
         'Content-Type': 'application/json; charset=UTF-8',
@@ -34,51 +34,52 @@ class MSpekService {
       },
     );
     if (response.statusCode == 200) {
-      final dynamic M_spekJson = jsonDecode(response.body);
-      return MSpek.fromJson(M_spekJson);
+      final dynamic pembelianJson = jsonDecode(response.body);
+      return Pembelian.fromJson(pembelianJson);
     } else {
-      throw Exception('Failed to load M_spek');
+      throw Exception('${response.body} Failed to load pembelian');
     }
   }
 
-  Future<MSpek> createMSpek(MSpek M_spek) async {
+  Future<Pembelian> createPembelian(Pembelian pembelian) async {
     final response = await http.post(
-      Uri.parse(M_speksUrl),
+      Uri.parse(pembeliansUrl),
       headers: <String, String>{
         'accept': 'text/plain',
         'Content-Type': 'application/json; charset=UTF-8',
         'X-Api-Key': GlobalConfig.apiKey!,
       },
-      body: jsonEncode(M_spek.toJson()),
+      body: jsonEncode(pembelian.toJson()),
     );
     if (response.statusCode == 201) {
-      return M_spek;
+      final dynamic pembelianJson = jsonDecode(response.body);
+      return Pembelian.fromJson(pembelianJson);
     } else {
-      throw Exception('${M_spek.toJson()} failed to create M_spek');
+      throw Exception('${response.body} failed to create pembelian');
     }
   }
 
-  Future<MSpek> updateMSpek(String id, MSpek M_spek) async {
+  Future<Pembelian> updatePembelian(String id, Pembelian pembelian) async {
     final response = await http.put(
-      Uri.parse('$M_speksUrl/$id'),
+      Uri.parse('$pembeliansUrl/$id'),
       headers: <String, String>{
         'accept': 'text/plain',
         'Content-Type': 'application/json; charset=UTF-8',
         'X-Api-Key': GlobalConfig.apiKey!,
       },
-      body: jsonEncode(M_spek.toJson()),
+      body: jsonEncode(pembelian.toJson()),
     );
     if (response.statusCode == 200) {
-      final dynamic M_spekJson = jsonDecode(response.body);
-      return MSpek.fromJson(M_spekJson);
+      final dynamic pembelianJson = jsonDecode(response.body);
+      return Pembelian.fromJson(pembelianJson);
     } else {
-      throw Exception('Failed to update M_spek');
+      throw Exception('${response.body} Failed to update pembelian');
     }
   }
 
-  Future<void> deleteMSpek(String id) async {
+  Future<void> deletePembelian(String id) async {
     final response = await http.delete(
-      Uri.parse('$M_speksUrl/$id'),
+      Uri.parse('$pembeliansUrl/$id'),
       headers: <String, String>{
         'accept': 'text/plain',
         'Content-Type': 'application/json; charset=UTF-8',
@@ -86,7 +87,7 @@ class MSpekService {
       },
     );
     if (response.statusCode != 200) {
-      throw Exception('Failed to delete M_spek');
+      throw Exception('${response.body} Failed to delete pembelian');
     }
   }
 }

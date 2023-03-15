@@ -51,8 +51,7 @@ class BarangService {
       body: jsonEncode(barang.toJson()),
     );
     if (response.statusCode == 201) {
-      final dynamic barangJson = jsonDecode(response.body);
-      return Barang.fromJson(barangJson);
+      return barang;
     } else {
       throw Exception('${response.body} failed to create barang');
     }

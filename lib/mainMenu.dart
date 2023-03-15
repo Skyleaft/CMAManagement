@@ -11,6 +11,7 @@ import 'package:cma_management/component/paymentDetailList.dart';
 import 'package:cma_management/model/menu.dart';
 import 'package:cma_management/styles/colors.dart';
 import 'package:cma_management/styles/styles.dart';
+import 'package:cma_management/styles/themes.dart';
 import 'package:cma_management/utils/rive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
@@ -31,48 +32,66 @@ class _mainMenuState extends State<mainMenu>
   int selectedIndex = 0;
   Menu selectedBottonNav = bottomNavItems.first;
 
+  AnimationController? _animationController;
+  Animation<double>? scalAnimation;
+  Animation<double>? animation;
+
   late SMIBool isMenuOpenInput;
 
   void updateSelectedBtmNav(Menu menu) {
     if (selectedBottonNav != menu) {
-      setState(() {
-        selectedIndex = menu.index;
-        selectedBottonNav = menu;
+      _animationController?.reverse().then<dynamic>((data) {
+        if (!mounted) {
+          return;
+        }
+        setState(() {
+          selectedIndex = menu.index;
+          selectedBottonNav = menu;
+          tabBody = loadMenu(selectedIndex)!;
+        });
       });
     }
   }
 
-  late AnimationController _animationController;
-  late Animation<double> scalAnimation;
-  late Animation<double> animation;
+  Widget tabBody = Container(
+    color: CMATheme.background,
+  );
 
-  //list of widgets to call ontap
-  final widgetOptions = [
-    new DashboardFragment(),
-    new DataFragment(),
-    new NotificationFragment(),
-    new AccountFragment(),
-  ];
+  Widget? loadMenu(int index) {
+    switch (index) {
+      case 0:
+        return new DashboardFragment(animationController: _animationController);
+      case 1:
+        return new DataFragment(animationController: _animationController);
+      case 2:
+        return new NotificationFragment(
+            animationController: _animationController);
+      case 3:
+        return new AccountFragment();
+    }
+  }
 
   @override
   void initState() {
     _animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 200))
-      ..addListener(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    )..addListener(
         () {
           setState(() {});
         },
       );
+    tabBody = DashboardFragment(animationController: _animationController);
     scalAnimation = Tween<double>(begin: 1, end: 0.8).animate(CurvedAnimation(
-        parent: _animationController, curve: Curves.fastOutSlowIn));
+        parent: _animationController!, curve: Curves.fastOutSlowIn));
     animation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-        parent: _animationController, curve: Curves.fastOutSlowIn));
+        parent: _animationController!, curve: Curves.fastOutSlowIn));
     super.initState();
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _animationController?.dispose();
     super.dispose();
   }
 
@@ -80,16 +99,10 @@ class _mainMenuState extends State<mainMenu>
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
-      key: _drawerKey,
-      resizeToAvoidBottomInset: false,
-      extendBodyBehindAppBar: true,
       extendBody: true,
-      body: Center(
-        child: widgetOptions.elementAt(selectedIndex),
-      ),
-      // body:
+      body: tabBody,
       floatingActionButton: Transform.translate(
-        offset: Offset(20, 100 * animation.value),
+        offset: Offset(20, 10),
         child: SafeArea(
           child: Container(
             padding:

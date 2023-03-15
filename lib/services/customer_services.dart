@@ -20,7 +20,7 @@ class CustomerService {
       final List<dynamic> customersJson = jsonDecode(response.body);
       return customersJson.map((json) => Customer.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load customers');
+      throw Exception('${response.body} Failed to load customers');
     }
   }
 
@@ -37,7 +37,7 @@ class CustomerService {
       final dynamic customerJson = jsonDecode(response.body);
       return Customer.fromJson(customerJson);
     } else {
-      throw Exception('Failed to load customer');
+      throw Exception('${response.body} Failed to load customer');
     }
   }
 
@@ -55,7 +55,7 @@ class CustomerService {
       final dynamic customerJson = jsonDecode(response.body);
       return Customer.fromJson(customerJson);
     } else {
-      throw Exception('${customer.toJson()} failed to create customer');
+      throw Exception('${response.body} failed to create customer');
     }
   }
 
@@ -73,7 +73,7 @@ class CustomerService {
       final dynamic customerJson = jsonDecode(response.body);
       return Customer.fromJson(customerJson);
     } else {
-      throw Exception('Failed to update customer');
+      throw Exception('${response.body} Failed to update customer');
     }
   }
 
@@ -87,7 +87,7 @@ class CustomerService {
       },
     );
     if (response.statusCode != 200) {
-      throw Exception('Failed to delete customer');
+      throw Exception('${response.body} Failed to delete customer');
     }
   }
 }
