@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cma_management/model/DetailPembelian.dart';
+import 'package:cma_management/model/Suplier.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 
 class Pembelian {
@@ -7,6 +8,7 @@ class Pembelian {
   final DateTime tanggal;
   final String faktur;
   final Guid suplierID;
+  final Suplier? suplier;
   final List<DetailPembelian?>? detailPembelian;
   final String? created_at;
   final String? updated_at;
@@ -17,6 +19,7 @@ class Pembelian {
       required this.tanggal,
       required this.faktur,
       required this.suplierID,
+      this.suplier,
       this.detailPembelian,
       this.created_at,
       this.updated_at,
@@ -28,6 +31,7 @@ class Pembelian {
       tanggal: DateTime.parse(json["tanggal"]),
       faktur: json["faktur"],
       suplierID: new Guid(json["suplierID"]),
+      suplier: Suplier?.fromJson(json["suplier"]),
       detailPembelian: List<DetailPembelian>.from(
           json["detailPembelian"].map((x) => DetailPembelian.fromJson(x))),
       created_at: json["created_at"],

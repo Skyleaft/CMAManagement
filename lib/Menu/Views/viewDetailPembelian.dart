@@ -3,7 +3,6 @@ import 'package:cma_management/model/Barang.dart';
 import 'package:cma_management/model/DetailPembelian.dart';
 import 'package:cma_management/model/Pembelian.dart';
 import 'package:cma_management/model/Suplier.dart';
-import 'package:cma_management/model/Usaha.dart';
 import 'package:cma_management/services/barang_services.dart';
 import 'package:cma_management/services/detailpembelian_services.dart';
 import 'package:cma_management/services/pembelian_services.dart';
@@ -40,6 +39,8 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
   GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
+  int? totalItem;
+
   late List<Barang> _barangList;
   late Barang selectedBarang = _barangList.first;
   var barangController = TextEditingController();
@@ -57,7 +58,6 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
       hargaController.text = '${_detpembelian!.harga_beli}';
       //fakturController.text = _pembelian!.faktur;
     }
-
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
       return Dialog(
@@ -372,7 +372,7 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                   thousandSeparator: '.',
                   decimalSeparator: ',',
                   symbolAndNumberSeparator: ' ',
-                  fractionDigits: 3,
+                  fractionDigits: 0,
                 ));
             return Card(
               margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
@@ -444,114 +444,118 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
     _detailPembelianList = _detail;
     setState(() {
       _detailPembelianList = _detail;
+      totalItem = _detail.length;
     });
   }
 
   @override
   void initState() {
-    super.initState();
     futurePembelian = _initData();
+    totalItem = widget.dataPembelian.detailPembelian!.length;
+    super.initState();
   }
 
   SampleItem? selectedMenu;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.iconGray),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        centerTitle: true,
-      ),
-      resizeToAvoidBottomInset: true,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return _dialogForm(false);
-            },
+    return Builder(builder: (context) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.iconGray),
+            onPressed: () => Navigator.of(context).pop(),
           ),
-        },
-        label: const Text('Tambah Barang'),
-        icon: const Icon(Icons.add),
-        backgroundColor: AppColors.primary,
-      ),
-      body: Container(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              color: Colors.white,
-              width: double.infinity,
-              height: 80,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: Column(
-                  children: [
-                    Text(
-                      'No.Faktur : ${widget.dataPembelian.faktur}',
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline5
-                          ?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      'Jumlah pembelian : ${widget.dataPembelian.detailPembelian?.length}',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.copyWith(fontWeight: FontWeight.normal),
-                    ),
-                  ],
+          centerTitle: true,
+        ),
+        resizeToAvoidBottomInset: true,
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return _dialogForm(false);
+              },
+            ),
+          },
+          label: const Text('Tambah Barang'),
+          icon: const Icon(Icons.add),
+          backgroundColor: AppColors.primary,
+        ),
+        body: Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                color: Colors.white,
+                width: double.infinity,
+                height: 80,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Column(
+                    children: [
+                      Text(
+                        'No.Faktur : ${widget.dataPembelian.faktur}',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline5
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        'Jumlah pembelian : ${totalItem}',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(fontWeight: FontWeight.normal),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            FutureBuilder(
-              future: BarangService().getBarangs(),
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.none:
-                  case ConnectionState.waiting:
-                  case ConnectionState.active:
-                    {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  case ConnectionState.done:
-                    {
-                      _barangList = snapshot.data!;
-                      return SizedBox();
-                    }
-                }
-              },
-            ),
-            FutureBuilder(
-              future: futurePembelian,
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.none:
-                  case ConnectionState.waiting:
-                  case ConnectionState.active:
-                    {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  case ConnectionState.done:
-                    {
-                      return _buildListView(_detailPembelianList);
-                    }
-                }
-              },
-            ),
-          ],
+              FutureBuilder(
+                future: BarangService().getBarangs(),
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.none:
+                    case ConnectionState.waiting:
+                    case ConnectionState.active:
+                      {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                    case ConnectionState.done:
+                      {
+                        _barangList = snapshot.data!;
+                        return SizedBox();
+                      }
+                  }
+                },
+              ),
+              FutureBuilder(
+                future: futurePembelian,
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.none:
+                    case ConnectionState.waiting:
+                    case ConnectionState.active:
+                      {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                    case ConnectionState.done:
+                      {
+                        return _buildListView(_detailPembelianList);
+                      }
+                  }
+                },
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

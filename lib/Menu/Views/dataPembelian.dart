@@ -1,4 +1,5 @@
 import 'package:cma_management/Menu/Views/viewDetailPembelian.dart';
+import 'package:cma_management/model/DetailPembelian.dart';
 import 'package:cma_management/model/Pembelian.dart';
 import 'package:cma_management/model/Suplier.dart';
 import 'package:cma_management/model/Usaha.dart';
@@ -13,6 +14,8 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'dart:developer' as dev;
+
+import 'package:money_formatter/money_formatter.dart';
 
 class DataPembelian extends StatefulWidget {
   const DataPembelian({Key? key}) : super(key: key);
@@ -206,16 +209,20 @@ class _DataPembelianState extends State<DataPembelian> {
                                     DateTime.now().toIso8601String() + 'Z',
                                 updated_at: null,
                                 deleted_at: null);
-                            service.createPembelian(pembelian).then((value) =>
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => viewDetailPembelian(
-                                            dataPembelian: pembelian,
-                                          )),
-                                ));
+                            service
+                                .createPembelian(pembelian)
+                                .then((value) => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            viewDetailPembelian(
+                                          dataPembelian: pembelian,
+                                        ),
+                                      ),
+                                    ).then((_) {
+                                      _refreshData();
+                                    }));
                           }
-
                           _refreshData();
                           Navigator.pop(context);
                         }
@@ -271,7 +278,26 @@ class _DataPembelianState extends State<DataPembelian> {
           physics: AlwaysScrollableScrollPhysics(),
           itemCount: pembelians.length,
           itemBuilder: (context, index) {
-            Pembelian pembelian = pembelians[index];
+            Pembelian _pembelian = pembelians[index];
+            List<DetailPembelian?>? det = _pembelian.detailPembelian;
+            int? totalHarga = det
+                ?.map((e) => e?.harga_beli)
+                .reduce((value, current) => value! + current!);
+            int? totalqty = det
+                ?.map((e) => e?.qty)
+                .reduce((value, current) => value! + current!);
+            int? totalPembelian = totalHarga! * totalqty!;
+
+            MoneyFormatter fmf = new MoneyFormatter(
+                amount: double.parse(totalPembelian.toString()),
+                settings: MoneyFormatterSettings(
+                  symbol: 'Rp.',
+                  thousandSeparator: '.',
+                  decimalSeparator: ',',
+                  symbolAndNumberSeparator: ' ',
+                  fractionDigits: 0,
+                ));
+
             return Card(
               margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
               child: Padding(
@@ -279,11 +305,31 @@ class _DataPembelianState extends State<DataPembelian> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      pembelian.faktur,
-                      style: TextStyle(color: Colors.black54, fontSize: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _pembelian.faktur,
+                              style: TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                                '${DateFormat("dd-MM-yyyy").format(_pembelian.tanggal)}'),
+                            Text('${_pembelian.suplier?.nama_suplier}'),
+                            Text('${det!.length.toString()} item'),
+                          ],
+                        ),
+                        Text(
+                          '${fmf.output.symbolOnLeft}',
+                          style: TextStyle(color: Colors.black54, fontSize: 20),
+                        ),
+                      ],
                     ),
-                    Text('${pembelian.tanggal}'),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
@@ -292,7 +338,7 @@ class _DataPembelianState extends State<DataPembelian> {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
-                                return _deleteDialog(pembelian);
+                                return _deleteDialog(_pembelian);
                               },
                             )
                           },
@@ -306,7 +352,7 @@ class _DataPembelianState extends State<DataPembelian> {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
-                                return _dialogForm(true, pembelian);
+                                return _dialogForm(true, _pembelian);
                               },
                             )
                           },
@@ -317,19 +363,16 @@ class _DataPembelianState extends State<DataPembelian> {
                         ),
                         TextButton(
                           onPressed: () => {
-                            // showDialog(
-                            //   context: context,
-                            //   builder: (BuildContext context) {
-                            //     return _dialogForm(true, pembelian);
-                            //   },
-                            // )
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => viewDetailPembelian(
-                                        dataPembelian: pembelian,
-                                      )),
-                            )
+                                builder: (context) => viewDetailPembelian(
+                                  dataPembelian: _pembelian,
+                                ),
+                              ),
+                            ).then((_) {
+                              _refreshData();
+                            })
                           },
                           child: Text(
                             "Detail",
