@@ -322,32 +322,35 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
   }
 
   Widget _deleteDialog(DetailPembelian _detailBeli) {
-    return AlertDialog(
-      title: const Text('Delete Barang'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('Yakin Mau Hapus Pembelian ${_detailBeli.barangID.value}?')
+    return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+      return AlertDialog(
+        title: const Text('Delete Barang'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Yakin Mau Hapus Barang ${_detailBeli.barang!.nama_barang}?')
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              detailPembelianService
+                  .deleteDetailPembelian(_detailBeli.id.toString());
+              _refreshData();
+              Navigator.pop(context);
+            },
+            child: const Text('Yes'),
+          ),
         ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            _refreshData();
-            Navigator.pop(context);
-          },
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            // service.deletePembelian(_pembelian.id.toString());
-            // _refreshData();
-            // Navigator.pop(context);
-          },
-          child: const Text('Yes'),
-        ),
-      ],
-    );
+      );
+    });
   }
 
   Widget _buildListView(List<DetailPembelian?>? detPembelians) {
