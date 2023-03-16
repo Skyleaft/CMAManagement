@@ -45,12 +45,16 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
   var barangController = TextEditingController();
 
 //dialog form
-  Widget _dialogForm(bool isUpdate, [Pembelian? _pembelian]) {
+  Widget _dialogForm(bool isUpdate, [DetailPembelian? _detpembelian]) {
     DateTime tanggal = DateTime.now();
     var qtyController = TextEditingController();
+    var panjangController = TextEditingController();
     var hargaController = TextEditingController();
-
+    qtyController.text = '0';
     if (isUpdate) {
+      qtyController.text = '${_detpembelian!.qty}';
+      panjangController.text = '${_detpembelian!.panjang}';
+      hargaController.text = '${_detpembelian!.harga_beli}';
       //fakturController.text = _pembelian!.faktur;
     }
 
@@ -130,16 +134,56 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                     CurrencyTextInputFormatter(
                         locale: 'id', decimalDigits: 0, symbol: 'Rp. '),
                   ],
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter amount';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: panjangController,
+                  maxLength: 7,
+                  onChanged: (value) {
+                    setState(
+                      () {
+                        if (value != null && value != "") {
+                          int currentp = int.parse(value);
+                          int qty = (currentp / 100).floor();
+                          qtyController.text = qty.toString();
+                        } else {
+                          qtyController.text = '0';
+                        }
+                      },
+                    );
+                  },
+                  decoration: new InputDecoration(
+                    hintText: "Panjang/100M",
+                    labelText: "Jumlah Panjang",
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a jumlah';
+                    }
+                    return null;
+                  },
                 ),
                 TextFormField(
                   controller: qtyController,
-                  inputFormatters: [],
+                  readOnly: true,
                   maxLength: 7,
                   decoration: new InputDecoration(
                     hintText: "Jumlah",
                     labelText: "Qty",
                   ),
                   keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a jumlah';
+                    }
+                    return null;
+                  },
                 ),
                 SizedBox(height: 30),
                 Row(

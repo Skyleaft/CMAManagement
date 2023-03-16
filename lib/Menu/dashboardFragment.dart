@@ -70,14 +70,16 @@ class _DashboardFragmentState extends State<DashboardFragment> {
     final _customers = await CustomerService().getCustomers();
     final _supliers = await SuplierService().getSupliers();
     final _usahas = await UsahaService().getUsahas();
-    setState(() {
-      produks = _produk;
-      barangs = _barangs;
-      pembelians = _pembelians;
-      customers = _customers;
-      supliers = _supliers;
-      usahas = _usahas;
-    });
+    if (this.mounted) {
+      setState(() {
+        produks = _produk;
+        barangs = _barangs;
+        pembelians = _pembelians;
+        customers = _customers;
+        supliers = _supliers;
+        usahas = _usahas;
+      });
+    }
   }
 
   Future<void> _refreshData() async {
@@ -217,6 +219,7 @@ class _DashboardFragmentState extends State<DashboardFragment> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       child: Wrap(
+          alignment: WrapAlignment.start,
           direction: Axis.horizontal,
           runSpacing: 24,
           spacing: 12,
@@ -341,12 +344,6 @@ class _DashboardFragmentState extends State<DashboardFragment> {
             ),
           ]),
     );
-  }
-
-  Future<bool> getData() async {
-    await Future<dynamic>.delayed(const Duration(milliseconds: 50));
-    await initData();
-    return true;
   }
 
   @override

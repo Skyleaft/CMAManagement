@@ -52,8 +52,7 @@ class SuplierService {
       body: jsonEncode(suplier.toJson()),
     );
     if (response.statusCode == 201) {
-      final dynamic suplierJson = jsonDecode(response.body);
-      return Suplier.fromJson(suplierJson);
+      return suplier;
     } else {
       throw Exception('${suplier.toJson()} failed to create suplier');
     }
@@ -70,8 +69,7 @@ class SuplierService {
       body: jsonEncode(suplier.toJson()),
     );
     if (response.statusCode == 200) {
-      final dynamic suplierJson = jsonDecode(response.body);
-      return Suplier.fromJson(suplierJson);
+      return suplier;
     } else {
       throw Exception('Failed to update suplier');
     }

@@ -52,8 +52,7 @@ class PembelianService {
       body: jsonEncode(pembelian.toJson()),
     );
     if (response.statusCode == 201) {
-      final dynamic pembelianJson = jsonDecode(response.body);
-      return Pembelian.fromJson(pembelianJson);
+      return pembelian;
     } else {
       throw Exception('${response.body} failed to create pembelian');
     }
@@ -70,8 +69,7 @@ class PembelianService {
       body: jsonEncode(pembelian.toJson()),
     );
     if (response.statusCode == 200) {
-      final dynamic pembelianJson = jsonDecode(response.body);
-      return Pembelian.fromJson(pembelianJson);
+      return pembelian;
     } else {
       throw Exception('${response.body} Failed to update pembelian');
     }

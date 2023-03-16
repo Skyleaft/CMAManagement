@@ -4,7 +4,6 @@ import 'dart:developer' as dev;
 
 class CardButton extends StatelessWidget {
   final String titleTxt;
-  final String subTxt;
   final VoidCallback? onTap;
   final IconData icon;
   final AnimationController? animationController;
@@ -13,7 +12,6 @@ class CardButton extends StatelessWidget {
   const CardButton(
       {Key? key,
       this.titleTxt: "",
-      this.subTxt: "",
       this.onTap,
       this.icon: Icons.storage,
       this.animationController,
@@ -33,26 +31,24 @@ class CardButton extends StatelessWidget {
             child: Container(
               child: Column(
                 children: <Widget>[
-                  Material(
-                    color: Colors.grey,
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                    elevation: 6,
+                  Card(
+                    color: Colors.white,
+                    elevation: 10,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
                     shadowColor: Colors.grey,
                     child: InkWell(
-                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
                       onTap: onTap,
                       child: Container(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 28, vertical: 12),
+                            EdgeInsets.symmetric(horizontal: 28, vertical: 22),
                         child: Column(children: [
                           Icon(
                             icon,
-                            color: Colors.white,
-                            size: 28,
-                          ),
-                          Text(
-                            subTxt,
-                            style: TextStyle(color: Colors.white, fontSize: 16),
+                            color: Colors.deepOrange,
+                            size: 42,
                           ),
                         ]),
                       ),
@@ -63,7 +59,7 @@ class CardButton extends StatelessWidget {
                   ),
                   Text(
                     titleTxt,
-                    style: CMATheme.caption,
+                    style: TextStyle(fontSize: 14, color: Colors.deepOrange),
                   ),
                 ],
               ),

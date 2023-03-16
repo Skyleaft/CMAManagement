@@ -12,6 +12,7 @@ import 'package:flutter_guid/flutter_guid.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'dart:developer' as dev;
 
 class DataPembelian extends StatefulWidget {
   const DataPembelian({Key? key}) : super(key: key);
@@ -30,7 +31,6 @@ class _DataPembelianState extends State<DataPembelian> {
   GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
   Future<List<Suplier>> supliers = SuplierService().getSupliers();
-  Suplier? currentSuplier;
 
 //dialog form
   Widget _dialogForm(bool isUpdate, [Pembelian? _pembelian]) {
@@ -38,15 +38,17 @@ class _DataPembelianState extends State<DataPembelian> {
     DateTime tanggal = DateTime.now();
     var tanggalController = TextEditingController();
     tanggalController.text = DateFormat.yMMMEd().format(tanggal);
+    Suplier? currentSuplier;
 
     if (isUpdate) {
       fakturController.text = _pembelian!.faktur;
+      tanggal = _pembelian.tanggal;
+      tanggalController.text = _pembelian.tanggal.toString();
     }
 
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
       return Dialog(
-        //title: isUpdate ? const Text('Ubah Data') : const Text('Pembelian Baru'),
         insetPadding: EdgeInsets.all(15),
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
@@ -80,8 +82,14 @@ class _DataPembelianState extends State<DataPembelian> {
                           case ConnectionState.done:
                             {
                               List<Suplier>? _suplier = snapshot.data;
+                              if (isUpdate) {
+                                currentSuplier = _suplier!
+                                    .where((element) =>
+                                        element.id == _pembelian?.suplierID)
+                                    .first;
+                              }
                               return DropdownButton<Suplier>(
-                                value: currentSuplier ?? _suplier![0],
+                                value: currentSuplier ??= _suplier!.first,
                                 icon: const Icon(Icons.keyboard_arrow_down),
                                 // Array list of items
                                 items: _suplier?.map<DropdownMenuItem<Suplier>>(
@@ -95,7 +103,7 @@ class _DataPembelianState extends State<DataPembelian> {
                                 // change button value to selected value
                                 onChanged: (Suplier? newValue) {
                                   setState(() {
-                                    currentSuplier = newValue;
+                                    currentSuplier = newValue!;
                                   });
                                 },
                               );
@@ -198,7 +206,14 @@ class _DataPembelianState extends State<DataPembelian> {
                                     DateTime.now().toIso8601String() + 'Z',
                                 updated_at: null,
                                 deleted_at: null);
-                            service.createPembelian(pembelian);
+                            service.createPembelian(pembelian).then((value) =>
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => viewDetailPembelian(
+                                            dataPembelian: pembelian,
+                                          )),
+                                ));
                           }
 
                           _refreshData();

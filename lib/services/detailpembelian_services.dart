@@ -93,8 +93,7 @@ class DetailPembelianService {
       body: jsonEncode(detailPembelian.toJson()),
     );
     if (response.statusCode == 200) {
-      final dynamic detailPembelianJson = jsonDecode(response.body);
-      return DetailPembelian.fromJson(detailPembelianJson);
+      return detailPembelian;
     } else {
       throw Exception('${response.body} Failed to update detailPembelian');
     }

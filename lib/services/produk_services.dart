@@ -52,8 +52,7 @@ class ProdukService {
       body: jsonEncode(produk.toJson()),
     );
     if (response.statusCode == 201) {
-      final dynamic produkJson = jsonDecode(response.body);
-      return Produk.fromJson(produkJson);
+      return produk;
     } else {
       throw Exception('${response.body} failed to create produk');
     }
@@ -70,8 +69,7 @@ class ProdukService {
       body: jsonEncode(produk.toJson()),
     );
     if (response.statusCode == 200) {
-      final dynamic produkJson = jsonDecode(response.body);
-      return Produk.fromJson(produkJson);
+      return produk;
     } else {
       throw Exception('Failed to update produk');
     }

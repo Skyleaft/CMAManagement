@@ -5,6 +5,8 @@ import 'package:cma_management/Menu/Views/dataPembelian.dart';
 import 'package:cma_management/Menu/Views/dataProduk.dart';
 import 'package:cma_management/Menu/Views/dataSuplier.dart';
 import 'package:cma_management/Menu/Views/dataUsaha.dart';
+import 'package:cma_management/Menu/component/cardButton.dart';
+import 'package:cma_management/Menu/component/title_view.dart';
 import 'package:cma_management/styles/colors.dart';
 import 'package:cma_management/styles/styles.dart';
 import 'package:cma_management/styles/themes.dart';
@@ -57,10 +59,230 @@ class _DataFragmentState extends State<DataFragment> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Stack(
+      child: Column(
         children: [
-          Content(),
           getAppBarUI(),
+          Content(),
+        ],
+      ),
+    );
+  }
+
+  Widget SettingsManager() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      child: Wrap(
+        alignment: WrapAlignment.start,
+        direction: Axis.horizontal,
+        spacing: 16,
+        runSpacing: 22,
+        children: [
+          CardButton(
+            titleTxt: "Account Manager",
+            icon: Icons.account_box_rounded,
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DataBarang()),
+              ),
+            },
+            animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                CurvedAnimation(
+                    parent: widget.animationController!,
+                    curve: Interval((1 / 3) * 2, 1.0,
+                        curve: Curves.fastOutSlowIn))),
+            animationController: widget.animationController,
+          ),
+          CardButton(
+            titleTxt: "Setting",
+            icon: Icons.settings,
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DataBarang()),
+              ),
+            },
+            animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                CurvedAnimation(
+                    parent: widget.animationController!,
+                    curve: Interval((1 / 3) * 2, 1.0,
+                        curve: Curves.fastOutSlowIn))),
+            animationController: widget.animationController,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget Transaksi() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      child: Wrap(
+          alignment: WrapAlignment.start,
+          direction: Axis.horizontal,
+          spacing: 16,
+          runSpacing: 22,
+          children: [
+            CardButton(
+              titleTxt: "Barang",
+              icon: Icons.inventory,
+              onTap: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const DataBarang()),
+                ),
+              },
+              animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                  CurvedAnimation(
+                      parent: widget.animationController!,
+                      curve: Interval((1 / 4) * 2, 1.0,
+                          curve: Curves.fastOutSlowIn))),
+              animationController: widget.animationController,
+            ),
+            CardButton(
+              titleTxt: "Pembelian",
+              icon: Icons.receipt,
+              onTap: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const DataPembelian()),
+                ),
+              },
+              animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                  CurvedAnimation(
+                      parent: widget.animationController!,
+                      curve: Interval((1 / 4) * 2, 1.0,
+                          curve: Curves.fastOutSlowIn))),
+              animationController: widget.animationController,
+            ),
+            CardButton(
+              titleTxt: "Penjualan",
+              icon: Icons.receipt,
+              onTap: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const DataPembelian()),
+                ),
+              },
+              animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                  CurvedAnimation(
+                      parent: widget.animationController!,
+                      curve: Interval((1 / 4) * 2, 1.0,
+                          curve: Curves.fastOutSlowIn))),
+              animationController: widget.animationController,
+            ),
+            CardButton(
+              titleTxt: "Pembayaran",
+              icon: Icons.receipt,
+              onTap: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const DataPembelian()),
+                ),
+              },
+              animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                  CurvedAnimation(
+                      parent: widget.animationController!,
+                      curve: Interval((1 / 4) * 2, 1.0,
+                          curve: Curves.fastOutSlowIn))),
+              animationController: widget.animationController,
+            ),
+          ]),
+    );
+  }
+
+  Widget MasterData() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      child: Wrap(
+        alignment: WrapAlignment.start,
+        direction: Axis.horizontal,
+        spacing: 16,
+        runSpacing: 22,
+        children: [
+          CardButton(
+            titleTxt: "Usaha",
+            icon: Icons.store_mall_directory,
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DataUsaha()),
+              ),
+            },
+            animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                CurvedAnimation(
+                    parent: widget.animationController!,
+                    curve: Interval((1 / 6) * 2, 1.0,
+                        curve: Curves.fastOutSlowIn))),
+            animationController: widget.animationController,
+          ),
+          CardButton(
+            titleTxt: "Speksifikasi",
+            icon: Icons.tune,
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DataMSpek()),
+              ),
+            },
+            animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                CurvedAnimation(
+                    parent: widget.animationController!,
+                    curve: Interval((1 / 6) * 2, 1.0,
+                        curve: Curves.fastOutSlowIn))),
+            animationController: widget.animationController,
+          ),
+          CardButton(
+            titleTxt: "Produk",
+            icon: Icons.conveyor_belt,
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DataProduk()),
+              ),
+            },
+            animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                CurvedAnimation(
+                    parent: widget.animationController!,
+                    curve: Interval((1 / 6) * 2, 1.0,
+                        curve: Curves.fastOutSlowIn))),
+            animationController: widget.animationController,
+          ),
+          CardButton(
+            titleTxt: "Customer",
+            icon: Icons.diversity_1,
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DataCustomer()),
+              ),
+            },
+            animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                CurvedAnimation(
+                    parent: widget.animationController!,
+                    curve: Interval((1 / 6) * 2, 1.0,
+                        curve: Curves.fastOutSlowIn))),
+            animationController: widget.animationController,
+          ),
+          CardButton(
+            titleTxt: "Suplier",
+            icon: Icons.local_shipping,
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DataSuplier()),
+              ),
+            },
+            animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                CurvedAnimation(
+                    parent: widget.animationController!,
+                    curve: Interval((1 / 6) * 2, 1.0,
+                        curve: Curves.fastOutSlowIn))),
+            animationController: widget.animationController,
+          ),
         ],
       ),
     );
@@ -71,271 +293,42 @@ class _DataFragmentState extends State<DataFragment> {
       child: ListView(
         controller: scrollController,
         padding: EdgeInsets.only(
-          top: AppBar().preferredSize.height +
-              MediaQuery.of(context).padding.top +
-              24,
           bottom: 100 + MediaQuery.of(context).padding.bottom,
         ),
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 20, top: 80),
-            child: PrimaryText(
-              text: 'Master Data',
-              size: 26,
-              fontWeight: FontWeight.w800,
-            ),
+          TitleView(
+            titleTxt: 'Master Data',
+            subTxt: 'Details',
+            animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                CurvedAnimation(
+                    parent: widget.animationController!,
+                    curve: Interval((1 / 9) * 0, 1.0,
+                        curve: Curves.fastOutSlowIn))),
+            animationController: widget.animationController!,
           ),
-          Container(
-            height: 300,
-            child: GridView.count(
-              physics: NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.all(20),
-              crossAxisCount: 3,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              children: [
-                SizedBox(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: AppColors.primary, // Background color
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const DataUsaha()),
-                      );
-                    },
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.add_business,
-                            size: 36,
-                          ),
-                          Text('Usaha'),
-                        ]),
-                  ),
-                ),
-                SizedBox(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: AppColors.primary, // Background color
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const DataMSpek()),
-                      );
-                    },
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.tune,
-                            size: 36,
-                          ),
-                          Text('Speksifikasi'),
-                        ]),
-                  ),
-                ),
-                SizedBox(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: AppColors.primary, // Background color
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const DataProduk()),
-                      );
-                    },
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.inventory_2,
-                            size: 36,
-                          ),
-                          Text('Produk'),
-                        ]),
-                  ),
-                ),
-                SizedBox(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: AppColors.primary, // Background color
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const DataCustomer()),
-                      );
-                    },
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.support_agent,
-                            size: 36,
-                          ),
-                          Text('Customer'),
-                        ]),
-                  ),
-                ),
-                SizedBox(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: AppColors.primary, // Background color
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const DataSuplier()),
-                      );
-                    },
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.shelves,
-                            size: 36,
-                          ),
-                          Text('Suplier'),
-                        ]),
-                  ),
-                ),
-              ],
-            ),
+          MasterData(),
+          TitleView(
+            titleTxt: 'Transaksi',
+            subTxt: 'Details',
+            animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                CurvedAnimation(
+                    parent: widget.animationController!,
+                    curve: Interval((1 / 9) * 0, 1.0,
+                        curve: Curves.fastOutSlowIn))),
+            animationController: widget.animationController!,
           ),
-          SizedBox(
-            height: 100,
+          Transaksi(),
+          TitleView(
+            titleTxt: 'App Setting',
+            subTxt: 'Details',
+            animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                CurvedAnimation(
+                    parent: widget.animationController!,
+                    curve: Interval((1 / 9) * 0, 1.0,
+                        curve: Curves.fastOutSlowIn))),
+            animationController: widget.animationController!,
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 20, top: 20),
-            child: PrimaryText(
-              text: 'Transaksi',
-              size: 26,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          Container(
-            height: 300,
-            child: GridView.count(
-              padding: EdgeInsets.all(20),
-              physics: NeverScrollableScrollPhysics(),
-              crossAxisCount: 3,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              children: [
-                SizedBox(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: AppColors.primary, // Background color
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const DataBarang()),
-                      );
-                    },
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.add_business,
-                            size: 36,
-                          ),
-                          Text('Barang'),
-                        ]),
-                  ),
-                ),
-                SizedBox(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: AppColors.primary, // Background color
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const DataPembelian()),
-                      );
-                    },
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.add_business,
-                            size: 36,
-                          ),
-                          Text('Pembelian'),
-                        ]),
-                  ),
-                ),
-                SizedBox(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: AppColors.primary, // Background color
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const DataUsaha()),
-                      );
-                    },
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.add_business,
-                            size: 36,
-                          ),
-                          Text('Penjualan'),
-                        ]),
-                  ),
-                ),
-                SizedBox(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: AppColors.primary, // Background color
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const DataUsaha()),
-                      );
-                    },
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.add_business,
-                            size: 36,
-                          ),
-                          Text('Pembayaran'),
-                        ]),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          SettingsManager(),
         ],
       ),
     );

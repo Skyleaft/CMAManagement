@@ -69,8 +69,7 @@ class MSpekService {
       body: jsonEncode(M_spek.toJson()),
     );
     if (response.statusCode == 200) {
-      final dynamic M_spekJson = jsonDecode(response.body);
-      return MSpek.fromJson(M_spekJson);
+      return M_spek;
     } else {
       throw Exception('Failed to update M_spek');
     }

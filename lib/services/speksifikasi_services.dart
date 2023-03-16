@@ -55,8 +55,7 @@ class SpeksifikasiService {
       body: jsonEncode(speksifikasi.toJson()),
     );
     if (response.statusCode == 201) {
-      final dynamic speksifikasiJson = jsonDecode(response.body);
-      return Speksifikasi.fromJson(speksifikasiJson);
+      return speksifikasi;
     } else {
       throw Exception('${response.body} failed to create speksifikasi');
     }
@@ -74,8 +73,7 @@ class SpeksifikasiService {
       body: jsonEncode(speksifikasi.toJson()),
     );
     if (response.statusCode == 200) {
-      final dynamic speksifikasiJson = jsonDecode(response.body);
-      return Speksifikasi.fromJson(speksifikasiJson);
+      return speksifikasi;
     } else {
       throw Exception('Failed to update speksifikasi');
     }
