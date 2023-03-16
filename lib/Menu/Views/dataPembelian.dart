@@ -1,7 +1,9 @@
 import 'package:cma_management/Menu/Views/viewDetailPembelian.dart';
 import 'package:cma_management/model/Pembelian.dart';
+import 'package:cma_management/model/Suplier.dart';
 import 'package:cma_management/model/Usaha.dart';
 import 'package:cma_management/services/pembelian_services.dart';
+import 'package:cma_management/services/suplier_services.dart';
 import 'package:cma_management/styles/colors.dart';
 import 'package:cma_management/styles/styles.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +29,8 @@ class _DataPembelianState extends State<DataPembelian> {
   final _formKey = GlobalKey<FormState>();
   GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
+  Future<List<Suplier>> supliers = SuplierService().getSupliers();
+  Suplier? currentSuplier;
 
 //dialog form
   Widget _dialogForm(bool isUpdate, [Pembelian? _pembelian]) {
@@ -58,6 +62,49 @@ class _DataPembelianState extends State<DataPembelian> {
                   fontWeight: FontWeight.w800,
                 ),
                 SizedBox(height: 20),
+                Row(
+                  children: [
+                    Text("Supplier : "),
+                    FutureBuilder(
+                      future: supliers,
+                      builder: (context, snapshot) {
+                        switch (snapshot.connectionState) {
+                          case ConnectionState.none:
+                          case ConnectionState.waiting:
+                          case ConnectionState.active:
+                            {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                          case ConnectionState.done:
+                            {
+                              List<Suplier>? _suplier = snapshot.data;
+                              return DropdownButton<Suplier>(
+                                value: currentSuplier ?? _suplier![0],
+                                icon: const Icon(Icons.keyboard_arrow_down),
+                                // Array list of items
+                                items: _suplier?.map<DropdownMenuItem<Suplier>>(
+                                    (Suplier items) {
+                                  return DropdownMenuItem(
+                                    value: items,
+                                    child: Text(items.nama_suplier),
+                                  );
+                                }).toList(),
+                                // After selecting the desired option,it will
+                                // change button value to selected value
+                                onChanged: (Suplier? newValue) {
+                                  setState(() {
+                                    currentSuplier = newValue;
+                                  });
+                                },
+                              );
+                            }
+                        }
+                      },
+                    ),
+                  ],
+                ),
                 TextFormField(
                   controller: fakturController,
                   decoration: new InputDecoration(
@@ -134,6 +181,7 @@ class _DataPembelianState extends State<DataPembelian> {
                                 id: _pembelian!.id,
                                 faktur: fakturController.text,
                                 tanggal: tanggal,
+                                suplierID: currentSuplier!.id,
                                 created_at: _pembelian.created_at,
                                 updated_at:
                                     DateTime.now().toIso8601String() + 'Z',
@@ -145,6 +193,7 @@ class _DataPembelianState extends State<DataPembelian> {
                                 id: Guid.generate(),
                                 faktur: fakturController.text,
                                 tanggal: tanggal,
+                                suplierID: currentSuplier!.id,
                                 created_at:
                                     DateTime.now().toIso8601String() + 'Z',
                                 updated_at: null,
@@ -235,6 +284,20 @@ class _DataPembelianState extends State<DataPembelian> {
                           child: Text(
                             "Delete",
                             style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return _dialogForm(true, pembelian);
+                              },
+                            )
+                          },
+                          child: Text(
+                            "Edit",
+                            style: TextStyle(color: AppColors.primary),
                           ),
                         ),
                         TextButton(

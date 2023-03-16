@@ -5,7 +5,7 @@ import 'package:flutter_guid/flutter_guid.dart';
 class Barang {
   final Guid id;
   final Guid produkID;
-  final Guid suplierID;
+
   final List<Speksifikasi?>? speksifikasi;
   final String nama_barang;
   final DateTime? created_at;
@@ -15,7 +15,6 @@ class Barang {
   const Barang(
       {required this.id,
       required this.produkID,
-      required this.suplierID,
       required this.nama_barang,
       this.speksifikasi,
       this.created_at,
@@ -26,7 +25,6 @@ class Barang {
     return Barang(
       id: new Guid(json["id"]),
       produkID: new Guid(json["produkID"]),
-      suplierID: new Guid(json["suplierID"]),
       nama_barang: json["nama_barang"],
       speksifikasi: List<Speksifikasi?>.from(
           json["speksifikasi"].map((x) => Speksifikasi?.fromJson(x))),
@@ -40,7 +38,6 @@ class Barang {
     return {
       "id": id.value,
       "produkID": produkID.value,
-      "suplierID": suplierID.value,
       "nama_barang": nama_barang,
       "created_at": created_at?.toUtc().toIso8601String(),
       "updated_at": updated_at?.toUtc().toIso8601String(),

@@ -9,6 +9,7 @@ class DetailPembelian {
   final Guid pembelianID;
   final int qty;
   final int harga_beli;
+  final int? panjang;
   final Barang? barang;
   final DateTime? created_at;
   final DateTime? updated_at;
@@ -20,6 +21,7 @@ class DetailPembelian {
       required this.pembelianID,
       required this.qty,
       required this.harga_beli,
+      this.panjang,
       this.barang,
       this.created_at,
       this.updated_at,
@@ -32,6 +34,7 @@ class DetailPembelian {
       pembelianID: new Guid(json["pembelianID"]),
       qty: json["qty"],
       harga_beli: json["harga_beli"],
+      panjang: json["panjang"],
       barang: Barang?.fromJson(json["barang"]),
       created_at: DateTime.tryParse(json["created_at"].toString()),
       updated_at: DateTime.tryParse(json["updated_at"].toString()),
@@ -46,6 +49,7 @@ class DetailPembelian {
       "pembelianID": pembelianID.value,
       "qty": qty,
       "harga_beli": harga_beli,
+      "panjang": panjang,
       "created_at": created_at?.toUtc().toIso8601String(),
       "updated_at": updated_at?.toUtc().toIso8601String(),
       "deleted_at": deleted_at?.toUtc().toIso8601String(),

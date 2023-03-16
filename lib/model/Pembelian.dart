@@ -6,6 +6,7 @@ class Pembelian {
   final Guid id;
   final DateTime tanggal;
   final String faktur;
+  final Guid suplierID;
   final List<DetailPembelian?>? detailPembelian;
   final String? created_at;
   final String? updated_at;
@@ -15,6 +16,7 @@ class Pembelian {
       {required this.id,
       required this.tanggal,
       required this.faktur,
+      required this.suplierID,
       this.detailPembelian,
       this.created_at,
       this.updated_at,
@@ -25,6 +27,7 @@ class Pembelian {
       id: new Guid(json["id"]),
       tanggal: DateTime.parse(json["tanggal"]),
       faktur: json["faktur"],
+      suplierID: new Guid(json["suplierID"]),
       detailPembelian: List<DetailPembelian>.from(
           json["detailPembelian"].map((x) => DetailPembelian.fromJson(x))),
       created_at: json["created_at"],
@@ -38,6 +41,7 @@ class Pembelian {
       "id": id.value,
       "tanggal": tanggal.toUtc().toIso8601String(),
       "faktur": faktur,
+      "suplierID": suplierID.value,
       "created_at": created_at,
       "updated_at": updated_at,
       "deleted_at": deleted_at

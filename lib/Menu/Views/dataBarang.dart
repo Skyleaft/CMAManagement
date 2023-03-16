@@ -229,7 +229,6 @@ class _DataBarangState extends State<DataBarang> {
                   final barangToUpdate = Barang(
                       id: _barang!.id,
                       produkID: currentProduk!.id,
-                      suplierID: currentSuplier!.id,
                       nama_barang: namaController.text,
                       created_at: _barang.created_at,
                       updated_at: DateTime.now(),
@@ -257,7 +256,6 @@ class _DataBarangState extends State<DataBarang> {
                   final barang = Barang(
                       id: currentID,
                       produkID: currentProduk!.id,
-                      suplierID: Guid('e4b36887-ab66-4f8f-9640-14eb94ddadc8'),
                       nama_barang:
                           '${currentProduk?.nama_produk} ${namaController.text}',
                       speksifikasi: listSpek,
