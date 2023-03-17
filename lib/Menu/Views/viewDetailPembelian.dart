@@ -2,10 +2,12 @@ import 'package:cma_management/Menu/Views/dataPembelian.dart';
 import 'package:cma_management/model/Barang.dart';
 import 'package:cma_management/model/DetailPembelian.dart';
 import 'package:cma_management/model/Pembelian.dart';
+import 'package:cma_management/model/Stok.dart';
 import 'package:cma_management/model/Suplier.dart';
 import 'package:cma_management/services/barang_services.dart';
 import 'package:cma_management/services/detailpembelian_services.dart';
 import 'package:cma_management/services/pembelian_services.dart';
+import 'package:cma_management/services/stok_services.dart';
 import 'package:cma_management/services/suplier_services.dart';
 import 'package:cma_management/styles/colors.dart';
 import 'package:cma_management/styles/styles.dart';
@@ -17,6 +19,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:money_formatter/money_formatter.dart';
+import 'dart:developer' as dev;
 
 class viewDetailPembelian extends StatefulWidget {
   const viewDetailPembelian({Key? key, required this.dataPembelian})
@@ -216,11 +219,39 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                               pembelianID: widget.dataPembelian.id,
                               harga_beli: int.parse(hargaController.text
                                   .replaceAll(RegExp(r'[^0-9]'), '')),
+                              panjang: int.parse(panjangController.text),
                               qty: int.parse(qtyController.text),
                             );
                             detailPembelianService
                                 .createDetailPembelian(detPembelian);
-                            //service.createPembelian(pembelian);
+                            Stok? currentStok = await StokService()
+                                .getStokByBarang(selectedBarang.id.value);
+                            if (currentStok == null) {
+                              Stok newStok = Stok(
+                                  id: Guid.generate(),
+                                  barangID: selectedBarang.id,
+                                  panjang: int.parse(panjangController.text),
+                                  jumlah: int.parse(qtyController.text),
+                                  created_at: DateTime.now());
+                              await StokService().createStok(newStok);
+                            } else {
+                              int curentPanjang = currentStok.panjang;
+                              curentPanjang +=
+                                  int.parse(panjangController.text);
+                              int currentQty = currentStok.jumlah;
+                              currentQty = (curentPanjang / 100).floor();
+                              dev.log('currentstok ada ${currentQty}');
+
+                              Stok newStok = Stok(
+                                  id: currentStok.id,
+                                  barangID: selectedBarang.id,
+                                  panjang: curentPanjang,
+                                  jumlah: currentQty,
+                                  updated_at: DateTime.now());
+                              await StokService()
+                                  .updateStok(newStok.id.value, newStok);
+                              dev.log('stok ada ${newStok.jumlah}');
+                            }
                           }
 
                           _refreshData();
@@ -341,6 +372,18 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
           ),
           ElevatedButton(
             onPressed: () async {
+              Stok? currentStok = await StokService()
+                  .getStokByBarang(_detailBeli.barangID.value);
+              int curentPanjang = currentStok!.panjang;
+              curentPanjang -= _detailBeli.panjang!;
+              int currentQty = (curentPanjang / 100).floor();
+              Stok stokToUpdate = Stok(
+                id: currentStok.id,
+                barangID: _detailBeli.barangID,
+                panjang: curentPanjang,
+                jumlah: currentQty,
+              );
+              StokService().updateStok(currentStok.id.value, stokToUpdate);
               detailPembelianService
                   .deleteDetailPembelian(_detailBeli.id.toString());
               _refreshData();
@@ -442,6 +485,7 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
     final List<DetailPembelian> _detail = await detailPembelianService
         .getByPembelian(widget.dataPembelian.id.value);
     _detailPembelianList = _detail;
+
     setState(() {
       _detailPembelianList = _detail;
       totalItem = _detail.length;
@@ -451,7 +495,12 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
   @override
   void initState() {
     futurePembelian = _initData();
-    totalItem = widget.dataPembelian.detailPembelian!.length;
+    if (widget.dataPembelian.detailPembelian == null) {
+      totalItem = 0;
+    } else {
+      totalItem = widget.dataPembelian.detailPembelian!.length;
+    }
+
     super.initState();
   }
 

@@ -4,9 +4,11 @@ import 'package:cma_management/services/customer_services.dart';
 import 'package:cma_management/styles/colors.dart';
 import 'package:cma_management/styles/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/phone_number.dart';
 
 class DataCustomer extends StatefulWidget {
   const DataCustomer({Key? key}) : super(key: key);
@@ -30,6 +32,7 @@ class _DataCustomerState extends State<DataCustomer> {
     final namaController = TextEditingController();
     final alamatController = TextEditingController();
     final notelpController = TextEditingController();
+    String nohp = '';
 
     if (isUpdate) {
       namaController.text = _customer!.nama_customer;
@@ -61,7 +64,10 @@ class _DataCustomerState extends State<DataCustomer> {
                   decoration: new InputDecoration(
                       hintText: "Masukan Nama Customer",
                       labelText: "Nama Customer",
-                      icon: Icon(Icons.people)),
+                      icon: Icon(Icons.people),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(),
+                      )),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a name';
@@ -69,12 +75,21 @@ class _DataCustomerState extends State<DataCustomer> {
                     return null;
                   },
                 ),
+                SizedBox(
+                  height: 15,
+                ),
                 TextFormField(
                   controller: alamatController,
                   decoration: new InputDecoration(
                       hintText: "Masukan Alamat",
                       labelText: "Alamat",
-                      icon: Icon(Icons.people)),
+                      icon: Icon(Icons.people),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(),
+                      )),
+                ),
+                SizedBox(
+                  height: 15,
                 ),
                 IntlPhoneField(
                   decoration: InputDecoration(
@@ -83,10 +98,17 @@ class _DataCustomerState extends State<DataCustomer> {
                       borderSide: BorderSide(),
                     ),
                   ),
+                  keyboardType: TextInputType.number,
+                  disableLengthCheck: true,
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(13),
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  ],
+                  initialValue: nohp,
                   controller: notelpController,
                   initialCountryCode: 'ID',
                   onChanged: (phone) {
-                    print(phone.completeNumber);
+                    nohp = phone.completeNumber;
                   },
                 ),
                 Row(

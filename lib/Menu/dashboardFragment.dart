@@ -314,6 +314,23 @@ class _DashboardFragmentState extends State<DashboardFragment> {
               animationController: widget.animationController,
             ),
             TileCard(
+              titleTxt: "Stok",
+              subTxt: '${barangs.length.toString()}',
+              color: Colors.deepOrange.shade600,
+              onTap: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const DataBarang()),
+                )
+              },
+              animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                  CurvedAnimation(
+                      parent: widget.animationController!,
+                      curve: Interval((1 / count) * 2, 1.0,
+                          curve: Curves.fastOutSlowIn))),
+              animationController: widget.animationController,
+            ),
+            TileCard(
               titleTxt: "Total Pembelian",
               subTxt: '${pembelians.length.toString()}',
               color: Colors.deepOrange.shade500,

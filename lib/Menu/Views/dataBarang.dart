@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:cma_management/model/Barang.dart';
 import 'package:cma_management/model/Produk.dart';
 import 'package:cma_management/model/Speksifikasi.dart';
@@ -11,6 +9,7 @@ import 'package:cma_management/services/speksifikasi_services.dart';
 import 'package:cma_management/services/suplier_services.dart';
 import 'package:cma_management/services/usaha_services.dart';
 import 'package:cma_management/styles/colors.dart';
+import 'package:cma_management/styles/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_guid/flutter_guid.dart';
@@ -82,6 +81,11 @@ class _DataBarangState extends State<DataBarang> {
 
     if (isUpdate) {
       namaController.text = _barang!.nama_barang;
+      currentColor = Color(int.parse(_barang.speksifikasi!
+          .where((element) =>
+              element!.mspekID == "9fe65b33-762d-440e-b053-842feea58c20")
+          .first!
+          .value));
     }
 
     return StatefulBuilder(
@@ -93,90 +97,56 @@ class _DataBarangState extends State<DataBarang> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              FutureBuilder(
-                future: produks,
-                builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                    case ConnectionState.waiting:
-                    case ConnectionState.active:
-                      {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                    case ConnectionState.done:
-                      {
-                        List<Produk>? _produk = snapshot.data;
-                        var result = _produk
-                            ?.where((item) =>
-                                item.usahaID ==
-                                Guid('e44c46b9-fe04-4b14-a27a-f07824034079'))
-                            .toList();
-                        currentProduk = result?.elementAt(0);
-                        return DropdownButton<Produk?>(
-                          value: currentProduk ?? result![0],
-                          icon: const Icon(Icons.keyboard_arrow_down),
-                          // Array list of items
-                          items: result
-                              ?.map<DropdownMenuItem<Produk>>((Produk items) {
-                            return DropdownMenuItem(
-                              value: items,
-                              child: Text(items.nama_produk),
+              Row(
+                children: [
+                  Text("Produk : "),
+                  FutureBuilder(
+                    future: produks,
+                    builder: (context, snapshot) {
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.none:
+                        case ConnectionState.waiting:
+                        case ConnectionState.active:
+                          {
+                            return Center(
+                              child: CircularProgressIndicator(),
                             );
-                          }).toList(),
-                          // After selecting the desired option,it will
-                          // change button value to selected value
-                          onChanged: (Produk? newValue) {
-                            setState(() {
-                              currentProduk = newValue;
-                            });
-                          },
-                        );
+                          }
+                        case ConnectionState.done:
+                          {
+                            List<Produk>? _produk = snapshot.data;
+                            var result = _produk
+                                ?.where((item) =>
+                                    item.usahaID ==
+                                    Guid(
+                                        'e44c46b9-fe04-4b14-a27a-f07824034079'))
+                                .toList();
+                            return DropdownButton<Produk?>(
+                              value: currentProduk ??= result![0],
+                              icon: const Icon(Icons.keyboard_arrow_down),
+                              // Array list of items
+                              items: result?.map<DropdownMenuItem<Produk>>(
+                                  (Produk items) {
+                                return DropdownMenuItem(
+                                  value: items,
+                                  child: Text(items.nama_produk),
+                                );
+                              }).toList(),
+                              onChanged: (Produk? newValue) {
+                                setState(() {
+                                  currentProduk = newValue;
+                                });
+                              },
+                            );
+                          }
                       }
-                  }
-                },
+                    },
+                  ),
+                ],
               ),
-              // FutureBuilder(
-              //   future: supliers,
-              //   builder: (context, snapshot) {
-              //     switch (snapshot.connectionState) {
-              //       case ConnectionState.none:
-              //       case ConnectionState.waiting:
-              //       case ConnectionState.active:
-              //         {
-              //           return Center(
-              //             child: CircularProgressIndicator(),
-              //           );
-              //         }
-              //       case ConnectionState.done:
-              //         {
-              //           List<Suplier>? _suplier = snapshot.data;
-              //           return DropdownButton<Suplier>(
-              //             value: currentSuplier ?? _suplier![0],
-              //             icon: const Icon(Icons.keyboard_arrow_down),
-              //             // Array list of items
-              //             items: _suplier
-              //                 ?.map<DropdownMenuItem<Suplier>>((Suplier items) {
-              //               return DropdownMenuItem(
-              //                 value: items,
-              //                 child: Text(items.nama_suplier),
-              //               );
-              //             }).toList(),
-              //             // After selecting the desired option,it will
-              //             // change button value to selected value
-              //             onChanged: (Suplier? newValue) {
-              //               setState(() {
-              //                 currentSuplier = newValue;
-              //               });
-              //             },
-              //           );
-              //         }
-              //     }
-              //   },
-              // ),
               TextFormField(
                 controller: namaController,
+                maxLength: 25,
                 decoration: new InputDecoration(
                     hintText: "Masukan Warna",
                     labelText: "Nama Warna",
@@ -188,19 +158,26 @@ class _DataBarangState extends State<DataBarang> {
                   return null;
                 },
               ),
-              Row(children: [
+              SizedBox(
+                height: 20,
+              ),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 SizedBox(
                   width: 50,
                   height: 50,
                   child: Container(
-                    color: currentColor,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: currentColor),
                   ),
                 ),
                 SizedBox(
                   width: 20,
                 ),
-                ElevatedButton(
-                  child: const Text('Pick'),
+                TextButton(
+                  child: Row(
+                    children: [Icon(Icons.palette), Text('Pick')],
+                  ),
                   onPressed: () {
                     showDialog(
                       context: context,
@@ -311,10 +288,14 @@ class _DataBarangState extends State<DataBarang> {
         .first!;
 
     return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(12.0),
@@ -325,46 +306,56 @@ class _DataBarangState extends State<DataBarang> {
                     _barang.nama_barang,
                     style: TextStyle(color: Colors.black54, fontSize: 16),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      TextButton(
-                        onPressed: () => {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return _deleteDialog(_barang);
-                            },
-                          )
-                        },
-                        child: Text(
-                          "Delete",
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () => {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return _dialogForm(true, _barang);
-                            },
-                          )
-                        },
-                        child: Text(
-                          "Edit",
-                          style: TextStyle(color: AppColors.primary),
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                SizedBox(
+                  width: 5,
+                ),
+                Text(
+                    "Stok: ${_barang.stok == null ? 0 : _barang.stok!.jumlah}"),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      style: TextButton.styleFrom(
+                          foregroundColor: Colors.red, minimumSize: Size(5, 5)),
+                      onPressed: () => {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return _deleteDialog(_barang);
+                          },
+                        )
+                      },
+                      child: Icon(Icons.delete),
+                    ),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                          foregroundColor: CMATheme.grey,
+                          minimumSize: Size(5, 5)),
+                      onPressed: () => {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return _dialogForm(true, _barang);
+                          },
+                        )
+                      },
+                      child: Icon(Icons.edit),
+                    ),
+                  ],
+                )
+              ],
             ),
             Container(
               alignment: Alignment.bottomCenter,
               height: 20,
               decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
                 color: Color(int.parse(bgCol!.value)),
               ),
             )
@@ -385,12 +376,10 @@ class _DataBarangState extends State<DataBarang> {
           itemBuilder: (context, index) => _buildCardBarang(barangs[index]),
           itemCount: barangs.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 4,
-            crossAxisSpacing: 4,
-            // width / height: fixed for *all* items
-            childAspectRatio: 1.4,
-          ),
+              crossAxisCount: 2,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              childAspectRatio: (MediaQuery.of(context).size.height * 0.0016)),
         ),
       ),
     );

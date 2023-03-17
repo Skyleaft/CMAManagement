@@ -1,9 +1,11 @@
 import 'package:cma_management/Menu/Views/viewDetailPembelian.dart';
 import 'package:cma_management/model/DetailPembelian.dart';
 import 'package:cma_management/model/Pembelian.dart';
+import 'package:cma_management/model/Stok.dart';
 import 'package:cma_management/model/Suplier.dart';
 import 'package:cma_management/model/Usaha.dart';
 import 'package:cma_management/services/pembelian_services.dart';
+import 'package:cma_management/services/stok_services.dart';
 import 'package:cma_management/services/suplier_services.dart';
 import 'package:cma_management/styles/colors.dart';
 import 'package:cma_management/styles/styles.dart';
@@ -216,7 +218,7 @@ class _DataPembelianState extends State<DataPembelian> {
                                       MaterialPageRoute(
                                         builder: (context) =>
                                             viewDetailPembelian(
-                                          dataPembelian: pembelian,
+                                          dataPembelian: value,
                                         ),
                                       ),
                                     ).then((_) {
@@ -257,6 +259,7 @@ class _DataPembelianState extends State<DataPembelian> {
         ),
         ElevatedButton(
           onPressed: () async {
+            await StokService().deleteStokbyPembelian(_pembelian.id.value);
             service.deletePembelian(_pembelian.id.toString());
             _refreshData();
             Navigator.pop(context);
@@ -280,16 +283,20 @@ class _DataPembelianState extends State<DataPembelian> {
           itemBuilder: (context, index) {
             Pembelian _pembelian = pembelians[index];
             List<DetailPembelian?>? det = _pembelian.detailPembelian;
-            int? totalHarga = det
-                ?.map((e) => e?.harga_beli)
-                .reduce((value, current) => value! + current!);
-            int? totalqty = det
-                ?.map((e) => e?.qty)
-                .reduce((value, current) => value! + current!);
-            int? totalPembelian = totalHarga! * totalqty!;
+            double? totalPembelian = 0;
 
-            MoneyFormatter fmf = new MoneyFormatter(
-                amount: double.parse(totalPembelian.toString()),
+            if (det!.length > 0) {
+              int? totalHarga = det
+                  ?.map((e) => e?.harga_beli)
+                  .reduce((value, current) => value! + current!);
+              int? totalqty = det
+                  ?.map((e) => e?.qty)
+                  .reduce((value, current) => value! + current!);
+              totalPembelian = totalHarga!.toDouble() * totalqty!.toDouble();
+            }
+
+            MoneyFormatter fmf = MoneyFormatter(
+                amount: totalPembelian,
                 settings: MoneyFormatterSettings(
                   symbol: 'Rp.',
                   thousandSeparator: '.',

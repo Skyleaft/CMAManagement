@@ -41,6 +41,25 @@ class StokService {
     }
   }
 
+  Future<Stok?> getStokByBarang(String id) async {
+    final response = await http.get(
+      Uri.parse('$stoksUrl/barang?barangID=$id'),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
+    if (response.statusCode == 200) {
+      final dynamic stokJson = jsonDecode(response.body);
+      return Stok.fromJson(stokJson);
+    } else if (response.statusCode == 404) {
+      return null;
+    } else {
+      throw Exception('${response.body} Failed to load stok');
+    }
+  }
+
   Future<Stok> createStok(Stok stok) async {
     final response = await http.post(
       Uri.parse(stoksUrl),
@@ -78,6 +97,20 @@ class StokService {
   Future<void> deleteStok(String id) async {
     final response = await http.delete(
       Uri.parse('$stoksUrl/$id'),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('${response.body} Failed to delete stok');
+    }
+  }
+
+  Future<void> deleteStokbyPembelian(String idPembelian) async {
+    final response = await http.delete(
+      Uri.parse('$stoksUrl/pembelian/$idPembelian'),
       headers: <String, String>{
         'accept': 'text/plain',
         'Content-Type': 'application/json; charset=UTF-8',
