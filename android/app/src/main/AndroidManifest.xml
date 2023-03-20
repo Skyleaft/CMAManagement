@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.cybercode.cma_management">
+    package="com.example.cma_management">
     <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="CMA Management"

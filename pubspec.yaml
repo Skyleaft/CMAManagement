@@ -85,6 +85,7 @@ flutter:
     - assets/icons/
     - assets/RiveAssets/
     - assets/fitness_app/
+    - assets/Backgrounds/
     
 
   # An image asset can refer to one or more resolution-specific "variants", see

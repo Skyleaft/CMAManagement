@@ -1,6 +1,7 @@
 import 'package:cma_management/Menu/Views/dataBarang.dart';
 import 'package:cma_management/Menu/Views/dataCustomer.dart';
 import 'package:cma_management/Menu/Views/dataPembelian.dart';
+import 'package:cma_management/Menu/Views/dataPenjualan.dart';
 import 'package:cma_management/Menu/Views/dataProduk.dart';
 import 'package:cma_management/Menu/Views/dataSuplier.dart';
 import 'package:cma_management/Menu/Views/dataUsaha.dart';
@@ -19,13 +20,17 @@ import 'package:cma_management/model/Barang.dart';
 import 'package:cma_management/model/Customer.dart';
 import 'package:cma_management/model/DetailPembelian.dart';
 import 'package:cma_management/model/Pembelian.dart';
+import 'package:cma_management/model/Penjualan.dart';
 import 'package:cma_management/model/Produk.dart';
+import 'package:cma_management/model/Stok.dart';
 import 'package:cma_management/model/Suplier.dart';
 import 'package:cma_management/model/Usaha.dart';
 import 'package:cma_management/services/barang_services.dart';
 import 'package:cma_management/services/customer_services.dart';
 import 'package:cma_management/services/pembelian_services.dart';
+import 'package:cma_management/services/penjualan_services.dart';
 import 'package:cma_management/services/produk_services.dart';
+import 'package:cma_management/services/stok_services.dart';
 import 'package:cma_management/services/suplier_services.dart';
 import 'package:cma_management/services/usaha_services.dart';
 import 'package:cma_management/styles/colors.dart';
@@ -60,6 +65,9 @@ class _DashboardFragmentState extends State<DashboardFragment> {
   late List<Pembelian> pembelians = <Pembelian>[];
   late List<Customer> customers = <Customer>[];
   late List<Suplier> supliers = <Suplier>[];
+  late List<Penjualan> penjualans = <Penjualan>[];
+  late List<Stok> stoks = <Stok>[];
+  int? currentStok = 0;
 
   List<Widget> listViews = <Widget>[];
 
@@ -70,6 +78,8 @@ class _DashboardFragmentState extends State<DashboardFragment> {
     final _customers = await CustomerService().getCustomers();
     final _supliers = await SuplierService().getSupliers();
     final _usahas = await UsahaService().getUsahas();
+    final _penjualans = await PenjualanService().getPenjualans();
+    final _stoks = await StokService().getStoks();
     if (this.mounted) {
       setState(() {
         produks = _produk;
@@ -78,6 +88,11 @@ class _DashboardFragmentState extends State<DashboardFragment> {
         customers = _customers;
         supliers = _supliers;
         usahas = _usahas;
+        penjualans = _penjualans;
+        stoks = _stoks;
+        currentStok = stoks
+            .map((e) => e?.jumlah)
+            .reduce((value, current) => value! + current!);
       });
     }
   }
@@ -90,6 +105,8 @@ class _DashboardFragmentState extends State<DashboardFragment> {
     final _customers = await CustomerService().getCustomers();
     final _supliers = await SuplierService().getSupliers();
     final _usahas = await UsahaService().getUsahas();
+    final _penjualans = await PenjualanService().getPenjualans();
+    final _stoks = await StokService().getStoks();
     setState(() {
       produks = _produk;
       barangs = _barangs;
@@ -97,6 +114,11 @@ class _DashboardFragmentState extends State<DashboardFragment> {
       customers = _customers;
       supliers = _supliers;
       usahas = _usahas;
+      penjualans = _penjualans;
+      stoks = _stoks;
+      currentStok = stoks
+          .map((e) => e?.jumlah)
+          .reduce((value, current) => value! + current!);
     });
   }
 
@@ -216,6 +238,7 @@ class _DashboardFragmentState extends State<DashboardFragment> {
 
   Widget loadMonitoringData(bool isLoaded) {
     int count = 8;
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       child: Wrap(
@@ -315,7 +338,7 @@ class _DashboardFragmentState extends State<DashboardFragment> {
             ),
             TileCard(
               titleTxt: "Stok",
-              subTxt: '${barangs.length.toString()}',
+              subTxt: '${currentStok}',
               color: Colors.deepOrange.shade600,
               onTap: () => {
                 Navigator.push(
@@ -350,7 +373,7 @@ class _DashboardFragmentState extends State<DashboardFragment> {
             ),
             TileCard(
               titleTxt: "Total Penjualan",
-              subTxt: "0",
+              subTxt: '${penjualans.length.toString()}',
               color: Colors.deepOrange.shade400,
               animation: Tween<double>(begin: 0.0, end: 1.0).animate(
                   CurvedAnimation(
@@ -358,6 +381,13 @@ class _DashboardFragmentState extends State<DashboardFragment> {
                       curve: Interval((1 / count) * 2, 1.0,
                           curve: Curves.fastOutSlowIn))),
               animationController: widget.animationController,
+              onTap: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const DataPenjualan()),
+                )
+              },
             ),
           ]),
     );

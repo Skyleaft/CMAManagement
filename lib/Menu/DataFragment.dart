@@ -2,6 +2,7 @@ import 'package:cma_management/Menu/Views/dataBarang.dart';
 import 'package:cma_management/Menu/Views/dataCustomer.dart';
 import 'package:cma_management/Menu/Views/dataMSpek.dart';
 import 'package:cma_management/Menu/Views/dataPembelian.dart';
+import 'package:cma_management/Menu/Views/dataPenjualan.dart';
 import 'package:cma_management/Menu/Views/dataProduk.dart';
 import 'package:cma_management/Menu/Views/dataSuplier.dart';
 import 'package:cma_management/Menu/Views/dataUsaha.dart';
@@ -163,7 +164,7 @@ class _DataFragmentState extends State<DataFragment> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const DataPembelian()),
+                      builder: (context) => const DataPenjualan()),
                 ),
               },
               animation: Tween<double>(begin: 0.0, end: 1.0).animate(
