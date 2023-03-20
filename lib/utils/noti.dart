@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -125,34 +126,26 @@ class Noti {
         android: androidInit,
         iOS: initializationSettingsDarwin,
         linux: initializationSettingsLinux);
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onDidReceiveNotificationResponse: (details) {});
   }
 }
 
-Future<void> showNotification() async {
-  const AndroidNotificationDetails androidNotificationDetails =
-      AndroidNotificationDetails('your channel id', 'your channel name',
-          channelDescription: 'your channel description',
-          importance: Importance.max,
-          priority: Priority.high,
-          ticker: 'ticker');
-  const NotificationDetails notificationDetails =
-      NotificationDetails(android: androidNotificationDetails);
-  await flutterLocalNotificationsPlugin.show(
-      id++, 'plain title', 'plain body', notificationDetails,
-      payload: 'item x');
-}
+void createNotification(RemoteMessage message) async {
+  try {
+    final id = DateTime.now().millisecond ~/ 1000;
+    const NotificationDetails notificationDetails = NotificationDetails(
+        android: AndroidNotificationDetails(
+      "cma",
+      "cmachannel",
+      channelDescription: 'This channel is used for important notifications.',
+      importance: Importance.max,
+      priority: Priority.high,
+    ));
 
-Future<void> showNotificationWithNoBody() async {
-  const AndroidNotificationDetails androidNotificationDetails =
-      AndroidNotificationDetails('your channel id', 'your channel name',
-          channelDescription: 'your channel description',
-          importance: Importance.max,
-          priority: Priority.high,
-          ticker: 'ticker');
-  const NotificationDetails notificationDetails = NotificationDetails(
-    android: androidNotificationDetails,
-  );
-  await flutterLocalNotificationsPlugin
-      .show(id++, 'plain title', null, notificationDetails, payload: 'item x');
+    await flutterLocalNotificationsPlugin.show(id, message.notification!.title,
+        message.notification!.body, notificationDetails);
+  } on Exception catch (e) {
+    print(e);
+  }
 }

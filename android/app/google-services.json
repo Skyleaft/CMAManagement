@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "763625489768",
+    "project_id": "cma-api-58c1f",
+    "storage_bucket": "cma-api-58c1f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:763625489768:android:01b518df2a4ab00ab182dd",
+        "android_client_info": {
+          "package_name": "com.example.cma_management"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "763625489768-r9q67el80t8jhqkj0oll51b1gfv62afg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAurroH2iqPhKX5-8S_EFoZcfKbAOjDS-0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "763625489768-r9q67el80t8jhqkj0oll51b1gfv62afg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

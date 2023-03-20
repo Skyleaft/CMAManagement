@@ -1,7 +1,15 @@
+import 'dart:convert';
+
 import 'package:cma_management/Menu/component/modalForm.dart';
+import 'package:cma_management/firebase_options.dart';
+import 'package:cma_management/main.dart';
 import 'package:cma_management/styles/themes.dart';
 import 'package:cma_management/utils/noti.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:http/http.dart' as http;
 
 class NotificationFragment extends StatefulWidget {
   const NotificationFragment({Key? key, this.animationController})
@@ -10,6 +18,21 @@ class NotificationFragment extends StatefulWidget {
 
   @override
   _NotificationFragmentState createState() => _NotificationFragmentState();
+}
+
+int _messageCount = 0;
+
+String myKey =
+    "AAAAscugRWg:APA91bEZ80gVbiGpX-cSvHtXIRk2Ebxa3lSNF0gkRz9O7djU3_LFgpTLXvFfFkmH97XbO-vQqO0hKmkjRvICwoOsCSlEw4aJqeaosFzH56Zq5j23oBa-HuiRvGd2JsqpPExcnWfA-TpY";
+String constructFCMPayload(String? token) {
+  _messageCount++;
+  return jsonEncode({
+    'notification': {
+      'title': 'Hello FlutterFire!',
+      'body': 'This notification (#$_messageCount) was created via FCM!',
+    },
+    "to": token
+  });
 }
 
 class _NotificationFragmentState extends State<NotificationFragment> {
@@ -59,7 +82,29 @@ class _NotificationFragmentState extends State<NotificationFragment> {
         ),
         TextButton(
             onPressed: () async {
-              await showNotification();
+              var mes = new RemoteMessage(
+                  notification:
+                      RemoteNotification(title: "coba", body: "baksodaksd"));
+              //createNotification(mes);
+              try {
+                var response = await http.post(
+                  Uri.parse('https://fcm.googleapis.com/fcm/send'),
+                  headers: <String, String>{
+                    'Content-Type': 'application/json',
+                    'Authorization': 'key=' + myKey,
+                  },
+                  body: constructFCMPayload(mToken),
+                );
+                print('res ${response.statusCode}');
+                print('res ${response.body}');
+                // print('FCM request for device sent!');
+                if (response.statusCode == 200) {
+                } else {
+                  throw Exception('Failed to send ${response.body}');
+                }
+              } catch (e) {
+                print(e);
+              }
             },
             child: Text("Test")),
       ],
