@@ -1,5 +1,6 @@
 import 'package:cma_management/Menu/component/modalForm.dart';
 import 'package:cma_management/styles/themes.dart';
+import 'package:cma_management/utils/noti.dart';
 import 'package:flutter/material.dart';
 
 class NotificationFragment extends StatefulWidget {
@@ -56,7 +57,11 @@ class _NotificationFragmentState extends State<NotificationFragment> {
         SizedBox(
           height: 200,
         ),
-        Text(widget.animationController!.status.toString()),
+        TextButton(
+            onPressed: () async {
+              await showNotification();
+            },
+            child: Text("Test")),
       ],
     ));
   }
