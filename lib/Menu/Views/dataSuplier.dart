@@ -1,5 +1,7 @@
+import 'package:cma_management/model/Logs.dart';
 import 'package:cma_management/model/Suplier.dart';
 import 'package:cma_management/model/Usaha.dart';
+import 'package:cma_management/services/logs_services.dart';
 import 'package:cma_management/services/suplier_services.dart';
 import 'package:cma_management/styles/colors.dart';
 import 'package:cma_management/styles/styles.dart';
@@ -136,6 +138,16 @@ class _DataSuplierState extends State<DataSuplier> {
                                 updated_at: null,
                                 deleted_at: null);
                             service.createSuplier(suplier);
+                            var log = Logs(
+                                id: Guid.generate(),
+                                namaLog:
+                                    'User Admin Menambahkan Suplier ${suplier.nama_suplier}',
+                                userID: Guid(
+                                    'a0547ef6-9b97-4d7c-be79-47fc632bffed'),
+                                column: 'Suplier',
+                                action: 'Create',
+                                timestamp: DateTime.now());
+                            LogsService().createLog(log);
                           }
 
                           _refreshData();

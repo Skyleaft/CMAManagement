@@ -1,5 +1,7 @@
+import 'package:cma_management/model/Logs.dart';
 import 'package:cma_management/model/Produk.dart';
 import 'package:cma_management/model/Usaha.dart';
+import 'package:cma_management/services/logs_services.dart';
 import 'package:cma_management/services/produk_services.dart';
 import 'package:cma_management/services/usaha_services.dart';
 import 'package:cma_management/styles/colors.dart';
@@ -139,6 +141,15 @@ class _DataProdukState extends State<DataProduk> {
                       updated_at: null,
                       deleted_at: null);
                   service.createProduk(produk);
+                  var log = Logs(
+                      id: Guid.generate(),
+                      namaLog:
+                          'User Admin Menambahkan Produk ${produk.nama_produk}',
+                      userID: Guid('a0547ef6-9b97-4d7c-be79-47fc632bffed'),
+                      column: 'Produk',
+                      action: 'Create',
+                      timestamp: DateTime.now());
+                  LogsService().createLog(log);
                 }
 
                 _refreshData();

@@ -1,9 +1,11 @@
 import 'package:cma_management/model/Barang.dart';
+import 'package:cma_management/model/Logs.dart';
 import 'package:cma_management/model/Produk.dart';
 import 'package:cma_management/model/Speksifikasi.dart';
 import 'package:cma_management/model/Suplier.dart';
 import 'package:cma_management/model/Usaha.dart';
 import 'package:cma_management/services/barang_services.dart';
+import 'package:cma_management/services/logs_services.dart';
 import 'package:cma_management/services/produk_services.dart';
 import 'package:cma_management/services/speksifikasi_services.dart';
 import 'package:cma_management/services/suplier_services.dart';
@@ -240,6 +242,15 @@ class _DataBarangState extends State<DataBarang> {
                       updated_at: null,
                       deleted_at: null);
                   service.createBarang(barang);
+                  var log = Logs(
+                      id: Guid.generate(),
+                      namaLog:
+                          'User Admin Menambahkan Barang ${barang.nama_barang}',
+                      userID: Guid('a0547ef6-9b97-4d7c-be79-47fc632bffed'),
+                      column: 'Barang',
+                      action: 'Create',
+                      timestamp: barang.created_at!);
+                  LogsService().createLog(log);
                 }
 
                 await Future.delayed(Duration(milliseconds: 100));

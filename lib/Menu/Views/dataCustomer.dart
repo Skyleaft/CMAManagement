@@ -1,6 +1,8 @@
 import 'package:cma_management/model/Customer.dart';
+import 'package:cma_management/model/Logs.dart';
 import 'package:cma_management/model/Usaha.dart';
 import 'package:cma_management/services/customer_services.dart';
+import 'package:cma_management/services/logs_services.dart';
 import 'package:cma_management/styles/colors.dart';
 import 'package:cma_management/styles/styles.dart';
 import 'package:flutter/material.dart';
@@ -147,6 +149,16 @@ class _DataCustomerState extends State<DataCustomer> {
                                 updated_at: null,
                                 deleted_at: null);
                             service.createCustomer(customer);
+                            var log = Logs(
+                                id: Guid.generate(),
+                                namaLog:
+                                    'User Admin Menambahkan Customer ${customer.nama_customer}',
+                                userID: Guid(
+                                    'a0547ef6-9b97-4d7c-be79-47fc632bffed'),
+                                column: 'Customer',
+                                action: 'Create',
+                                timestamp: DateTime.now());
+                            LogsService().createLog(log);
                           }
 
                           _refreshData();
