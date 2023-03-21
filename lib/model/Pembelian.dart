@@ -31,9 +31,12 @@ class Pembelian {
       tanggal: DateTime.parse(json["tanggal"]),
       faktur: json["faktur"],
       suplierID: new Guid(json["suplierID"]),
-      suplier: Suplier?.fromJson(json["suplier"]),
-      detailPembelian: List<DetailPembelian>.from(
-          json["detailPembelian"].map((x) => DetailPembelian.fromJson(x))),
+      suplier:
+          json["suplier"] == null ? null : Suplier?.fromJson(json["suplier"]),
+      detailPembelian: json["detailPembelian"] == null
+          ? null
+          : List<DetailPembelian>.from(
+              json["detailPembelian"].map((x) => DetailPembelian.fromJson(x))),
       created_at: json["created_at"],
       updated_at: json["updated_at"],
       deleted_at: json["deleted_at"],

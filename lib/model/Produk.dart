@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cma_management/model/Usaha.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 
 class Produk {
@@ -7,6 +8,7 @@ class Produk {
   final Guid usahaID;
   final String nama_produk;
   final String? keterangan;
+  final Usaha? usaha;
   final String? created_at;
   final String? updated_at;
   final String? deleted_at;
@@ -16,6 +18,7 @@ class Produk {
       required this.usahaID,
       required this.nama_produk,
       this.keterangan,
+      this.usaha,
       this.created_at,
       this.updated_at,
       this.deleted_at});
@@ -26,6 +29,7 @@ class Produk {
       usahaID: new Guid(json["usahaID"]),
       nama_produk: json["nama_produk"],
       keterangan: json["keterangan"],
+      usaha: json["usaha"] == null ? null : Usaha.fromJson(json["usaha"]),
       created_at: json["created_at"],
       updated_at: json["updated_at"],
       deleted_at: json["deleted_at"],

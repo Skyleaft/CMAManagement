@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cma_management/model/Customer.dart';
 import 'package:cma_management/model/DetailPenjualan.dart';
 import 'package:cma_management/model/Suplier.dart';
+import 'package:cma_management/services/customer_services.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 
 class Penjualan {
@@ -32,9 +33,12 @@ class Penjualan {
       jatuh_tempo: DateTime.parse(json["jatuh_tempo"]),
       no_faktur: json["no_faktur"],
       customerID: new Guid(json["customerID"]),
-      customer: Customer?.fromJson(json["customer"]),
-      detailPenjualan: List<DetailPenjualan>.from(
-          json["detailPenjualan"].map((x) => DetailPenjualan.fromJson(x))),
+      customer:
+          json["customer"] == null ? null : Customer.fromJson(json["customer"]),
+      detailPenjualan: json["detailPenjualan"] == null
+          ? null
+          : List<DetailPenjualan>.from(
+              json["detailPenjualan"].map((x) => DetailPenjualan.fromJson(x))),
       created_at: json["created_at"],
       updated_at: json["updated_at"],
       deleted_at: json["deleted_at"],

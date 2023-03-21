@@ -6,6 +6,7 @@ import 'package:cma_management/services/suplier_services.dart';
 import 'package:cma_management/styles/colors.dart';
 import 'package:cma_management/styles/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -32,6 +33,7 @@ class _DataSuplierState extends State<DataSuplier> {
     final namaController = TextEditingController();
     final alamatController = TextEditingController();
     final notelpController = TextEditingController();
+    String nohp = '';
 
     if (isUpdate) {
       namaController.text = _suplier!.nama_suplier;
@@ -96,10 +98,17 @@ class _DataSuplierState extends State<DataSuplier> {
                       borderSide: BorderSide(),
                     ),
                   ),
+                  keyboardType: TextInputType.number,
+                  disableLengthCheck: true,
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(13),
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  ],
+                  initialValue: nohp,
                   controller: notelpController,
                   initialCountryCode: 'ID',
                   onChanged: (phone) {
-                    print(phone.completeNumber);
+                    nohp = phone.completeNumber;
                   },
                 ),
                 Row(

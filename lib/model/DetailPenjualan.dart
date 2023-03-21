@@ -35,7 +35,7 @@ class DetailPenjualan {
       qty: json["qty"],
       harga_jual: json["harga_jual"],
       panjang: json["panjang"],
-      barang: Barang?.fromJson(json["barang"]),
+      barang: json["barang"] == null ? null : Barang?.fromJson(json["barang"]),
       created_at: DateTime.tryParse(json["created_at"].toString()),
       updated_at: DateTime.tryParse(json["updated_at"].toString()),
       deleted_at: DateTime.tryParse(json["deleted_at"].toString()),

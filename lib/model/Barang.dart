@@ -36,8 +36,10 @@ class Barang {
       produkID: new Guid(json["produkID"]),
       nama_barang: json["nama_barang"],
       stok: newStok,
-      speksifikasi: List<Speksifikasi?>.from(
-          json["speksifikasi"].map((x) => Speksifikasi?.fromJson(x))),
+      speksifikasi: json["speksifikasi"] == null
+          ? null
+          : List<Speksifikasi?>.from(
+              json["speksifikasi"].map((x) => Speksifikasi?.fromJson(x))),
       created_at: DateTime.tryParse(json["created_at"].toString()),
       updated_at: DateTime.tryParse(json["updated_at"].toString()),
       deleted_at: DateTime.tryParse(json["deleted_at"].toString()),
