@@ -18,6 +18,7 @@ import 'package:cma_management/config/responsive.dart';
 import 'package:cma_management/config/size_config.dart';
 import 'package:cma_management/model/Barang.dart';
 import 'package:cma_management/model/Customer.dart';
+import 'package:cma_management/model/DashbordData.dart';
 import 'package:cma_management/model/DetailPembelian.dart';
 import 'package:cma_management/model/Pembelian.dart';
 import 'package:cma_management/model/Penjualan.dart';
@@ -27,6 +28,7 @@ import 'package:cma_management/model/Suplier.dart';
 import 'package:cma_management/model/Usaha.dart';
 import 'package:cma_management/services/barang_services.dart';
 import 'package:cma_management/services/customer_services.dart';
+import 'package:cma_management/services/dashboard_services.dart';
 import 'package:cma_management/services/pembelian_services.dart';
 import 'package:cma_management/services/penjualan_services.dart';
 import 'package:cma_management/services/produk_services.dart';
@@ -59,66 +61,24 @@ class _DashboardFragmentState extends State<DashboardFragment> {
   Animation<double>? topBarAnimation;
   final ScrollController scrollController = ScrollController();
   double topBarOpacity = 0.0;
-  late List<Usaha> usahas = <Usaha>[];
-  late List<Produk> produks = <Produk>[];
-  late List<Barang> barangs = <Barang>[];
-  late List<Pembelian> pembelians = <Pembelian>[];
-  late List<Customer> customers = <Customer>[];
-  late List<Suplier> supliers = <Suplier>[];
-  late List<Penjualan> penjualans = <Penjualan>[];
-  late List<Stok> stoks = <Stok>[];
-  int? currentStok = 0;
+  late DashboardData dashboardData = DashboardData();
 
   List<Widget> listViews = <Widget>[];
 
   Future<void> initData() async {
-    final _produk = await serviceProduk.getProduks();
-    final _barangs = await BarangService().getBarangs();
-    final _pembelians = await PembelianService().getPembelians();
-    final _customers = await CustomerService().getCustomers();
-    final _supliers = await SuplierService().getSupliers();
-    final _usahas = await UsahaService().getUsahas();
-    final _penjualans = await PenjualanService().getPenjualans();
-    final _stoks = await StokService().getStoks();
     if (this.mounted) {
+      final _data = await DashboardService().getDashboards();
       setState(() {
-        produks = _produk;
-        barangs = _barangs;
-        pembelians = _pembelians;
-        customers = _customers;
-        supliers = _supliers;
-        usahas = _usahas;
-        penjualans = _penjualans;
-        stoks = _stoks;
-        currentStok = stoks
-            .map((e) => e?.jumlah)
-            .reduce((value, current) => value! + current!);
+        dashboardData = _data;
       });
     }
   }
 
   Future<void> _refreshData() async {
     await Future.delayed(Duration(milliseconds: 100));
-    final _produk = await serviceProduk.getProduks();
-    final _barangs = await BarangService().getBarangs();
-    final _pembelians = await PembelianService().getPembelians();
-    final _customers = await CustomerService().getCustomers();
-    final _supliers = await SuplierService().getSupliers();
-    final _usahas = await UsahaService().getUsahas();
-    final _penjualans = await PenjualanService().getPenjualans();
-    final _stoks = await StokService().getStoks();
+    final _data = await DashboardService().getDashboards();
     setState(() {
-      produks = _produk;
-      barangs = _barangs;
-      pembelians = _pembelians;
-      customers = _customers;
-      supliers = _supliers;
-      usahas = _usahas;
-      penjualans = _penjualans;
-      stoks = _stoks;
-      currentStok = stoks
-          .map((e) => e?.jumlah)
-          .reduce((value, current) => value! + current!);
+      dashboardData = _data;
     });
   }
 
@@ -249,7 +209,7 @@ class _DashboardFragmentState extends State<DashboardFragment> {
           children: [
             TileCard(
               titleTxt: "Total Usaha",
-              subTxt: '${usahas.length.toString()}',
+              subTxt: '${dashboardData.usahaCount}',
               color: Colors.deepOrange.shade400,
               icon: Icons.store_mall_directory,
               onTap: () => {
@@ -267,7 +227,7 @@ class _DashboardFragmentState extends State<DashboardFragment> {
             ),
             TileCard(
               titleTxt: "Total Produk",
-              subTxt: '${produks.length.toString()}',
+              subTxt: '${dashboardData.produkCount}',
               icon: Icons.inventory,
               color: Colors.deepOrange.shade500,
               onTap: () => {
@@ -285,7 +245,7 @@ class _DashboardFragmentState extends State<DashboardFragment> {
             ),
             TileCard(
               titleTxt: "Total Suplier",
-              subTxt: '${supliers.length.toString()}',
+              subTxt: '${dashboardData.suplierCount}',
               color: Colors.deepOrange.shade600,
               icon: Icons.local_shipping,
               onTap: () => {
@@ -303,7 +263,7 @@ class _DashboardFragmentState extends State<DashboardFragment> {
             ),
             TileCard(
               titleTxt: "Total Customer",
-              subTxt: '${customers.length.toString()}',
+              subTxt: '${dashboardData.customerCount}',
               icon: Icons.diversity_1,
               onTap: () => {
                 Navigator.push(
@@ -321,7 +281,7 @@ class _DashboardFragmentState extends State<DashboardFragment> {
             ),
             TileCard(
               titleTxt: "Total Barang",
-              subTxt: '${barangs.length.toString()}',
+              subTxt: '${dashboardData.barangCount}',
               color: Colors.deepOrange.shade600,
               onTap: () => {
                 Navigator.push(
@@ -338,7 +298,7 @@ class _DashboardFragmentState extends State<DashboardFragment> {
             ),
             TileCard(
               titleTxt: "Stok",
-              subTxt: '${currentStok}',
+              subTxt: '${dashboardData.stockCount}',
               color: Colors.deepOrange.shade600,
               onTap: () => {
                 Navigator.push(
@@ -355,7 +315,7 @@ class _DashboardFragmentState extends State<DashboardFragment> {
             ),
             TileCard(
               titleTxt: "Total Pembelian",
-              subTxt: '${pembelians.length.toString()}',
+              subTxt: '${dashboardData.pembelianCount}',
               color: Colors.deepOrange.shade500,
               onTap: () => {
                 Navigator.push(
@@ -373,7 +333,7 @@ class _DashboardFragmentState extends State<DashboardFragment> {
             ),
             TileCard(
               titleTxt: "Total Penjualan",
-              subTxt: '${penjualans.length.toString()}',
+              subTxt: '${dashboardData.penjualanCount}',
               color: Colors.deepOrange.shade400,
               animation: Tween<double>(begin: 0.0, end: 1.0).animate(
                   CurvedAnimation(
