@@ -301,19 +301,41 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
                             var result = _barangList[index];
                             return Card(
                               margin: EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 20),
+                                  vertical: 5, horizontal: 15),
                               child: InkWell(
                                 onTap: () async {
-                                  setState(() {
-                                    barangController.text = result.nama_barang;
-                                    selectedBarang = result;
-                                  });
-                                  Navigator.pop(context);
+                                  if (result.stok == null) {
+                                    print("Habis");
+                                    Navigator.pop(context);
+                                    showDialog<String>(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          AlertDialog(
+                                        title: const Text('Message'),
+                                        content:
+                                            const Text('Stok Barang Habis'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, 'OK'),
+                                            child: const Text('OK'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  } else {
+                                    setState(() {
+                                      Navigator.pop(context);
+                                      barangController.text =
+                                          result.nama_barang;
+                                      selectedBarang = result;
+                                    });
+                                  }
                                 },
                                 child: Row(
                                   children: [
                                     Container(
-                                      width: 20,
+                                      width: 15,
                                       height: 50,
                                       decoration: BoxDecoration(
                                           color: Color(int.parse(result
@@ -324,11 +346,20 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
                                               .first!
                                               .value))),
                                     ),
-                                    SizedBox(width: 20),
+                                    SizedBox(width: 8),
                                     Text(
                                       '${result.nama_barang}',
                                       style: TextStyle(fontSize: 16),
-                                    )
+                                    ),
+                                    Expanded(
+                                        child: SizedBox(
+                                      width: 20,
+                                    )),
+                                    Text(
+                                      '${result.stok?.jumlah ?? 0}',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    SizedBox(width: 8),
                                   ],
                                 ),
                               ),
