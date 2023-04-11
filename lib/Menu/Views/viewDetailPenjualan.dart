@@ -33,7 +33,7 @@ class viewDetailPenjualan extends StatefulWidget {
 enum SampleItem { itemOne, itemTwo, itemThree }
 
 class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
-  late List<Penjualan> _penjualanList;
+  late List<Penjualan?>? _penjualanList;
   late List<DetailPenjualan?>? _detailPenjualanList;
   late Future<void> futurePenjualan;
   PenjualanService service = new PenjualanService();
@@ -57,8 +57,8 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
     qtyController.text = '0';
     if (isUpdate) {
       qtyController.text = '${_detpenjualan!.qty}';
-      panjangController.text = '${_detpenjualan!.panjang}';
-      hargaController.text = '${_detpenjualan!.harga_jual}';
+      panjangController.text = '${_detpenjualan.panjang}';
+      hargaController.text = '${_detpenjualan.harga_jual}';
       //fakturController.text = _penjualan!.faktur;
     }
     return StatefulBuilder(

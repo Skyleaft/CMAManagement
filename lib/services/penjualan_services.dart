@@ -41,6 +41,23 @@ class PenjualanService {
     }
   }
 
+  Future<Penjualan> getLatestPenjualan() async {
+    final response = await http.get(
+      Uri.parse('$penjualansUrl/latest'),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
+    if (response.statusCode == 200) {
+      final dynamic penjualanJson = jsonDecode(response.body);
+      return Penjualan.fromJson(penjualanJson);
+    } else {
+      throw Exception('${response.body} Failed to load penjualan');
+    }
+  }
+
   Future<Penjualan> createPenjualan(Penjualan penjualan) async {
     final response = await http.post(
       Uri.parse(penjualansUrl),

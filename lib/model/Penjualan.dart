@@ -9,6 +9,7 @@ class Penjualan {
   final Guid id;
   final DateTime jatuh_tempo;
   final String no_faktur;
+  final DateTime tanggal;
   final Guid customerID;
   final Customer? customer;
   final List<DetailPenjualan?>? detailPenjualan;
@@ -21,6 +22,7 @@ class Penjualan {
       required this.jatuh_tempo,
       required this.no_faktur,
       required this.customerID,
+      required this.tanggal,
       this.customer,
       this.detailPenjualan,
       this.created_at,
@@ -32,6 +34,7 @@ class Penjualan {
       id: new Guid(json["id"]),
       jatuh_tempo: DateTime.parse(json["jatuh_tempo"]),
       no_faktur: json["no_faktur"],
+      tanggal: DateTime.parse(json["tanggal"]),
       customerID: new Guid(json["customerID"]),
       customer:
           json["customer"] == null ? null : Customer.fromJson(json["customer"]),
@@ -50,6 +53,7 @@ class Penjualan {
       "id": id.value,
       "jatuh_tempo": jatuh_tempo.toUtc().toIso8601String(),
       "no_faktur": no_faktur,
+      "tanggal": tanggal.toUtc().toIso8601String(),
       "customerID": customerID.value,
       "created_at": created_at,
       "updated_at": updated_at,

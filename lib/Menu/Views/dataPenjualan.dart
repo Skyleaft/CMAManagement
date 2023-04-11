@@ -34,6 +34,7 @@ class _DataPenjualanState extends State<DataPenjualan> {
   late List<Penjualan> _penjualanList;
   late Future<void> futurePenjualan;
   PenjualanService service = new PenjualanService();
+  late Penjualan latestPenjualan;
   final _formKey = GlobalKey<FormState>();
   GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
@@ -41,15 +42,43 @@ class _DataPenjualanState extends State<DataPenjualan> {
 //dialog form
   Widget _dialogForm(bool isUpdate, [Penjualan? _penjualan]) {
     final no_fakturController = TextEditingController();
+    DateTime jatuhTempo = DateTime.now();
+    var jatuhTempoController = TextEditingController();
+    jatuhTempoController.text = DateFormat.yMMMEd().format(jatuhTempo);
     DateTime tanggal = DateTime.now();
     var tanggalController = TextEditingController();
     tanggalController.text = DateFormat.yMMMEd().format(tanggal);
     Customer? currentCustomer;
 
+    //generate faktur
+    String newFaktur = '';
+    if (latestPenjualan == null) {
+      newFaktur = 'CMA/J${DateFormat('yyM').format(DateTime.now())}/0001';
+    } else {
+      List<String> fakturSplit = latestPenjualan.no_faktur.split('/');
+      int currentNumber = int.parse(fakturSplit.last) + 1;
+
+      if (currentNumber < 10) {
+        newFaktur =
+            'CMA/J${DateFormat('yyM').format(DateTime.now())}/000${currentNumber}';
+      } else if (currentNumber < 100) {
+        newFaktur =
+            'CMA/J${DateFormat('yyM').format(DateTime.now())}/00${currentNumber}';
+      } else if (currentNumber < 1000) {
+        newFaktur =
+            'CMA/J${DateFormat('yyM').format(DateTime.now())}/0${currentNumber}';
+      } else {
+        newFaktur =
+            'CMA/J${DateFormat('yyM').format(DateTime.now())}/${currentNumber}';
+      }
+    }
+
+    no_fakturController.text = newFaktur;
+
     if (isUpdate) {
       no_fakturController.text = _penjualan!.no_faktur;
-      tanggal = _penjualan.jatuh_tempo;
-      tanggalController.text = _penjualan.jatuh_tempo.toString();
+      jatuhTempo = _penjualan.jatuh_tempo;
+      jatuhTempoController.text = _penjualan.jatuh_tempo.toString();
     }
 
     return StatefulBuilder(
@@ -110,7 +139,7 @@ class _DataPenjualanState extends State<DataPenjualan> {
                                 // change button value to selected value
                                 onChanged: (Customer? newValue) {
                                   setState(() {
-                                    currentCustomer = newValue!;
+                                    currentCustomer = newValue;
                                   });
                                 },
                               );
@@ -126,6 +155,7 @@ class _DataPenjualanState extends State<DataPenjualan> {
                       hintText: "Masukan Nomor Faktur",
                       labelText: "Faktur Penjualan",
                       icon: Icon(Icons.people)),
+                  readOnly: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a name';
@@ -140,7 +170,7 @@ class _DataPenjualanState extends State<DataPenjualan> {
                         readOnly: true,
                         controller: tanggalController,
                         decoration: new InputDecoration(
-                            labelText: "Tanggal Penjualan",
+                            labelText: "Tanggal Pembelian",
                             icon: Icon(Icons.date_range)),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -155,7 +185,7 @@ class _DataPenjualanState extends State<DataPenjualan> {
                         onPressed: () {
                           DatePicker.showDatePicker(context,
                               showTitleActions: true,
-                              minTime: DateTime(2016, 1, 1),
+                              minTime: DateTime(2019, 1, 1),
                               maxTime: DateTime.now().add(Duration(days: 365)),
                               onChanged: (date) {
                             tanggalController.text =
@@ -165,6 +195,50 @@ class _DataPenjualanState extends State<DataPenjualan> {
                             tanggalController.text =
                                 DateFormat.yMMMEd().format(tanggal);
                             tanggal = date;
+                          },
+                              currentTime: DateTime.now(),
+                              locale: LocaleType.id);
+                        },
+                        child: Text(
+                          'Pilih Tanggal',
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        readOnly: true,
+                        controller: jatuhTempoController,
+                        decoration: new InputDecoration(
+                            labelText: "Jatuh Tempo Pembayaran",
+                            icon: Icon(Icons.date_range)),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a name';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {
+                          DatePicker.showDatePicker(context,
+                              showTitleActions: true,
+                              minTime: DateTime.now(),
+                              maxTime: DateTime.now().add(Duration(days: 365)),
+                              onChanged: (date) {
+                            jatuhTempoController.text =
+                                DateFormat.yMMMEd().format(jatuhTempo);
+                            jatuhTempo = date;
+                          }, onConfirm: (date) {
+                            jatuhTempoController.text =
+                                DateFormat.yMMMEd().format(jatuhTempo);
+                            jatuhTempo = date;
                           },
                               currentTime: DateTime.now(),
                               locale: LocaleType.id);
@@ -195,7 +269,8 @@ class _DataPenjualanState extends State<DataPenjualan> {
                             final penjualanToUpdate = Penjualan(
                                 id: _penjualan!.id,
                                 no_faktur: no_fakturController.text,
-                                jatuh_tempo: tanggal,
+                                jatuh_tempo: jatuhTempo,
+                                tanggal: tanggal,
                                 customerID: currentCustomer!.id,
                                 created_at: _penjualan.created_at,
                                 updated_at:
@@ -207,7 +282,8 @@ class _DataPenjualanState extends State<DataPenjualan> {
                             final penjualan = Penjualan(
                                 id: Guid.generate(),
                                 no_faktur: no_fakturController.text,
-                                jatuh_tempo: tanggal,
+                                jatuh_tempo: jatuhTempo,
+                                tanggal: tanggal,
                                 customerID: currentCustomer!.id,
                                 created_at:
                                     DateTime.now().toIso8601String() + 'Z',
@@ -289,10 +365,10 @@ class _DataPenjualanState extends State<DataPenjualan> {
 
             if (det!.length > 0) {
               int? totalHarga = det
-                  ?.map((e) => e?.harga_jual)
+                  .map((e) => e?.harga_jual)
                   .reduce((value, current) => value! + current!);
               int? totalqty = det
-                  ?.map((e) => e?.qty)
+                  .map((e) => e?.qty)
                   .reduce((value, current) => value! + current!);
               totalPenjualan = totalHarga!.toDouble() * totalqty!.toDouble();
             }
@@ -330,7 +406,7 @@ class _DataPenjualanState extends State<DataPenjualan> {
                             Text(
                                 '${DateFormat("dd-MM-yyyy").format(_penjualan.jatuh_tempo)}'),
                             Text('${_penjualan.customer?.nama_customer}'),
-                            Text('${det!.length.toString()} item'),
+                            Text('${det.length.toString()} item'),
                           ],
                         ),
                         Text(
@@ -402,13 +478,19 @@ class _DataPenjualanState extends State<DataPenjualan> {
 
   Future<void> _initData() async {
     final List<Penjualan> _penjualan = await service.getPenjualans();
-    _penjualanList = _penjualan;
+    final _latest = await service.getLatestPenjualan();
+    setState(() {
+      latestPenjualan = _latest;
+      _penjualanList = _penjualan;
+    });
   }
 
   Future<void> _refreshData() async {
     await Future.delayed(Duration(milliseconds: 100));
     final List<Penjualan> _penjualan = await service.getPenjualans();
+    final _latest = await service.getLatestPenjualan();
     setState(() {
+      latestPenjualan = _latest;
       _penjualanList = _penjualan;
     });
   }
