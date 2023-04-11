@@ -235,12 +235,10 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                                   created_at: DateTime.now());
                               await StokService().createStok(newStok);
                             } else {
-                              int curentPanjang = currentStok.panjang;
-                              curentPanjang +=
+                              int curentPanjang =
                                   int.parse(panjangController.text);
                               int currentQty = currentStok.jumlah;
                               currentQty = (curentPanjang / 100).floor();
-                              dev.log('currentstok ada ${currentQty}');
 
                               Stok newStok = Stok(
                                   id: currentStok.id,
@@ -248,8 +246,7 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                                   panjang: curentPanjang,
                                   jumlah: currentQty,
                                   updated_at: DateTime.now());
-                              await StokService()
-                                  .updateStok(newStok.id.value, newStok);
+                              await StokService().addStok(newStok);
                               dev.log('stok ada ${newStok.jumlah}');
                             }
                           }

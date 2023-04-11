@@ -77,6 +77,40 @@ class StokService {
     }
   }
 
+  Future<Stok> addStok(Stok stok) async {
+    final response = await http.post(
+      Uri.parse('$stoksUrl/add'),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+      body: jsonEncode(stok.toJson()),
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return stok;
+    } else {
+      throw Exception('${response.body} failed to create stok');
+    }
+  }
+
+  Future<Stok> minStok(Stok stok) async {
+    final response = await http.put(
+      Uri.parse('$stoksUrl/min'),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+      body: jsonEncode(stok.toJson()),
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return stok;
+    } else {
+      throw Exception('${response.body} failed to create stok');
+    }
+  }
+
   Future<Stok> updateStok(String id, Stok stok) async {
     final response = await http.put(
       Uri.parse('$stoksUrl/$id'),

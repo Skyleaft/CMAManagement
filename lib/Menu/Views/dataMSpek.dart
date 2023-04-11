@@ -150,20 +150,20 @@ class _DataMSpekState extends State<DataMSpek> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
-                        TextButton(
-                          onPressed: () => {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return _deleteDialog(mSpek);
-                              },
-                            )
-                          },
-                          child: Text(
-                            "Delete",
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ),
+                        // TextButton(
+                        //   onPressed: () => {
+                        //     showDialog(
+                        //       context: context,
+                        //       builder: (BuildContext context) {
+                        //         return _deleteDialog(mSpek);
+                        //       },
+                        //     )
+                        //   },
+                        //   child: Text(
+                        //     "Delete",
+                        //     style: TextStyle(color: Colors.red),
+                        //   ),
+                        // ),
                         TextButton(
                           onPressed: () => {
                             showDialog(
