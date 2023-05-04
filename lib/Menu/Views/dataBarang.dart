@@ -148,7 +148,7 @@ class _DataBarangState extends State<DataBarang> {
               ),
               TextFormField(
                 controller: namaController,
-                maxLength: 25,
+                maxLength: 50,
                 decoration: new InputDecoration(
                     hintText: "Masukan Warna",
                     labelText: "Nama Warna",
@@ -326,8 +326,16 @@ class _DataBarangState extends State<DataBarang> {
                 SizedBox(
                   width: 5,
                 ),
-                Text(
-                    "Stok: ${_barang.stok == null ? 0 : _barang.stok!.jumlah}"),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                        "Stok: ${_barang.stok == null ? 0 : _barang.stok!.jumlah}"),
+                    Text(
+                        "Meter: ${_barang.stok == null ? 0 : _barang.stok!.panjang}"),
+                  ],
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [

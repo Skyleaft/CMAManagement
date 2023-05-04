@@ -356,10 +356,6 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
                                         child: SizedBox(
                                       width: 20,
                                     )),
-                                    Text(
-                                      '${result.stok?.jumlah ?? 0}',
-                                      style: TextStyle(fontSize: 16),
-                                    ),
                                     SizedBox(width: 8),
                                   ],
                                 ),

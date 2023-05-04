@@ -306,33 +306,6 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                                   vertical: 5, horizontal: 10),
                               child: InkWell(
                                 onTap: () async {
-                                  // if (result.stok == null) {
-                                  //   print("Habis");
-                                  //   Navigator.pop(context);
-                                  //   showDialog<String>(
-                                  //     context: context,
-                                  //     builder: (BuildContext context) =>
-                                  //         AlertDialog(
-                                  //       title: const Text('Message'),
-                                  //       content:
-                                  //           const Text('Stok Barang Habis'),
-                                  //       actions: <Widget>[
-                                  //         TextButton(
-                                  //           onPressed: () =>
-                                  //               Navigator.pop(context, 'OK'),
-                                  //           child: const Text('OK'),
-                                  //         ),
-                                  //       ],
-                                  //     ),
-                                  //   );
-                                  // } else {
-                                  //   setState(() {
-                                  //     Navigator.pop(context);
-                                  //     barangController.text =
-                                  //         result.nama_barang;
-                                  //     selectedBarang = result;
-                                  //   });
-                                  // }
                                   setState(() {
                                     Navigator.pop(context);
                                     barangController.text = result.nama_barang;
@@ -364,10 +337,6 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                                         child: SizedBox(
                                       width: 20,
                                     )),
-                                    Text(
-                                      '${result.stok?.jumlah ?? 0}',
-                                      style: TextStyle(fontSize: 16),
-                                    ),
                                     SizedBox(width: 8),
                                   ],
                                 ),
