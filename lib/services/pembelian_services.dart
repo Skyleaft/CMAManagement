@@ -54,7 +54,8 @@ class PembelianService {
     if (response.statusCode == 201) {
       return pembelian;
     } else {
-      throw Exception('${response.body} failed to create pembelian');
+      throw Exception(
+          '${response.body} failed to create pembelian ${pembelian.tanggal.toIso8601String()}Z');
     }
   }
 
@@ -71,7 +72,8 @@ class PembelianService {
     if (response.statusCode == 200) {
       return pembelian;
     } else {
-      throw Exception('${response.body} Failed to update pembelian');
+      throw Exception(
+          '${response.body} Failed to update pembelian ${pembelian.tanggal}');
     }
   }
 

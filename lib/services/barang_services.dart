@@ -24,6 +24,25 @@ class BarangService {
     }
   }
 
+  Future<List<Barang>?> searchBarangs(String nama) async {
+    final response = await http.get(
+      Uri.parse("${barangsUrl}/name?name=${nama}"),
+      headers: <String, String>{
+        'accept': 'text/plain',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'X-Api-Key': GlobalConfig.apiKey!,
+      },
+    );
+    if (response.statusCode == 200) {
+      final List<dynamic> barangsJson = jsonDecode(response.body);
+      return barangsJson.map((json) => Barang.fromJson(json)).toList();
+    } else if (response.statusCode == 204) {
+      return null;
+    } else {
+      throw Exception('Failed to load barangs');
+    }
+  }
+
   Future<Barang> getBarang(String id) async {
     final response = await http.get(
       Uri.parse('$barangsUrl/$id'),

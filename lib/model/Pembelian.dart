@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cma_management/model/DetailPembelian.dart';
 import 'package:cma_management/model/Suplier.dart';
 import 'package:flutter_guid/flutter_guid.dart';
@@ -46,7 +47,7 @@ class Pembelian {
   Map<String, dynamic> toJson() {
     return {
       "id": id.value,
-      "tanggal": tanggal.toUtc().toIso8601String(),
+      "tanggal": "${tanggal.toIso8601String()}Z",
       "faktur": faktur,
       "suplierID": suplierID.value,
       "created_at": created_at,

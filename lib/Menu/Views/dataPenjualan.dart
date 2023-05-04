@@ -34,7 +34,7 @@ class _DataPenjualanState extends State<DataPenjualan> {
   late List<Penjualan> _penjualanList;
   late Future<void> futurePenjualan;
   PenjualanService service = new PenjualanService();
-  late Penjualan latestPenjualan;
+  late Penjualan? latestPenjualan;
   final _formKey = GlobalKey<FormState>();
   GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
@@ -55,7 +55,7 @@ class _DataPenjualanState extends State<DataPenjualan> {
     if (latestPenjualan == null) {
       newFaktur = 'CMA/J${DateFormat('yyM').format(DateTime.now())}/0001';
     } else {
-      List<String> fakturSplit = latestPenjualan.no_faktur.split('/');
+      List<String> fakturSplit = latestPenjualan!.no_faktur.split('/');
       int currentNumber = int.parse(fakturSplit.last) + 1;
 
       if (currentNumber < 10) {
@@ -495,7 +495,7 @@ class _DataPenjualanState extends State<DataPenjualan> {
     final List<Penjualan> _penjualan = await service.getPenjualans();
     final _latest = await service.getLatestPenjualan();
     setState(() {
-      latestPenjualan = _latest;
+      latestPenjualan = _latest!;
       _penjualanList = _penjualan;
     });
   }
@@ -594,6 +594,11 @@ class _DataPenjualanState extends State<DataPenjualan> {
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
+                    {
+                      return Center(
+                        child: Text("Penjualan Masih Kosong"),
+                      );
+                    }
                   case ConnectionState.waiting:
                   case ConnectionState.active:
                     {

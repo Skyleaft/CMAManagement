@@ -41,7 +41,7 @@ class PenjualanService {
     }
   }
 
-  Future<Penjualan> getLatestPenjualan() async {
+  Future<Penjualan?> getLatestPenjualan() async {
     final response = await http.get(
       Uri.parse('$penjualansUrl/latest'),
       headers: <String, String>{
@@ -53,6 +53,8 @@ class PenjualanService {
     if (response.statusCode == 200) {
       final dynamic penjualanJson = jsonDecode(response.body);
       return Penjualan.fromJson(penjualanJson);
+    } else if (response.statusCode == 204) {
+      return null;
     } else {
       throw Exception('${response.body} Failed to load penjualan');
     }

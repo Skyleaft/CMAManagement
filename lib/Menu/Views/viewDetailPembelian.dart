@@ -36,6 +36,7 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
   late List<Pembelian> _pembelianList;
   late List<DetailPembelian?>? _detailPembelianList;
   late Future<void> futurePembelian;
+  late Future<void> futureBarangList;
   PembelianService service = new PembelianService();
   DetailPembelianService detailPembelianService = new DetailPembelianService();
   final _formKey = GlobalKey<FormState>();
@@ -114,7 +115,7 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
-                              return _dialogListBarang(setState);
+                              return _dialogListBarang();
                             },
                           )
                         },
@@ -273,92 +274,109 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
     });
   }
 
-  Widget _dialogListBarang(StateSetter setState) {
-    return Dialog(
-      child: Container(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          children: [
-            TextField(decoration: InputDecoration(labelText: "Search")),
-            FutureBuilder(
-              future: BarangService().getBarangs(),
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.none:
-                  case ConnectionState.waiting:
-                  case ConnectionState.active:
-                    {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  case ConnectionState.done:
-                    {
-                      _barangList = snapshot.data!;
-                      return Expanded(
-                        child: ListView.builder(
-                          itemCount: _barangList.length,
-                          scrollDirection: Axis.vertical,
-                          itemBuilder: (context, index) {
-                            var result = _barangList[index];
-                            return Card(
-                              margin: EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 10),
-                              child: InkWell(
-                                onTap: () async {
-                                  setState(() {
-                                    Navigator.pop(context);
-                                    barangController.text = result.nama_barang;
-                                    selectedBarang = result;
-                                  });
-                                },
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Container(
-                                      width: 10,
-                                      height: 50,
-                                      decoration: BoxDecoration(
-                                          color: Color(int.parse(result
-                                              .speksifikasi!
-                                              .where((e) =>
-                                                  e?.mspekID ==
-                                                  "9fe65b33-762d-440e-b053-842feea58c20")
-                                              .first!
-                                              .value))),
-                                    ),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      '${result.nama_barang}',
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                    Expanded(
-                                        child: SizedBox(
-                                      width: 20,
-                                    )),
-                                    SizedBox(width: 8),
-                                  ],
-                                ),
+  Widget _dialogListBarang() {
+    String searchString = "";
+    return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+      return Dialog(
+        child: Container(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: [
+              TextField(
+                decoration: InputDecoration(labelText: "Search"),
+                onChanged: (value) {
+                  setState(() {
+                    _searchBarangList(value);
+                    searchString = value.toLowerCase();
+                    //dev.log(_barangList.length.toString());
+                  });
+                },
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _barangList.length,
+                  scrollDirection: Axis.vertical,
+                  itemBuilder: (context, index) {
+                    var result = _barangList[index];
+                    return result.nama_barang
+                            .toLowerCase()
+                            .contains(searchString)
+                        ? Card(
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
+                            child: InkWell(
+                              onTap: () async {
+                                setState(() {
+                                  Navigator.pop(context);
+                                  barangController.text = result.nama_barang;
+                                  selectedBarang = result;
+                                });
+                              },
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    width: 10,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                        color: Color(int.parse(result
+                                            .speksifikasi!
+                                            .where((e) =>
+                                                e?.mspekID ==
+                                                "9fe65b33-762d-440e-b053-842feea58c20")
+                                            .first!
+                                            .value))),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    '${result.nama_barang}',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  Expanded(
+                                      child: SizedBox(
+                                    width: 20,
+                                  )),
+                                  SizedBox(width: 8),
+                                ],
                               ),
-                            );
-                          },
-                        ),
-                      );
-                    }
-                }
-              },
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancel'),
-            ),
-          ],
+                            ),
+                          )
+                        : Container();
+                  },
+                ),
+              ),
+              // FutureBuilder(
+              //   future: futureBarangList,
+              //   builder: (context, snapshot) {
+              //     switch (snapshot.connectionState) {
+              //       case ConnectionState.none:
+              //       case ConnectionState.waiting:
+              //       case ConnectionState.active:
+              //         {
+              //           return const Center(
+              //             child: CircularProgressIndicator(),
+              //           );
+              //         }
+              //       case ConnectionState.done:
+              //         {
+              //           return
+              //         }
+              //     }
+              //   },
+              // ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel'),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _deleteDialog(DetailPembelian _detailBeli) {
@@ -494,6 +512,25 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
     _detailPembelianList = _detail;
   }
 
+  Future<void> _initBarangList() async {
+    final List<Barang> barangList = await BarangService().getBarangs();
+    _barangList = barangList;
+  }
+
+  Future<void> _searchBarangList(String nama) async {
+    final List<Barang> _filtered = await BarangService().getBarangs();
+    setState(() {
+      if (nama == "") {
+        _barangList = _filtered;
+      } else {
+        _barangList = _filtered
+            .where((element) =>
+                element.nama_barang.toLowerCase().contains(nama.toLowerCase()))
+            .toList();
+      }
+    });
+  }
+
   Future<void> _refreshData() async {
     await Future.delayed(const Duration(milliseconds: 100));
     final List<DetailPembelian> _detail = await detailPembelianService
@@ -509,6 +546,7 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
   @override
   void initState() {
     futurePembelian = _initData();
+    futureBarangList = _initBarangList();
     if (widget.dataPembelian.detailPembelian == null) {
       totalItem = 0;
     } else {

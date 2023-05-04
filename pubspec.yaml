@@ -43,7 +43,7 @@ dependencies:
   flutter_guid: ^0.3.1
   intl_phone_field: ^3.1.0
   flutter_dotenv: ^5.0.2
-  cloud_firestore: ^4.4.4
+  cloud_firestore: ^4.5.3
   flutter_colorpicker: ^1.0.3
   flutter_datetime_picker: ^1.5.1
   money_formatter: ^0.0.4
