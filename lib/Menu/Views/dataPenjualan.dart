@@ -229,7 +229,7 @@ class _DataPenjualanState extends State<DataPenjualan> {
                         onPressed: () {
                           DatePicker.showDatePicker(context,
                               showTitleActions: true,
-                              minTime: DateTime.now(),
+                              minTime: tanggal,
                               maxTime: DateTime.now().add(Duration(days: 365)),
                               onChanged: (date) {
                             jatuhTempoController.text =
@@ -361,16 +361,21 @@ class _DataPenjualanState extends State<DataPenjualan> {
           itemBuilder: (context, index) {
             Penjualan _penjualan = penjualans[index];
             List<DetailPenjualan?>? det = _penjualan.detailPenjualan;
-            double? totalPenjualan = 0;
+            double totalPenjualan = 0;
 
             if (det!.length > 0) {
-              int? totalHarga = det
-                  .map((e) => e?.harga_jual)
-                  .reduce((value, current) => value! + current!);
-              int? totalqty = det
-                  .map((e) => e?.qty)
-                  .reduce((value, current) => value! + current!);
-              totalPenjualan = totalHarga!.toDouble() * totalqty!.toDouble();
+              int subTotal = 0;
+              for (int i = 0; i < det.length; i++) {
+                subTotal = det[i]!.harga_jual * det[i]!.panjang!;
+                totalPenjualan += subTotal.toDouble();
+              }
+              // int? totalHarga = det
+              //     .map((e) => e?.harga_jual)
+              //     .reduce((value, current) => value! + current!);
+              // int? totalqty = det
+              //     .map((e) => e?.qty)
+              //     .reduce((value, current) => value! + current!);
+              // totalPenjualan = totalHarga!.toDouble() * totalqty!.toDouble();
             }
 
             MoneyFormatter fmf = MoneyFormatter(
@@ -411,7 +416,7 @@ class _DataPenjualanState extends State<DataPenjualan> {
                         ),
                         Text(
                           '${fmf.output.symbolOnLeft}',
-                          style: TextStyle(color: Colors.black54, fontSize: 20),
+                          style: TextStyle(color: Colors.green, fontSize: 18),
                         ),
                       ],
                     ),

@@ -54,7 +54,7 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
     var qtyController = TextEditingController();
     var panjangController = TextEditingController();
     var hargaController = TextEditingController();
-    qtyController.text = '0';
+    var keteranganController = TextEditingController();
     if (isUpdate) {
       qtyController.text = '${_detpembelian!.qty}';
       panjangController.text = '${_detpembelian!.panjang}';
@@ -68,10 +68,10 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
         insetPadding: const EdgeInsets.all(15),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+          height: 550,
           child: Form(
             key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+            child: ListView(
               children: [
                 const SizedBox(height: 10),
                 PrimaryText(
@@ -129,7 +129,7 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                 TextFormField(
                   controller: hargaController,
                   decoration: new InputDecoration(
-                    hintText: "Harga Beli",
+                    hintText: "Harga Beli /Meter",
                     labelText: "Harga",
                   ),
                   keyboardType: TextInputType.number,
@@ -150,18 +150,18 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                   onChanged: (value) {
                     setState(
                       () {
-                        if (value != null && value != "") {
-                          int currentp = int.parse(value);
-                          int qty = (currentp / 100).floor();
-                          qtyController.text = qty.toString();
-                        } else {
-                          qtyController.text = '0';
-                        }
+                        // if (value != null && value != "") {
+                        //   int currentp = int.parse(value);
+                        //   int qty = (currentp / 100).ceil();
+                        //   qtyController.text = qty.toString();
+                        // } else {
+                        //   qtyController.text = '0';
+                        // }
                       },
                     );
                   },
                   decoration: new InputDecoration(
-                    hintText: "Panjang/100M",
+                    hintText: "Panjang /Meter",
                     labelText: "Jumlah Panjang",
                   ),
                   keyboardType: TextInputType.number,
@@ -174,7 +174,6 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                 ),
                 TextFormField(
                   controller: qtyController,
-                  readOnly: true,
                   maxLength: 7,
                   decoration: new InputDecoration(
                     hintText: "Jumlah",
@@ -187,6 +186,13 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                     }
                     return null;
                   },
+                ),
+                TextFormField(
+                  controller: keteranganController,
+                  decoration: new InputDecoration(
+                    hintText: "Keterangan",
+                    labelText: "Keterangan",
+                  ),
                 ),
                 SizedBox(height: 30),
                 Row(
@@ -237,8 +243,7 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                             } else {
                               int curentPanjang =
                                   int.parse(panjangController.text);
-                              int currentQty = currentStok.jumlah;
-                              currentQty = (curentPanjang / 100).floor();
+                              int currentQty = int.parse(qtyController.text);
 
                               Stok newStok = Stok(
                                   id: currentStok.id,
@@ -409,16 +414,16 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
             onPressed: () async {
               Stok? currentStok = await StokService()
                   .getStokByBarang(_detailBeli.barangID.value);
-              int curentPanjang = currentStok!.panjang;
-              curentPanjang -= _detailBeli.panjang!;
-              int currentQty = (curentPanjang / 100).floor();
-              Stok stokToUpdate = Stok(
-                id: currentStok.id,
-                barangID: _detailBeli.barangID,
-                panjang: curentPanjang,
-                jumlah: currentQty,
-              );
-              StokService().updateStok(currentStok.id.value, stokToUpdate);
+              // int curentPanjang = currentStok!.panjang;
+              // curentPanjang -= _detailBeli.panjang!;
+              // int currentQty = (curentPanjang / 100).floor();
+              // Stok stokToUpdate = Stok(
+              //   id: currentStok.id,
+              //   barangID: _detailBeli.barangID,
+              //   panjang: curentPanjang,
+              //   jumlah: currentQty,
+              // );
+              StokService().minStok(currentStok!);
               detailPembelianService
                   .deleteDetailPembelian(_detailBeli.id.toString());
               _refreshData();
@@ -455,7 +460,7 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
             return Card(
               margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
                     width: 20,
@@ -469,6 +474,9 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                           .value)),
                     ),
                   ),
+                  SizedBox(
+                    width: 20,
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -477,10 +485,12 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                         style: const TextStyle(
                             color: Colors.black54, fontSize: 16),
                       ),
-                      Text('qty :${detail.qty}'),
+                      Text('Qty :${detail.qty}'),
+                      Text('Meter :${detail.panjang} m.'),
                       Text('Harga Beli : ${fmf.output.symbolOnLeft}'),
                     ],
                   ),
+                  Expanded(child: SizedBox()),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[

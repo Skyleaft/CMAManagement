@@ -283,16 +283,23 @@ class _DataPembelianState extends State<DataPembelian> {
           itemBuilder: (context, index) {
             Pembelian _pembelian = pembelians[index];
             List<DetailPembelian?>? det = _pembelian.detailPembelian;
-            double? totalPembelian = 0;
+            double totalPembelian = 0;
 
             if (det!.length > 0) {
-              int? totalHarga = det
-                  ?.map((e) => e?.harga_beli)
-                  .reduce((value, current) => value! + current!);
-              int? totalqty = det
-                  ?.map((e) => e?.qty)
-                  .reduce((value, current) => value! + current!);
-              totalPembelian = totalHarga!.toDouble() * totalqty!.toDouble();
+              int subTotal = 0;
+              for (int i = 0; i < det.length; i++) {
+                subTotal = det[i]!.harga_beli * det[i]!.panjang!;
+                totalPembelian += subTotal.toDouble();
+              }
+
+              // int? totalHarga = det
+              //     ?.map((e) => e?.harga_beli)
+              //     .reduce((value, current) => value! + current!);
+              // int? totalPanjang = det
+              //     ?.map((e) => e?.panjang)
+              //     .reduce((value, current) => value! + current!);
+              // totalPembelian =
+              //     totalHarga!.toDouble() * totalPanjang!.toDouble();
             }
 
             MoneyFormatter fmf = MoneyFormatter(
@@ -333,7 +340,8 @@ class _DataPembelianState extends State<DataPembelian> {
                         ),
                         Text(
                           '${fmf.output.symbolOnLeft}',
-                          style: TextStyle(color: Colors.black54, fontSize: 20),
+                          style:
+                              TextStyle(color: Colors.green[600], fontSize: 18),
                         ),
                       ],
                     ),

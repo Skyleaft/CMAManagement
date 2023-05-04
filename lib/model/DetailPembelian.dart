@@ -10,6 +10,7 @@ class DetailPembelian {
   final int qty;
   final int harga_beli;
   final int? panjang;
+  final String? keterangan;
   final Barang? barang;
   final DateTime? created_at;
   final DateTime? updated_at;
@@ -23,6 +24,7 @@ class DetailPembelian {
       required this.harga_beli,
       this.panjang,
       this.barang,
+      this.keterangan,
       this.created_at,
       this.updated_at,
       this.deleted_at});
@@ -36,6 +38,7 @@ class DetailPembelian {
       harga_beli: json["harga_beli"],
       panjang: json["panjang"],
       barang: json["barang"] == null ? null : Barang?.fromJson(json["barang"]),
+      keterangan: json["keterangan"],
       created_at: DateTime.tryParse(json["created_at"].toString()),
       updated_at: DateTime.tryParse(json["updated_at"].toString()),
       deleted_at: DateTime.tryParse(json["deleted_at"].toString()),
@@ -50,6 +53,7 @@ class DetailPembelian {
       "qty": qty,
       "harga_beli": harga_beli,
       "panjang": panjang,
+      "keterangan": keterangan,
       "created_at": created_at?.toUtc().toIso8601String(),
       "updated_at": updated_at?.toUtc().toIso8601String(),
       "deleted_at": deleted_at?.toUtc().toIso8601String(),

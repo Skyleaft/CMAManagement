@@ -54,7 +54,7 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
     var qtyController = TextEditingController();
     var panjangController = TextEditingController();
     var hargaController = TextEditingController();
-    qtyController.text = '0';
+    var keteranganController = TextEditingController();
     if (isUpdate) {
       qtyController.text = '${_detpenjualan!.qty}';
       panjangController.text = '${_detpenjualan.panjang}';
@@ -68,10 +68,10 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
         insetPadding: const EdgeInsets.all(15),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+          height: 550,
           child: Form(
             key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+            child: ListView(
               children: [
                 const SizedBox(height: 10),
                 PrimaryText(
@@ -129,7 +129,7 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
                 TextFormField(
                   controller: hargaController,
                   decoration: new InputDecoration(
-                    hintText: "Harga Jual",
+                    hintText: "Harga Jual /Meter",
                     labelText: "Harga",
                   ),
                   keyboardType: TextInputType.number,
@@ -161,7 +161,7 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
                     );
                   },
                   decoration: new InputDecoration(
-                    hintText: "Panjang/100M",
+                    hintText: "Panjang /Meter",
                     labelText: "Jumlah Panjang",
                   ),
                   keyboardType: TextInputType.number,
@@ -174,7 +174,6 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
                 ),
                 TextFormField(
                   controller: qtyController,
-                  readOnly: true,
                   maxLength: 7,
                   decoration: new InputDecoration(
                     hintText: "Jumlah",
@@ -187,6 +186,13 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
                     }
                     return null;
                   },
+                ),
+                TextFormField(
+                  controller: keteranganController,
+                  decoration: new InputDecoration(
+                    hintText: "Keterangan",
+                    labelText: "Keterangan",
+                  ),
                 ),
                 SizedBox(height: 30),
                 Row(
@@ -235,12 +241,9 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
                                   created_at: DateTime.now());
                               await StokService().createStok(newStok);
                             } else {
-                              int curentPanjang = currentStok.panjang;
-                              curentPanjang -=
+                              int curentPanjang =
                                   int.parse(panjangController.text);
-                              int currentQty = currentStok.jumlah;
-                              currentQty = (curentPanjang / 100).floor();
-                              dev.log('currentstok ada ${currentQty}');
+                              int currentQty = int.parse(qtyController.text);
 
                               Stok newStok = Stok(
                                   id: currentStok.id,
@@ -248,9 +251,7 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
                                   panjang: curentPanjang,
                                   jumlah: currentQty,
                                   updated_at: DateTime.now());
-                              await StokService()
-                                  .updateStok(newStok.id.value, newStok);
-                              dev.log('stok ada ${newStok.jumlah}');
+                              await StokService().minStok(newStok);
                             }
                           }
 
@@ -405,16 +406,17 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
             onPressed: () async {
               Stok? currentStok = await StokService()
                   .getStokByBarang(_detailBeli.barangID.value);
-              int curentPanjang = currentStok!.panjang;
-              curentPanjang -= _detailBeli.panjang!;
-              int currentQty = (curentPanjang / 100).floor();
-              Stok stokToUpdate = Stok(
-                id: currentStok.id,
-                barangID: _detailBeli.barangID,
-                panjang: curentPanjang,
-                jumlah: currentQty,
-              );
-              StokService().updateStok(currentStok.id.value, stokToUpdate);
+              // int curentPanjang = currentStok!.panjang;
+              // curentPanjang -= _detailBeli.panjang!;
+              // int currentQty = (curentPanjang / 100).floor();
+              // Stok stokToUpdate = Stok(
+              //   id: currentStok.id,
+              //   barangID: _detailBeli.barangID,
+              //   panjang: curentPanjang,
+              //   jumlah: currentQty,
+              // );
+              // StokService().updateStok(currentStok.id.value, stokToUpdate);
+              StokService().minStok(currentStok!);
               detailPenjualanService
                   .deleteDetailPenjualan(_detailBeli.id.toString());
               _refreshData();
@@ -451,7 +453,7 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
             return Card(
               margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
                     width: 20,
@@ -465,6 +467,9 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
                           .value)),
                     ),
                   ),
+                  SizedBox(
+                    width: 20,
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -473,10 +478,12 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
                         style: const TextStyle(
                             color: Colors.black54, fontSize: 16),
                       ),
-                      Text('qty :${detail.qty}'),
+                      Text('Qty :${detail.qty}'),
+                      Text('Meter :${detail.panjang} m.'),
                       Text('Harga Beli : ${fmf.output.symbolOnLeft}'),
                     ],
                   ),
+                  Expanded(child: SizedBox()),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[

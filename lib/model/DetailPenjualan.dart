@@ -11,6 +11,7 @@ class DetailPenjualan {
   final int harga_jual;
   final int? panjang;
   final Barang? barang;
+  final String? keterangan;
   final DateTime? created_at;
   final DateTime? updated_at;
   final DateTime? deleted_at;
@@ -23,6 +24,7 @@ class DetailPenjualan {
       required this.harga_jual,
       this.panjang,
       this.barang,
+      this.keterangan,
       this.created_at,
       this.updated_at,
       this.deleted_at});
@@ -36,6 +38,7 @@ class DetailPenjualan {
       harga_jual: json["harga_jual"],
       panjang: json["panjang"],
       barang: json["barang"] == null ? null : Barang?.fromJson(json["barang"]),
+      keterangan: json["keterangan"],
       created_at: DateTime.tryParse(json["created_at"].toString()),
       updated_at: DateTime.tryParse(json["updated_at"].toString()),
       deleted_at: DateTime.tryParse(json["deleted_at"].toString()),
@@ -50,6 +53,7 @@ class DetailPenjualan {
       "qty": qty,
       "harga_jual": harga_jual,
       "panjang": panjang,
+      "keterangan": keterangan,
       "created_at": created_at?.toUtc().toIso8601String(),
       "updated_at": updated_at?.toUtc().toIso8601String(),
       "deleted_at": deleted_at?.toUtc().toIso8601String(),
