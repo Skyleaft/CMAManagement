@@ -38,12 +38,14 @@ class TileCard extends StatelessWidget {
                   Material(
                     color: color,
                     borderRadius: BorderRadius.all(Radius.circular(12)),
-                    elevation: 6,
-                    shadowColor: Colors.grey,
+                    elevation: 4,
+                    shadowColor: Colors.deepOrange,
                     child: InkWell(
                       borderRadius: BorderRadius.all(Radius.circular(12)),
                       onTap: onTap,
                       child: Container(
+                        constraints:
+                            BoxConstraints(minWidth: 110, maxWidth: 110),
                         padding:
                             EdgeInsets.symmetric(horizontal: 28, vertical: 12),
                         child: Column(children: [

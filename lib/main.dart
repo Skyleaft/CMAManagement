@@ -26,7 +26,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await _configureLocalTimeZone();
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -36,15 +35,6 @@ Future<void> main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   print("coba masuk ke log");
   runApp(const MyApp());
-}
-
-Future<void> _configureLocalTimeZone() async {
-  if (kIsWeb || Platform.isLinux) {
-    return;
-  }
-  tz.initializeTimeZones();
-  final String? timeZoneName = await FlutterTimezone.getLocalTimezone();
-  tz.setLocalLocation(tz.getLocation(timeZoneName!));
 }
 
 class MyApp extends StatefulWidget {

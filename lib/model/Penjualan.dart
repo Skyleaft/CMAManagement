@@ -51,9 +51,9 @@ class Penjualan {
   Map<String, dynamic> toJson() {
     return {
       "id": id.value,
-      "jatuh_tempo": jatuh_tempo.toUtc().toIso8601String(),
+      "jatuh_tempo": "${jatuh_tempo.toIso8601String()}Z",
       "no_faktur": no_faktur,
-      "tanggal": tanggal.toUtc().toIso8601String(),
+      "tanggal": "${tanggal.toIso8601String()}Z",
       "customerID": customerID.value,
       "created_at": created_at,
       "updated_at": updated_at,

@@ -391,7 +391,7 @@ class _DataBarangState extends State<DataBarang> {
         key: _refreshIndicatorKey,
         onRefresh: _refreshData,
         child: GridView.builder(
-          padding: EdgeInsets.all(10),
+          padding: EdgeInsets.only(top: 15, left: 10, right: 10, bottom: 88),
           itemBuilder: (context, index) => _buildCardBarang(barangs[index]),
           itemCount: barangs.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

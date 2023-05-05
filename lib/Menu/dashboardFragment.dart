@@ -317,6 +317,7 @@ class _DashboardFragmentState extends State<DashboardFragment> {
               titleTxt: "Total Pembelian",
               subTxt: '${dashboardData.pembelianCount}',
               color: Colors.deepOrange.shade500,
+              icon: Icons.shopping_cart,
               onTap: () => {
                 Navigator.push(
                   context,
@@ -335,6 +336,7 @@ class _DashboardFragmentState extends State<DashboardFragment> {
               titleTxt: "Total Penjualan",
               subTxt: '${dashboardData.penjualanCount}',
               color: Colors.deepOrange.shade400,
+              icon: Icons.shopping_cart,
               animation: Tween<double>(begin: 0.0, end: 1.0).animate(
                   CurvedAnimation(
                       parent: widget.animationController!,

@@ -15,6 +15,7 @@ import 'package:currency_text_input_formatter/currency_text_input_formatter.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_guid/flutter_guid.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -36,6 +37,7 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
   late List<Penjualan?>? _penjualanList;
   late List<DetailPenjualan?>? _detailPenjualanList;
   late Future<void> futurePenjualan;
+  late Future<void> futureBarangList;
   PenjualanService service = new PenjualanService();
   DetailPenjualanService detailPenjualanService = new DetailPenjualanService();
   final _formKey = GlobalKey<FormState>();
@@ -47,6 +49,7 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
   late List<Barang> _barangList;
   late Barang selectedBarang = _barangList.first;
   var barangController = TextEditingController();
+  Color selectedBarangColor = Colors.deepOrange;
 
 //dialog form
   Widget _dialogForm(bool isUpdate, [DetailPenjualan? _detpenjualan]) {
@@ -61,6 +64,7 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
       hargaController.text = '${_detpenjualan.harga_jual}';
       //fakturController.text = _penjualan!.faktur;
     }
+    bool isLoading = false;
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
       return Dialog(
@@ -83,16 +87,11 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
                 Row(
                   children: [
                     Container(
-                      color: Color(int.parse(selectedBarang.speksifikasi!
-                          .where((e) =>
-                              e?.mspekID ==
-                              "9fe65b33-762d-440e-b053-842feea58c20")
-                          .first!
-                          .value)),
+                      color: selectedBarangColor,
                       width: 30,
                       height: 30,
                     ),
-                    SizedBox(width: 20),
+                    SizedBox(width: 10),
                     Expanded(
                       child: TextFormField(
                         readOnly: true,
@@ -108,7 +107,8 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
                         },
                       ),
                     ),
-                    Expanded(
+                    SizedBox(
+                      width: 90,
                       child: TextButton(
                         onPressed: () => {
                           showDialog(
@@ -116,7 +116,17 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
                             builder: (BuildContext context) {
                               return _dialogListBarang(setState);
                             },
-                          )
+                          ).then((_) {
+                            setState(() => {
+                                  selectedBarangColor = Color(int.parse(
+                                      selectedBarang.speksifikasi!
+                                          .where((e) =>
+                                              e?.mspekID ==
+                                              "9fe65b33-762d-440e-b053-842feea58c20")
+                                          .first!
+                                          .value))
+                                });
+                          }),
                         },
                         child: const Text(
                           'Pilih Barang',
@@ -150,13 +160,13 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
                   onChanged: (value) {
                     setState(
                       () {
-                        if (value != null && value != "") {
-                          int currentp = int.parse(value);
-                          int qty = (currentp / 100).floor();
-                          qtyController.text = qty.toString();
-                        } else {
-                          qtyController.text = '0';
-                        }
+                        // if (value != null && value != "") {
+                        //   int currentp = int.parse(value);
+                        //   int qty = (currentp / 100).floor();
+                        //   qtyController.text = qty.toString();
+                        // } else {
+                        //   qtyController.text = '0';
+                        // }
                       },
                     );
                   },
@@ -205,63 +215,58 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
                       child: const Text('Cancel'),
                     ),
                     ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                          if (isUpdate) {
-                            // final penjualanToUpdate = Penjualan(
-                            //     id: _penjualan!.id,
-                            //     tanggal: tanggal,
-                            //     created_at: _penjualan.created_at,
-                            //     updated_at:
-                            //         DateTime.now().toIso8601String() + 'Z',
-                            //     deleted_at: _penjualan.deleted_at);
-                            // service.updatePenjualan(
-                            //     penjualanToUpdate.id.value, penjualanToUpdate);
-                          } else {
-                            final detPenjualan = DetailPenjualan(
-                              id: Guid.generate(),
-                              barangID: selectedBarang.id,
-                              penjualanID: widget.dataPenjualan.id,
-                              harga_jual: int.parse(hargaController.text
-                                  .replaceAll(RegExp(r'[^0-9]'), '')),
-                              panjang: int.parse(panjangController.text),
-                              qty: int.parse(qtyController.text),
-                            );
-                            detailPenjualanService
-                                .createDetailPenjualan(detPenjualan);
-                            Stok? currentStok = await StokService()
-                                .getStokByBarang(selectedBarang.id.value);
-                            if (currentStok == null) {
-                              Stok newStok = Stok(
-                                  id: Guid.generate(),
-                                  barangID: selectedBarang.id,
-                                  panjang: int.parse(panjangController.text),
-                                  jumlah: int.parse(qtyController.text),
-                                  created_at: DateTime.now());
-                              await StokService().createStok(newStok);
-                            } else {
-                              int curentPanjang =
-                                  int.parse(panjangController.text);
-                              int currentQty = int.parse(qtyController.text);
+                        onPressed: () async {
+                          if (!isLoading) {
+                            setState(() => {isLoading = true});
+                            if (_formKey.currentState!.validate()) {
+                              final detPenjualan = DetailPenjualan(
+                                id: Guid.generate(),
+                                barangID: selectedBarang.id,
+                                penjualanID: widget.dataPenjualan.id,
+                                harga_jual: int.parse(hargaController.text
+                                    .replaceAll(RegExp(r'[^0-9]'), '')),
+                                panjang: int.parse(panjangController.text),
+                                qty: int.parse(qtyController.text),
+                              );
+                              detailPenjualanService
+                                  .createDetailPenjualan(detPenjualan);
+                              Stok? currentStok = await StokService()
+                                  .getStokByBarang(selectedBarang.id.value);
+                              if (currentStok == null) {
+                                Stok newStok = Stok(
+                                    id: Guid.generate(),
+                                    barangID: selectedBarang.id,
+                                    panjang: int.parse(panjangController.text),
+                                    jumlah: int.parse(qtyController.text),
+                                    created_at: DateTime.now());
+                                await StokService().createStok(newStok);
+                              } else {
+                                int curentPanjang =
+                                    int.parse(panjangController.text);
+                                int currentQty = int.parse(qtyController.text);
 
-                              Stok newStok = Stok(
-                                  id: currentStok.id,
-                                  barangID: selectedBarang.id,
-                                  panjang: curentPanjang,
-                                  jumlah: currentQty,
-                                  updated_at: DateTime.now());
-                              await StokService().minStok(newStok);
+                                Stok newStok = Stok(
+                                    id: currentStok.id,
+                                    barangID: selectedBarang.id,
+                                    panjang: curentPanjang,
+                                    jumlah: currentQty,
+                                    updated_at: DateTime.now());
+                                await StokService().minStok(newStok);
+                              }
+                              await Future.delayed(Duration(milliseconds: 500));
+
+                              _formKey.currentState!.save();
+                              _refreshData();
+                              Navigator.pop(context);
+                              setState(() => {isLoading = false});
                             }
                           }
-
-                          _refreshData();
-                          Navigator.pop(context);
-                        }
-                      },
-                      child:
-                          isUpdate ? const Text('Update') : const Text('Save'),
-                    ),
+                        },
+                        child: isLoading
+                            ? CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : const Text('Save')),
                   ],
                 ),
               ],
@@ -273,111 +278,100 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
   }
 
   Widget _dialogListBarang(StateSetter setState) {
-    return Dialog(
-      child: Container(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          children: [
-            TextField(decoration: InputDecoration(labelText: "Search")),
-            FutureBuilder(
-              future: BarangService().getBarangs(),
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.none:
-                  case ConnectionState.waiting:
-                  case ConnectionState.active:
-                    {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  case ConnectionState.done:
-                    {
-                      _barangList = snapshot.data!;
-                      return Expanded(
-                        child: ListView.builder(
-                          itemCount: _barangList.length,
-                          scrollDirection: Axis.vertical,
-                          itemBuilder: (context, index) {
-                            var result = _barangList[index];
-                            return Card(
-                              margin: EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 15),
-                              child: InkWell(
-                                onTap: () async {
-                                  if (result.stok == null) {
-                                    print("Habis");
-                                    Navigator.pop(context);
-                                    showDialog<String>(
-                                      context: context,
-                                      builder: (BuildContext context) =>
-                                          AlertDialog(
-                                        title: const Text('Message'),
-                                        content:
-                                            const Text('Stok Barang Habis'),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context, 'OK'),
-                                            child: const Text('OK'),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  } else {
-                                    setState(() {
-                                      Navigator.pop(context);
-                                      barangController.text =
-                                          result.nama_barang;
-                                      selectedBarang = result;
-                                    });
-                                  }
-                                },
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 15,
-                                      height: 50,
-                                      decoration: BoxDecoration(
-                                          color: Color(int.parse(result
-                                              .speksifikasi!
-                                              .where((e) =>
-                                                  e?.mspekID ==
-                                                  "9fe65b33-762d-440e-b053-842feea58c20")
-                                              .first!
-                                              .value))),
-                                    ),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      '${result.nama_barang}',
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                    Expanded(
-                                        child: SizedBox(
-                                      width: 20,
-                                    )),
-                                    SizedBox(width: 8),
-                                  ],
-                                ),
+    String searchString = "";
+    return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+      return Dialog(
+        child: Container(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: [
+              TextField(
+                decoration: InputDecoration(labelText: "Search"),
+                onChanged: (value) {
+                  setState(() {
+                    _searchBarangList(value);
+                    searchString = value.toLowerCase();
+                    //dev.log(_barangList.length.toString());
+                  });
+                },
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _barangList.length,
+                  scrollDirection: Axis.vertical,
+                  itemBuilder: (context, index) {
+                    var result = _barangList[index];
+                    return Card(
+                      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                      child: InkWell(
+                        onTap: () async {
+                          if (result.stok == null) {
+                            print("Habis");
+                            Navigator.pop(context);
+                            showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                title: const Text('Message'),
+                                content: const Text('Stok Barang Habis'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, 'OK'),
+                                    child: const Text('OK'),
+                                  ),
+                                ],
                               ),
                             );
-                          },
+                          } else {
+                            setState(() {
+                              Navigator.pop(context);
+                              barangController.text = result.nama_barang;
+                              selectedBarang = result;
+                            });
+                          }
+                        },
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 15,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                  color: Color(int.parse(result.speksifikasi!
+                                      .where((e) =>
+                                          e?.mspekID ==
+                                          "9fe65b33-762d-440e-b053-842feea58c20")
+                                      .first!
+                                      .value))),
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              '${result.nama_barang}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            Expanded(
+                                child: SizedBox(
+                              width: 20,
+                            )),
+                            SizedBox(width: 8),
+                          ],
                         ),
-                      );
-                    }
-                }
-              },
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancel'),
-            ),
-          ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel'),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _deleteDialog(DetailPenjualan _detailBeli) {
@@ -514,6 +508,25 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
     _detailPenjualanList = _detail;
   }
 
+  Future<void> _initBarangList() async {
+    final List<Barang> barangList = await BarangService().getBarangs();
+    _barangList = barangList;
+  }
+
+  Future<void> _searchBarangList(String nama) async {
+    final List<Barang> _filtered = await BarangService().getBarangs();
+    setState(() {
+      if (nama == "") {
+        _barangList = _filtered;
+      } else {
+        _barangList = _filtered
+            .where((element) =>
+                element.nama_barang.toLowerCase().contains(nama.toLowerCase()))
+            .toList();
+      }
+    });
+  }
+
   Future<void> _refreshData() async {
     await Future.delayed(const Duration(milliseconds: 100));
     final List<DetailPenjualan> _detail = await detailPenjualanService
@@ -529,6 +542,7 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
   @override
   void initState() {
     futurePenjualan = _initData();
+    futureBarangList = _initBarangList();
     if (widget.dataPenjualan.detailPenjualan == null) {
       totalItem = 0;
     } else {
@@ -539,6 +553,7 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
   }
 
   SampleItem? selectedMenu;
+  ValueNotifier<bool> isDialOpen = ValueNotifier(false);
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
@@ -553,18 +568,39 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
           centerTitle: true,
         ),
         resizeToAvoidBottomInset: true,
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return _dialogForm(false);
+        floatingActionButton: SpeedDial(
+          icon: Icons.menu,
+          activeIcon: Icons.close,
+          spacing: 3,
+          openCloseDial: isDialOpen,
+          childPadding: const EdgeInsets.all(5),
+          spaceBetweenChildren: 4,
+          elevation: 8.0,
+          animationCurve: Curves.elasticInOut,
+          children: [
+            SpeedDialChild(
+              child: const Icon(Icons.print),
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              label: 'Cetak',
+              onTap: () => setState(() => {}),
+              onLongPress: () => debugPrint('FIRST CHILD LONG PRESS'),
+            ),
+            SpeedDialChild(
+              child: const Icon(Icons.add),
+              backgroundColor: Colors.deepOrange,
+              foregroundColor: Colors.white,
+              label: 'Tambah Barang',
+              onTap: () => {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return _dialogForm(false);
+                  },
+                ),
               },
             ),
-          },
-          label: const Text('Tambah Barang'),
-          icon: const Icon(Icons.add),
-          backgroundColor: AppColors.primary,
+          ],
         ),
         body: Container(
           child: Column(

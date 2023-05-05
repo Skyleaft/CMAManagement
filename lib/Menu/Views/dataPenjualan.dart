@@ -354,6 +354,7 @@ class _DataPenjualanState extends State<DataPenjualan> {
         key: _refreshIndicatorKey,
         onRefresh: _refreshData,
         child: ListView.builder(
+          padding: EdgeInsets.only(bottom: 80.0),
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
           physics: AlwaysScrollableScrollPhysics(),
@@ -389,6 +390,9 @@ class _DataPenjualanState extends State<DataPenjualan> {
                 ));
 
             return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
               margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -421,9 +425,12 @@ class _DataPenjualanState extends State<DataPenjualan> {
                       ],
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         TextButton(
+                          style: TextButton.styleFrom(
+                              foregroundColor: Colors.red,
+                              minimumSize: Size(5, 5)),
                           onPressed: () => {
                             showDialog(
                               context: context,
@@ -432,12 +439,10 @@ class _DataPenjualanState extends State<DataPenjualan> {
                               },
                             )
                           },
-                          child: Text(
-                            "Delete",
-                            style: TextStyle(color: Colors.red),
-                          ),
+                          child: Icon(Icons.delete),
                         ),
                         TextButton(
+                          style: TextButton.styleFrom(minimumSize: Size(5, 5)),
                           onPressed: () => {
                             showDialog(
                               context: context,
@@ -446,12 +451,10 @@ class _DataPenjualanState extends State<DataPenjualan> {
                               },
                             )
                           },
-                          child: Text(
-                            "Edit",
-                            style: TextStyle(color: AppColors.primary),
-                          ),
+                          child: Icon(Icons.edit),
                         ),
                         TextButton(
+                          style: TextButton.styleFrom(minimumSize: Size(5, 5)),
                           onPressed: () => {
                             Navigator.push(
                               context,
@@ -464,10 +467,7 @@ class _DataPenjualanState extends State<DataPenjualan> {
                               _refreshData();
                             })
                           },
-                          child: Text(
-                            "Detail",
-                            style: TextStyle(color: AppColors.primary),
-                          ),
+                          child: Icon(Icons.receipt),
                         ),
                       ],
                     ),

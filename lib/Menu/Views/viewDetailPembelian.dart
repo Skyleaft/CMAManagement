@@ -15,6 +15,7 @@ import 'package:currency_text_input_formatter/currency_text_input_formatter.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_guid/flutter_guid.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -48,6 +49,7 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
   late List<Barang> _barangList;
   late Barang selectedBarang = _barangList.first;
   var barangController = TextEditingController();
+  Color selectedBarangColor = Colors.deepOrange;
 
 //dialog form
   Widget _dialogForm(bool isUpdate, [DetailPembelian? _detpembelian]) {
@@ -82,18 +84,14 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                 ),
                 const SizedBox(height: 20),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      color: Color(int.parse(selectedBarang.speksifikasi!
-                          .where((e) =>
-                              e?.mspekID ==
-                              "9fe65b33-762d-440e-b053-842feea58c20")
-                          .first!
-                          .value)),
+                      color: selectedBarangColor,
                       width: 30,
                       height: 30,
                     ),
-                    SizedBox(width: 20),
+                    SizedBox(width: 10),
                     Expanded(
                       child: TextFormField(
                         readOnly: true,
@@ -109,7 +107,8 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                         },
                       ),
                     ),
-                    Expanded(
+                    SizedBox(
+                      width: 90,
                       child: TextButton(
                         onPressed: () => {
                           showDialog(
@@ -117,7 +116,17 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                             builder: (BuildContext context) {
                               return _dialogListBarang();
                             },
-                          )
+                          ).then((_) {
+                            setState(() => {
+                                  selectedBarangColor = Color(int.parse(
+                                      selectedBarang.speksifikasi!
+                                          .where((e) =>
+                                              e?.mspekID ==
+                                              "9fe65b33-762d-440e-b053-842feea58c20")
+                                          .first!
+                                          .value))
+                                });
+                          }),
                         },
                         child: const Text(
                           'Pilih Barang',
@@ -299,73 +308,47 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                   scrollDirection: Axis.vertical,
                   itemBuilder: (context, index) {
                     var result = _barangList[index];
-                    return result.nama_barang
-                            .toLowerCase()
-                            .contains(searchString)
-                        ? Card(
-                            margin: EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 10),
-                            child: InkWell(
-                              onTap: () async {
-                                setState(() {
-                                  Navigator.pop(context);
-                                  barangController.text = result.nama_barang;
-                                  selectedBarang = result;
-                                });
-                              },
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    width: 10,
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                        color: Color(int.parse(result
-                                            .speksifikasi!
-                                            .where((e) =>
-                                                e?.mspekID ==
-                                                "9fe65b33-762d-440e-b053-842feea58c20")
-                                            .first!
-                                            .value))),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    '${result.nama_barang}',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                  Expanded(
-                                      child: SizedBox(
-                                    width: 20,
-                                  )),
-                                  SizedBox(width: 8),
-                                ],
-                              ),
+                    return Card(
+                      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                      child: InkWell(
+                        onTap: () async {
+                          setState(() {
+                            Navigator.pop(context);
+                            barangController.text = result.nama_barang;
+                            selectedBarang = result;
+                          });
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: 10,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                  color: Color(int.parse(result.speksifikasi!
+                                      .where((e) =>
+                                          e?.mspekID ==
+                                          "9fe65b33-762d-440e-b053-842feea58c20")
+                                      .first!
+                                      .value))),
                             ),
-                          )
-                        : Container();
+                            SizedBox(width: 8),
+                            Text(
+                              '${result.nama_barang}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            Expanded(
+                                child: SizedBox(
+                              width: 20,
+                            )),
+                            SizedBox(width: 8),
+                          ],
+                        ),
+                      ),
+                    );
                   },
                 ),
               ),
-              // FutureBuilder(
-              //   future: futureBarangList,
-              //   builder: (context, snapshot) {
-              //     switch (snapshot.connectionState) {
-              //       case ConnectionState.none:
-              //       case ConnectionState.waiting:
-              //       case ConnectionState.active:
-              //         {
-              //           return const Center(
-              //             child: CircularProgressIndicator(),
-              //           );
-              //         }
-              //       case ConnectionState.done:
-              //         {
-              //           return
-              //         }
-              //     }
-              //   },
-              // ),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
@@ -429,6 +412,7 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
         key: _refreshIndicatorKey,
         onRefresh: _refreshData,
         child: ListView.builder(
+          padding: EdgeInsets.only(bottom: 80.0),
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
           physics: const AlwaysScrollableScrollPhysics(),
@@ -482,6 +466,9 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
                       TextButton(
+                        style: TextButton.styleFrom(
+                            foregroundColor: Colors.red,
+                            minimumSize: Size(5, 5)),
                         onPressed: () => {
                           showDialog(
                             context: context,
@@ -490,10 +477,7 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                             },
                           )
                         },
-                        child: const Text(
-                          "Delete",
-                          style: TextStyle(color: Colors.red),
-                        ),
+                        child: Icon(Icons.delete),
                       ),
                     ],
                   ),
@@ -557,6 +541,7 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
   }
 
   SampleItem? selectedMenu;
+  ValueNotifier<bool> isDialOpen = ValueNotifier(false);
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
@@ -571,19 +556,53 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
           centerTitle: true,
         ),
         resizeToAvoidBottomInset: true,
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return _dialogForm(false);
+        floatingActionButton: SpeedDial(
+          icon: Icons.menu,
+          activeIcon: Icons.close,
+          spacing: 3,
+          openCloseDial: isDialOpen,
+          childPadding: const EdgeInsets.all(5),
+          spaceBetweenChildren: 4,
+          elevation: 8.0,
+          animationCurve: Curves.elasticInOut,
+          children: [
+            SpeedDialChild(
+              child: const Icon(Icons.print),
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              label: 'Cetak',
+              onTap: () => setState(() => {}),
+              onLongPress: () => debugPrint('FIRST CHILD LONG PRESS'),
+            ),
+            SpeedDialChild(
+              child: const Icon(Icons.add),
+              backgroundColor: Colors.deepOrange,
+              foregroundColor: Colors.white,
+              label: 'Tambah Barang',
+              onTap: () => {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return _dialogForm(false);
+                  },
+                ),
               },
             ),
-          },
-          label: const Text('Tambah Barang'),
-          icon: const Icon(Icons.add),
-          backgroundColor: AppColors.primary,
+          ],
         ),
+        // floatingActionButton: FloatingActionButton.extended(
+        //   onPressed: () => {
+        //     showDialog(
+        //       context: context,
+        //       builder: (BuildContext context) {
+        //         return _dialogForm(false);
+        //       },
+        //     ),
+        //   },
+        //   label: const Text('Tambah Barang'),
+        //   icon: const Icon(Icons.add),
+        //   backgroundColor: AppColors.primary,
+        // ),
         body: Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
