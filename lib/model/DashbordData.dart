@@ -11,6 +11,8 @@ class DashboardData {
   int? stockCount;
   int? pembelianCount;
   int? penjualanCount;
+  int? pengeluaran;
+  int? pendapatan;
 
   DashboardData(
       {this.usahaCount,
@@ -20,7 +22,9 @@ class DashboardData {
       this.barangCount,
       this.stockCount,
       this.pembelianCount,
-      this.penjualanCount});
+      this.penjualanCount,
+      this.pengeluaran,
+      this.pendapatan});
 
   DashboardData.fromJson(Map<String, dynamic> json) {
     usahaCount = json['usahaCount'];
@@ -31,5 +35,7 @@ class DashboardData {
     stockCount = json['stockCount'];
     pembelianCount = json['pembelianCount'];
     penjualanCount = json['penjualanCount'];
+    pengeluaran = json['pengeluaran'];
+    pendapatan = json['pendapatan'];
   }
 }

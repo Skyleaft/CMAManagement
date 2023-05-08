@@ -40,6 +40,7 @@ import 'package:cma_management/styles/styles.dart';
 import 'package:cma_management/styles/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:money_formatter/money_formatter.dart';
 import 'dart:developer' as dev;
 
 import 'package:shimmer/shimmer.dart';
@@ -62,6 +63,8 @@ class _DashboardFragmentState extends State<DashboardFragment> {
   final ScrollController scrollController = ScrollController();
   double topBarOpacity = 0.0;
   late DashboardData dashboardData = DashboardData();
+  late MoneyFormatter? pengeluaran = null;
+  late MoneyFormatter? pendapatan = null;
 
   List<Widget> listViews = <Widget>[];
 
@@ -70,6 +73,24 @@ class _DashboardFragmentState extends State<DashboardFragment> {
       final _data = await DashboardService().getDashboards();
       setState(() {
         dashboardData = _data;
+        pengeluaran = new MoneyFormatter(
+            amount: double.parse(dashboardData.pengeluaran!.toString()),
+            settings: MoneyFormatterSettings(
+              symbol: 'Rp.',
+              thousandSeparator: '.',
+              decimalSeparator: ',',
+              symbolAndNumberSeparator: ' ',
+              fractionDigits: 0,
+            ));
+        pendapatan = new MoneyFormatter(
+            amount: double.parse(dashboardData.pendapatan!.toString()),
+            settings: MoneyFormatterSettings(
+              symbol: 'Rp.',
+              thousandSeparator: '.',
+              decimalSeparator: ',',
+              symbolAndNumberSeparator: ' ',
+              fractionDigits: 0,
+            ));
       });
     }
   }
@@ -387,6 +408,51 @@ class _DashboardFragmentState extends State<DashboardFragment> {
             animationController: widget.animationController!,
           ),
           loadMonitoringData(true),
+          Card(
+            margin: EdgeInsets.all(20),
+            child: Padding(
+              padding: const EdgeInsets.all(18.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    children: [
+                      Text(
+                        "Pengeluaran",
+                        style: CMATheme.title,
+                      ),
+                      Icon(
+                        Icons.arrow_upward,
+                        size: 48,
+                      ),
+                      Text(pengeluaran!.output.symbolOnLeft,
+                          style: TextStyle(fontSize: 17, color: Colors.red))
+                    ],
+                  ),
+                  Container(
+                    height: 80,
+                    width: 2,
+                    color: Colors.grey,
+                  ),
+                  Column(
+                    children: [
+                      Text(
+                        "Pendapatan",
+                        style: CMATheme.title,
+                      ),
+                      Icon(
+                        Icons.arrow_downward,
+                        size: 48,
+                      ),
+                      Text(pendapatan!.output.symbolOnLeft,
+                          style: TextStyle(fontSize: 17, color: Colors.green))
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
           TitleView(
             titleTxt: 'Pengeluaran Tiap Bulanan',
             subTxt: 'Details',

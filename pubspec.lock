@@ -253,10 +253,10 @@ packages:
     dependency: "direct main"
     description:
       name: fl_chart
-      sha256: dc9ad1e0535e968a29d04adebc28cad2530d20c700e26b76abf09aef4bb57415
+      sha256: "48a1b69be9544e2b03d9a8e843affd89e43f3194c9248776222efcb4206bb1ec"
       url: "https://pub.dev"
     source: hosted
-    version: "0.35.0"
+    version: "0.62.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -544,14 +544,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.5"
-  pedantic:
-    dependency: transitive
-    description:
-      name: pedantic
-      sha256: "67fc27ed9639506c856c840ccce7594d0bdcd91bc8d53d6e52359449a1d50602"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.11.1"
   petitparser:
     dependency: transitive
     description:

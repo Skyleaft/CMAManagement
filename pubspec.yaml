@@ -37,7 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   intl: ^0.18.0
   flutter_svg: ^1.1.6
-  fl_chart: ^0.35.0
+  fl_chart: ^0.62.0
   rive: ^0.9.1
   http: ^0.13.5
   flutter_guid: ^0.3.1
