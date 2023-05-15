@@ -23,7 +23,7 @@ class CetakPenjualan extends StatelessWidget {
 
   Future<void> cetak() async {
     final output = await getTemporaryDirectory();
-    final file = File("${output.path}/example.pdf");
+    final file = File("${output.path}/${fakturPenjualan.faktur}.pdf");
 
     await file.writeAsBytes(await buildPdf(PdfPageFormat.a4.landscape));
     OpenFile.open(file.path);
