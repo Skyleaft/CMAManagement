@@ -1,3 +1,4 @@
+import 'package:cma_management/Menu/Views/cetakPenjualan.dart';
 import 'package:cma_management/Menu/Views/dataPenjualan.dart';
 import 'package:cma_management/model/Barang.dart';
 import 'package:cma_management/model/DetailPenjualan.dart';
@@ -583,8 +584,12 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
               label: 'Cetak',
-              onTap: () => setState(() => {}),
-              onLongPress: () => debugPrint('FIRST CHILD LONG PRESS'),
+              onTap: () => setState(() => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CetakPenjualan()),
+                    )
+                  }),
             ),
             SpeedDialChild(
               child: const Icon(Icons.add),

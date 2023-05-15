@@ -426,7 +426,7 @@ class _DashboardFragmentState extends State<DashboardFragment> {
                         Icons.arrow_upward,
                         size: 48,
                       ),
-                      Text(pengeluaran!.output.symbolOnLeft,
+                      Text(pengeluaran?.output.symbolOnLeft ?? "0",
                           style: TextStyle(fontSize: 17, color: Colors.red))
                     ],
                   ),
@@ -445,7 +445,7 @@ class _DashboardFragmentState extends State<DashboardFragment> {
                         Icons.arrow_downward,
                         size: 48,
                       ),
-                      Text(pendapatan!.output.symbolOnLeft,
+                      Text(pendapatan?.output.symbolOnLeft ?? "0",
                           style: TextStyle(fontSize: 17, color: Colors.green))
                     ],
                   ),
