@@ -2,6 +2,7 @@ import 'package:cma_management/Menu/Views/cetakPenjualan.dart';
 import 'package:cma_management/Menu/Views/dataPenjualan.dart';
 import 'package:cma_management/model/Barang.dart';
 import 'package:cma_management/model/DetailPenjualan.dart';
+import 'package:cma_management/model/FakturPenjualan.dart';
 import 'package:cma_management/model/Penjualan.dart';
 import 'package:cma_management/model/Stok.dart';
 import 'package:cma_management/model/Suplier.dart';
@@ -558,6 +559,7 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
+      FakturPenjualan? _faktur;
       return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -580,17 +582,22 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
           animationCurve: Curves.elasticInOut,
           children: [
             SpeedDialChild(
-              child: const Icon(Icons.print),
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              label: 'Cetak',
-              onTap: () => setState(() => {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CetakPenjualan()),
-                    )
-                  }),
-            ),
+                child: const Icon(Icons.print),
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                label: 'Cetak',
+                onTap: () async => {
+                      _faktur = await PenjualanService()
+                          .getFakturPenjualan(widget.dataPenjualan.id.value)
+                          .then((value) => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => CetakPenjualan(
+                                          dataPenjualan: widget.dataPenjualan,
+                                          fakturPenjualan: value!,
+                                        )),
+                              ))
+                    }),
             SpeedDialChild(
               child: const Icon(Icons.add),
               backgroundColor: Colors.deepOrange,

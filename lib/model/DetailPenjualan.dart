@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:cma_management/model/Barang.dart';
 import 'package:cma_management/model/Speksifikasi.dart';
+import 'package:cma_management/utils/MoneyFormat.dart';
+import 'package:cma_management/utils/noti.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 
 class DetailPenjualan {
@@ -58,6 +61,25 @@ class DetailPenjualan {
       "updated_at": updated_at?.toUtc().toIso8601String(),
       "deleted_at": deleted_at?.toUtc().toIso8601String(),
     };
+  }
+
+  String getIndex(int index, int row) {
+    switch (index) {
+      case 0:
+        return row.toString();
+      case 1:
+        return barang!.nama_barang;
+      case 2:
+        return MoneyFormat().rupiah(double.parse(harga_jual.toString()));
+      case 3:
+        return qty.toString();
+      case 4:
+        return panjang.toString();
+      case 5:
+        return MoneyFormat()
+            .rupiah(double.parse((harga_jual * panjang!).toString()));
+    }
+    return '';
   }
 }
 
