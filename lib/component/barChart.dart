@@ -1,15 +1,34 @@
+import 'dart:ffi';
+
 import 'package:cma_management/config/responsive.dart';
+import 'package:cma_management/model/BarPembelian.dart';
+import 'package:cma_management/model/BarPenjualan.dart';
 import 'package:cma_management/styles/colors.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:collection/collection.dart';
+
+double? avgMontly = 0;
+double? min = 0;
+double? max = 0;
 
 class BarChartCopmponent extends StatelessWidget {
-  const BarChartCopmponent({
-    Key? key,
-  }) : super(key: key);
+  final List<BarPenjualan?>? barPenjualan;
+  final List<BarPembelian?>? barPembelian;
+
+  const BarChartCopmponent(
+      {Key? key, required this.barPenjualan, required this.barPembelian})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    avgMontly = barPenjualan?.map((m) => m!.totalPenjualan!).average;
+    min = barPenjualan!.map((m) => m!.totalPenjualan!).min.toDouble();
+    List<int> maxTerbesar = <int>[];
+    maxTerbesar.add(barPenjualan!.map((m) => m!.totalPenjualan!).max);
+    maxTerbesar.add(barPembelian!.map((m) => m!.totalPembelian!).max);
+    max = maxTerbesar.max.toDouble();
     return LineChart(
       sampleData1,
       swapAnimationDuration: Duration(milliseconds: 150), // Optional
@@ -23,10 +42,10 @@ class BarChartCopmponent extends StatelessWidget {
         titlesData: titlesData1,
         borderData: borderData,
         lineBarsData: lineBarsData1,
-        minX: 0,
-        maxX: 14,
-        maxY: 4,
-        minY: 0,
+        minX: 1,
+        maxX: 5,
+        maxY: formatDouble(max!.toInt()),
+        minY: formatDouble(min!.toInt()),
       );
 
   LineTouchData get lineTouchData1 => LineTouchData(
@@ -39,7 +58,6 @@ class BarChartCopmponent extends StatelessWidget {
   List<LineChartBarData> get lineBarsData1 => [
         lineChartBarData1_1,
         lineChartBarData1_2,
-        lineChartBarData1_3,
       ];
   FlTitlesData get titlesData1 => FlTitlesData(
         bottomTitles: AxisTitles(
@@ -61,21 +79,33 @@ class BarChartCopmponent extends StatelessWidget {
       fontWeight: FontWeight.bold,
       fontSize: 16,
     );
-    Widget text;
-    switch (value.toInt()) {
-      case 2:
-        text = const Text('SEPT', style: style);
-        break;
-      case 7:
-        text = const Text('OCT', style: style);
-        break;
-      case 12:
-        text = const Text('DEC', style: style);
-        break;
-      default:
-        text = const Text('');
-        break;
-    }
+    String tanggal = DateFormat('MMM').format(DateTime(2023, value.toInt()));
+    Widget text = Text(tanggal, style: style);
+    // switch (value.toInt()) {
+    //   case 1:
+    //     String tanggal = DateFormat('MMM').format(barPenjualan![4]!.perbulan!);
+    //     text = Text(tanggal, style: style);
+    //     break;
+    //   case 4:
+    //     String tanggal = DateFormat('MMM').format(barPenjualan![3]!.perbulan!);
+    //     text = Text(tanggal, style: style);
+    //     break;
+    //   case 7:
+    //     String tanggal = DateFormat('MMM').format(barPenjualan![2]!.perbulan!);
+    //     text = Text(tanggal, style: style);
+    //     break;
+    //   case 10:
+    //     String tanggal = DateFormat('MMM').format(barPenjualan![1]!.perbulan!);
+    //     text = Text(tanggal, style: style);
+    //     break;
+    //   case 13:
+    //     String tanggal = DateFormat('MMM').format(barPenjualan![0]!.perbulan!);
+    //     text = Text(tanggal, style: style);
+    //     break;
+    //   default:
+    //     text = const Text('');
+    //     break;
+    // }
 
     return SideTitleWidget(
       axisSide: meta.axisSide,
@@ -89,25 +119,34 @@ class BarChartCopmponent extends StatelessWidget {
       fontWeight: FontWeight.bold,
       fontSize: 14,
     );
-    String text;
-    switch (value.toInt()) {
-      case 1:
-        text = '1m';
-        break;
-      case 2:
-        text = '2m';
-        break;
-      case 3:
-        text = '3m';
-        break;
-      case 4:
-        text = '5m';
-        break;
-      case 5:
-        text = '6m';
-        break;
-      default:
-        return Container();
+    String text = '';
+
+    // switch (value.toInt()) {
+    //   case 1:
+    //     text =
+    //         '${NumberFormat.compactCurrency(locale: 'id_ID', symbol: '').format(min)}';
+    //     break;
+    //   case 3:
+    //     text =
+    //         '${NumberFormat.compactCurrency(locale: 'id_ID', symbol: '').format(avgMontly)}';
+    //     break;
+    //   case 5:
+    //     text =
+    //         '${NumberFormat.compactCurrency(locale: 'id_ID', symbol: '').format(max)}';
+    //     break;
+    //   default:
+    //     return Container();
+    // }
+
+    if (value == formatDouble(min!.toInt())) {
+      text =
+          '${NumberFormat.compactCurrency(locale: 'id_ID', symbol: '').format(min)}';
+    } else if (value == formatDouble(avgMontly!.toInt()).floor()) {
+      text =
+          '${NumberFormat.compactCurrency(locale: 'id_ID', symbol: '').format(avgMontly)}';
+    } else if (value == formatDouble(max!.toInt())) {
+      text =
+          '${NumberFormat.compactCurrency(locale: 'id_ID', symbol: '').format(max)}';
     }
 
     return Text(text, style: style, textAlign: TextAlign.center);
@@ -131,57 +170,55 @@ class BarChartCopmponent extends StatelessWidget {
         ),
       );
 
+  double formatDouble(int value) {
+    var number = value * 0.000001;
+    return number;
+  }
+
   LineChartBarData get lineChartBarData1_1 => LineChartBarData(
         isCurved: true,
         color: Colors.green,
-        barWidth: 8,
+        barWidth: 5,
         isStrokeCapRound: true,
-        dotData: FlDotData(show: false),
+        dotData: FlDotData(show: true),
         belowBarData: BarAreaData(show: false),
-        spots: const [
-          FlSpot(1, 1),
-          FlSpot(3, 1.5),
-          FlSpot(5, 1.4),
-          FlSpot(7, 3.4),
-          FlSpot(10, 2),
-          FlSpot(12, 2.2),
-          FlSpot(13, 1.8),
+        spots: [
+          FlSpot(barPenjualan![4]!.perbulan!.month.toDouble(),
+              formatDouble(barPenjualan![4]!.totalPenjualan!)),
+          FlSpot(barPenjualan![3]!.perbulan!.month.toDouble(),
+              formatDouble(barPenjualan![3]!.totalPenjualan!)),
+          FlSpot(barPenjualan![2]!.perbulan!.month.toDouble(),
+              formatDouble(barPenjualan![2]!.totalPenjualan!)),
+          FlSpot(barPenjualan![1]!.perbulan!.month.toDouble(),
+              formatDouble(barPenjualan![1]!.totalPenjualan!)),
+          FlSpot(barPenjualan![0]!.perbulan!.month.toDouble(),
+              formatDouble(barPenjualan![0]!.totalPenjualan!)),
         ],
       );
 
   LineChartBarData get lineChartBarData1_2 => LineChartBarData(
         isCurved: true,
         color: Colors.pink,
-        barWidth: 8,
+        barWidth: 5,
         isStrokeCapRound: true,
-        dotData: FlDotData(show: false),
+        dotData: FlDotData(show: true),
         belowBarData: BarAreaData(
           show: false,
           color: Colors.pink.withOpacity(0),
         ),
-        spots: const [
-          FlSpot(1, 1),
-          FlSpot(3, 2.8),
-          FlSpot(7, 1.2),
-          FlSpot(10, 2.8),
-          FlSpot(12, 2.6),
-          FlSpot(13, 3.9),
-        ],
-      );
-
-  LineChartBarData get lineChartBarData1_3 => LineChartBarData(
-        isCurved: true,
-        color: Colors.cyan,
-        barWidth: 8,
-        isStrokeCapRound: true,
-        dotData: FlDotData(show: false),
-        belowBarData: BarAreaData(show: false),
-        spots: const [
-          FlSpot(1, 2.8),
-          FlSpot(3, 1.9),
-          FlSpot(6, 3),
-          FlSpot(10, 1.3),
-          FlSpot(13, 2.5),
+        spots: [
+          barPembelian!.length < 5
+              ? FlSpot.nullSpot
+              : FlSpot(barPembelian![4]!.perbulan!.month.toDouble(),
+                  formatDouble(barPembelian![4]!.totalPembelian!)),
+          FlSpot(barPembelian![3]!.perbulan!.month.toDouble(),
+              formatDouble(barPembelian![3]!.totalPembelian!)),
+          FlSpot(barPembelian![2]!.perbulan!.month.toDouble(),
+              formatDouble(barPembelian![2]!.totalPembelian!)),
+          FlSpot(barPembelian![1]!.perbulan!.month.toDouble(),
+              formatDouble(barPembelian![1]!.totalPembelian!)),
+          FlSpot(barPembelian![0]!.perbulan!.month.toDouble(),
+              formatDouble(barPembelian![0]!.totalPembelian!)),
         ],
       );
 

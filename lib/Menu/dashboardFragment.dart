@@ -16,6 +16,8 @@ import 'package:cma_management/component/infoCard.dart';
 import 'package:cma_management/component/paymentDetailList.dart';
 import 'package:cma_management/config/responsive.dart';
 import 'package:cma_management/config/size_config.dart';
+import 'package:cma_management/model/BarPembelian.dart';
+import 'package:cma_management/model/BarPenjualan.dart';
 import 'package:cma_management/model/Barang.dart';
 import 'package:cma_management/model/Customer.dart';
 import 'package:cma_management/model/DashbordData.dart';
@@ -65,6 +67,8 @@ class _DashboardFragmentState extends State<DashboardFragment> {
   late DashboardData dashboardData = DashboardData();
   late MoneyFormatter? pengeluaran = null;
   late MoneyFormatter? pendapatan = null;
+  List<BarPenjualan?>? barPenjualan;
+  List<BarPembelian?>? barPembelian;
 
   List<Widget> listViews = <Widget>[];
 
@@ -93,6 +97,17 @@ class _DashboardFragmentState extends State<DashboardFragment> {
             ));
       });
     }
+  }
+
+  Future<void> getBarData() async {
+    final _barPenjualan = await DashboardService().getBarPenjualan();
+    final _barPembelian = await DashboardService().getBarPembelian();
+    barPenjualan = _barPenjualan;
+    barPembelian = _barPembelian;
+    // setState(() {
+    //   barPenjualan = _barPenjualan;
+    //   barPembelian = _barPembelian;
+    // });
   }
 
   Future<void> _refreshData() async {
@@ -454,7 +469,7 @@ class _DashboardFragmentState extends State<DashboardFragment> {
             ),
           ),
           TitleView(
-            titleTxt: 'Pengeluaran Tiap Bulanan',
+            titleTxt: 'Grafik Pembelian & Penjualan',
             subTxt: 'Details',
             animation: Tween<double>(begin: 0.0, end: 1.0).animate(
                 CurvedAnimation(
@@ -469,22 +484,20 @@ class _DashboardFragmentState extends State<DashboardFragment> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 28),
             height: 180,
-            child: BarChartCopmponent(),
-          ),
-          TitleView(
-            titleTxt: 'Pendapatan Tiap Bulanan',
-            subTxt: 'Details',
-            animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                CurvedAnimation(
-                    parent: widget.animationController!,
-                    curve: Interval((1 / 9) * 0, 1.0,
-                        curve: Curves.fastOutSlowIn))),
-            animationController: widget.animationController!,
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 28),
-            height: 180,
-            child: BarChartCopmponent(),
+            child: FutureBuilder(
+                future: getBarData(),
+                builder: (context, snapshot) {
+                  if (barPenjualan != null && barPembelian != null) {
+                    return BarChartCopmponent(
+                      barPenjualan: barPenjualan,
+                      barPembelian: barPembelian,
+                    );
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                }),
           ),
           TitleView(
             titleTxt: 'Log History',
