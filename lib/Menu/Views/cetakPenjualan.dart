@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:cma_management/model/DetailPenjualan.dart';
 import 'package:cma_management/model/FakturPenjualan.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -12,6 +14,8 @@ import 'package:open_file_plus/open_file_plus.dart';
 
 import '../../model/Penjualan.dart';
 import '../../utils/MoneyFormat.dart';
+
+String? _bgShape;
 
 class CetakPenjualan extends StatelessWidget {
   final Penjualan dataPenjualan;
@@ -23,13 +27,16 @@ class CetakPenjualan extends StatelessWidget {
 
   Future<void> cetak() async {
     final output = await getTemporaryDirectory();
-    final file = File("${output.path}/${fakturPenjualan.faktur}.pdf");
+    final file = File(
+        "${output.path}/${dataPenjualan.customer!.nama_customer}-${dataPenjualan.no_faktur.substring(dataPenjualan.no_faktur.length - 4)}.pdf");
 
-    await file.writeAsBytes(await buildPdf(PdfPageFormat.a4.landscape));
-    OpenFile.open(file.path);
+    await file
+        .writeAsBytes(await buildPdf(PdfPageFormat.a4.landscape))
+        .then((value) => OpenFile.open(value.path));
   }
 
   Future<Uint8List> buildPdf(PdfPageFormat pageFormat) async {
+    _bgShape = await rootBundle.loadString('assets/BGInvoce.svg');
     // Create a PDF document.
     final doc = pw.Document();
 
@@ -85,12 +92,12 @@ class CetakPenjualan extends StatelessWidget {
                     decoration: pw.BoxDecoration(
                       borderRadius:
                           const pw.BorderRadius.all(pw.Radius.circular(2)),
-                      color: PdfColors.amber,
+                      color: PdfColors.deepOrangeAccent,
                     ),
                     padding: const pw.EdgeInsets.only(
                         left: 40, top: 10, bottom: 10, right: 20),
                     alignment: pw.Alignment.centerLeft,
-                    height: 50,
+                    height: 80,
                     child: pw.DefaultTextStyle(
                       style: pw.TextStyle(
                         color: PdfColors.white,
@@ -98,11 +105,17 @@ class CetakPenjualan extends StatelessWidget {
                       ),
                       child: pw.GridView(
                         crossAxisCount: 2,
+                        crossAxisSpacing: 4,
+                        mainAxisSpacing: 6,
                         children: [
                           pw.Text('Invoice #'),
                           pw.Text(dataPenjualan.no_faktur),
-                          pw.Text('Date:'),
-                          pw.Text(dataPenjualan.tanggal.toIso8601String()),
+                          pw.Text('Tanggal:'),
+                          pw.Text(DateFormat('dd-MM-yyyy')
+                              .format(dataPenjualan.tanggal)),
+                          pw.Text('Jatuh Tempo:'),
+                          pw.Text(DateFormat('dd-MM-yyyy')
+                              .format(dataPenjualan.jatuh_tempo)),
                         ],
                       ),
                     ),
@@ -120,10 +133,10 @@ class CetakPenjualan extends StatelessWidget {
                     height: 72,
                     child: pw.PdfLogo(),
                   ),
-                  // pw.Container(
-                  //   color: baseColor,
-                  //   padding: pw.EdgeInsets.only(top: 3),
-                  // ),
+                  pw.Container(
+                    color: PdfColors.deepOrange,
+                    padding: pw.EdgeInsets.only(top: 3),
+                  ),
                 ],
               ),
             ),
@@ -170,7 +183,7 @@ class CetakPenjualan extends StatelessWidget {
       ),
       buildBackground: (context) => pw.FullPage(
         ignoreMargins: true,
-        child: pw.Text("bg"),
+        child: pw.SvgImage(svg: _bgShape!),
       ),
     );
   }
@@ -284,7 +297,7 @@ class CetakPenjualan extends StatelessWidget {
       rowDecoration: pw.BoxDecoration(
         border: pw.Border(
           bottom: pw.BorderSide(
-            color: PdfColors.amber,
+            color: PdfColors.deepOrange100,
             width: .5,
           ),
         ),
@@ -332,7 +345,7 @@ class CetakPenjualan extends StatelessWidget {
                 ),
               ),
               pw.Text(
-                "Ini Alamat Toko",
+                "Cybercode Media Alternatif, Jl. HMS Mintareja Sarjana Hukum Jl. Ruko Town Place No.A-25, Baros, Cimahi Tengah, Cimahi City, West Java 40521, Indonesia",
                 style: const pw.TextStyle(
                   fontSize: 8,
                   lineSpacing: 5,
@@ -367,7 +380,7 @@ class CetakPenjualan extends StatelessWidget {
                     pw.Text('0%'),
                   ],
                 ),
-                pw.Divider(color: PdfColors.amber),
+                pw.Divider(color: PdfColors.deepOrangeAccent),
                 pw.DefaultTextStyle(
                   style: pw.TextStyle(
                     color: PdfColors.black,
@@ -400,7 +413,8 @@ class CetakPenjualan extends StatelessWidget {
             children: [
               pw.Container(
                 decoration: pw.BoxDecoration(
-                  border: pw.Border(top: pw.BorderSide(color: PdfColors.amber)),
+                  border: pw.Border(
+                      top: pw.BorderSide(color: PdfColors.deepOrangeAccent)),
                 ),
                 padding: const pw.EdgeInsets.only(top: 10, bottom: 4),
                 child: pw.Text(
