@@ -427,10 +427,10 @@ class _DashboardFragmentState extends State<DashboardFragment> {
           Card(
             margin: EdgeInsets.all(20),
             child: Padding(
-              padding: const EdgeInsets.all(18.0),
+              padding: const EdgeInsets.all(12.0),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Column(
                     children: [
@@ -446,10 +446,16 @@ class _DashboardFragmentState extends State<DashboardFragment> {
                           style: TextStyle(fontSize: 17, color: Colors.red))
                     ],
                   ),
+                  SizedBox(
+                    width: 10,
+                  ),
                   Container(
                     height: 80,
                     width: 2,
                     color: Colors.grey,
+                  ),
+                  SizedBox(
+                    width: 10,
                   ),
                   Column(
                     children: [

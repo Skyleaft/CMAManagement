@@ -46,7 +46,7 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
 
   int? totalItem;
 
-  late List<Barang> _barangList;
+  List<Barang> _barangList = [];
   late Barang selectedBarang = _barangList.first;
   var barangController = TextEditingController();
   Color selectedBarangColor = Colors.deepOrange;
@@ -284,7 +284,6 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
   }
 
   Widget _dialogListBarang() {
-    String searchString = "";
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
       return Dialog(
@@ -296,9 +295,7 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
                 decoration: InputDecoration(labelText: "Search"),
                 onChanged: (value) {
                   setState(() {
-                    _searchBarangList(value);
-                    searchString = value.toLowerCase();
-                    //dev.log(_barangList.length.toString());
+                    filterSearchResults(value.toLowerCase());
                   });
                 },
               ),
@@ -501,17 +498,12 @@ class _viewDetailPembelianState extends State<viewDetailPembelian> {
     _barangList = barangList;
   }
 
-  Future<void> _searchBarangList(String nama) async {
-    final List<Barang> _filtered = await BarangService().getBarangs();
+  Future<void> filterSearchResults(String query) async {
+    final data = _barangList;
     setState(() {
-      if (nama == "") {
-        _barangList = _filtered;
-      } else {
-        _barangList = _filtered
-            .where((element) =>
-                element.nama_barang.toLowerCase().contains(nama.toLowerCase()))
-            .toList();
-      }
+      _barangList = data
+          .where((item) => item.nama_barang.toLowerCase().contains(query))
+          .toList();
     });
   }
 

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cma_management/Login/login.dart';
-import 'package:cma_management/firebase_options.dart';
 import 'package:cma_management/mainMenu.dart';
 import 'package:cma_management/styles/colors.dart';
 import 'package:cma_management/styles/themes.dart';
@@ -27,13 +26,12 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
   await Noti.initialize();
-  await FirebaseMessaging.instance.getInitialMessage();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  print("coba masuk ke log");
+  // await FirebaseMessaging.instance.getInitialMessage();
+  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const MyApp());
 }
 
@@ -53,22 +51,22 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    requestPermission();
-    getTokens();
-    FirebaseMessaging.instance.getInitialMessage().then(
-          (value) => setState(
-            () {
-              _resolved = true;
-              initialMessage = value?.data.toString();
-            },
-          ),
-        );
-    FirebaseMessaging.onMessage.listen((message) {
-      dev.log('test ${message.notification?.title}');
-      if (message.notification != null) {
-        createNotification(message);
-      }
-    });
+    //requestPermission();
+    //getTokens();
+    // FirebaseMessaging.instance.getInitialMessage().then(
+    //       (value) => setState(
+    //         () {
+    //           _resolved = true;
+    //           initialMessage = value?.data.toString();
+    //         },
+    //       ),
+    //     );
+    // FirebaseMessaging.onMessage.listen((message) {
+    //   dev.log('test ${message.notification?.title}');
+    //   if (message.notification != null) {
+    //     createNotification(message);
+    //   }
+    // });
   }
 
   void requestPermission() async {

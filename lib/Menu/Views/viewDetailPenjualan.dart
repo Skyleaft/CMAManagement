@@ -280,7 +280,6 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
   }
 
   Widget _dialogListBarang(StateSetter setState) {
-    String searchString = "";
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
       return Dialog(
@@ -292,9 +291,7 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
                 decoration: InputDecoration(labelText: "Search"),
                 onChanged: (value) {
                   setState(() {
-                    _searchBarangList(value);
-                    searchString = value.toLowerCase();
-                    //dev.log(_barangList.length.toString());
+                    filterSearchResults(value.toLowerCase());
                   });
                 },
               ),
@@ -515,17 +512,17 @@ class _viewDetailPenjualanState extends State<viewDetailPenjualan> {
     _barangList = barangList;
   }
 
-  Future<void> _searchBarangList(String nama) async {
-    final List<Barang> _filtered = await BarangService().getBarangs();
+  Future<List<Barang>> _getBarangs() async {
+    final List<Barang> data = await BarangService().getBarangs();
+    return data;
+  }
+
+  Future<void> filterSearchResults(String query) async {
+    final data = _barangList;
     setState(() {
-      if (nama == "") {
-        _barangList = _filtered;
-      } else {
-        _barangList = _filtered
-            .where((element) =>
-                element.nama_barang.toLowerCase().contains(nama.toLowerCase()))
-            .toList();
-      }
+      _barangList = data
+          .where((item) => item.nama_barang.toLowerCase().contains(query))
+          .toList();
     });
   }
 

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:cma_management/Menu/component/modalForm.dart';
-import 'package:cma_management/firebase_options.dart';
 import 'package:cma_management/main.dart';
 import 'package:cma_management/styles/themes.dart';
 import 'package:cma_management/utils/noti.dart';
@@ -86,25 +85,25 @@ class _NotificationFragmentState extends State<NotificationFragment> {
                   notification:
                       RemoteNotification(title: "coba", body: "baksodaksd"));
               //createNotification(mes);
-              try {
-                var response = await http.post(
-                  Uri.parse('https://fcm.googleapis.com/fcm/send'),
-                  headers: <String, String>{
-                    'Content-Type': 'application/json',
-                    'Authorization': 'key=' + myKey,
-                  },
-                  body: constructFCMPayload(mToken),
-                );
-                print('res ${response.statusCode}');
-                print('res ${response.body}');
-                // print('FCM request for device sent!');
-                if (response.statusCode == 200) {
-                } else {
-                  throw Exception('Failed to send ${response.body}');
-                }
-              } catch (e) {
-                print(e);
-              }
+              // try {
+              //   var response = await http.post(
+              //     Uri.parse('https://fcm.googleapis.com/fcm/send'),
+              //     headers: <String, String>{
+              //       'Content-Type': 'application/json',
+              //       'Authorization': 'key=' + myKey,
+              //     },
+              //     body: constructFCMPayload(mToken),
+              //   );
+              //   print('res ${response.statusCode}');
+              //   print('res ${response.body}');
+              //   // print('FCM request for device sent!');
+              //   if (response.statusCode == 200) {
+              //   } else {
+              //     throw Exception('Failed to send ${response.body}');
+              //   }
+              // } catch (e) {
+              //   print(e);
+              // }
             },
             child: Text("Test")),
       ],

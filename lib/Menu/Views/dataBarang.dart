@@ -1,3 +1,4 @@
+import 'package:cma_management/config/responsive.dart';
 import 'package:cma_management/model/Barang.dart';
 import 'package:cma_management/model/Logs.dart';
 import 'package:cma_management/model/Produk.dart';
@@ -395,7 +396,7 @@ class _DataBarangState extends State<DataBarang> {
           itemBuilder: (context, index) => _buildCardBarang(barangs[index]),
           itemCount: barangs.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
+              crossAxisCount: Responsive.isDesktop(context) ? 6 : 2,
               mainAxisSpacing: 8,
               crossAxisSpacing: 8,
               childAspectRatio: (MediaQuery.of(context).size.height * 0.0016)),
