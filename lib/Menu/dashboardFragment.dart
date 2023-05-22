@@ -11,6 +11,7 @@ import 'package:cma_management/Menu/component/tile_card.dart';
 import 'package:cma_management/Menu/component/title_view.dart';
 import 'package:cma_management/component/barChart.dart';
 import 'package:cma_management/Menu/component/header.dart';
+import 'package:cma_management/component/barChartJumlah.dart';
 import 'package:cma_management/component/historyTable.dart';
 import 'package:cma_management/component/infoCard.dart';
 import 'package:cma_management/component/paymentDetailList.dart';
@@ -489,6 +490,37 @@ class _DashboardFragmentState extends State<DashboardFragment> {
                 builder: (context, snapshot) {
                   if (barPenjualan != null && barPembelian != null) {
                     return BarChartCopmponent(
+                      barPenjualan: barPenjualan,
+                      barPembelian: barPembelian,
+                    );
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                }),
+          ),
+          TitleView(
+            titleTxt: 'Grafik Total Transaksi',
+            subTxt: 'Details',
+            animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                CurvedAnimation(
+                    parent: widget.animationController!,
+                    curve: Interval((1 / 9) * 0, 1.0,
+                        curve: Curves.fastOutSlowIn))),
+            animationController: widget.animationController!,
+          ),
+          SizedBox(
+            height: SizeConfig.blockSizeVertical! * 3,
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 28),
+            height: 180,
+            child: FutureBuilder(
+                future: getBarData(),
+                builder: (context, snapshot) {
+                  if (barPenjualan != null && barPembelian != null) {
+                    return BarChartJumlahCopmponent(
                       barPenjualan: barPenjualan,
                       barPembelian: barPembelian,
                     );
